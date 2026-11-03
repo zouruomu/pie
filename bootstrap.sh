@@ -6,7 +6,7 @@
 # reviews, and terminates the pod when the orchestrator marks the run done or the
 # deadline passes.
 #
-# Set by the orchestrator: R2G_RUN, R2G_CONTROL_SHA, R2G_DEADLINE_H (default 12).
+# Set by the orchestrator: R2G_RUN, R2G_CONTROL_SHA, R2G_DEADLINE_H (default 16).
 # Runpod secrets: claude_code_oauth_token, r2g_github_token.
 #
 # Branches on zouruomu/pie:
@@ -23,6 +23,7 @@ RUN=${R2G_RUN:?}
 SHA=${R2G_CONTROL_SHA:?}
 export CLAUDE_CODE_OAUTH_TOKEN=${RUNPOD_SECRET_claude_code_oauth_token:-}
 export R2G_GH_TOKEN=${RUNPOD_SECRET_r2g_github_token:-}
+export HF_TOKEN=${HF_TOKEN:-${RUNPOD_SECRET_HF_TOKEN:-}}
 unset RUNPOD_SECRET_claude_code_oauth_token RUNPOD_SECRET_r2g_github_token
 log "run $RUN, control $SHA, pod ${RUNPOD_POD_ID:-?}," \
     "claude token $([ -n "$CLAUDE_CODE_OAUTH_TOKEN" ] && echo set || echo MISSING)," \
@@ -44,12 +45,7 @@ git -C "$R/evidence" checkout -q -b "r2g-evidence/$RUN"
 git -C "$R/evidence" remote add origin https://github.com/zouruomu/pie
 gitcfg "$R/evidence"
 
-sync_evidence() {
-    cp "$R/bootstrap.log" "$R"/agent-*.json "$R/evidence/" 2>/dev/null
-    git -C "$R/evidence" add -A
-    git -C "$R/evidence" commit -q -m "r2g $RUN evidence" || true
-    git -C "$R/evidence" push -q -f origin HEAD || log "evidence push failed"
-}
+sync_evidence() { bash "$R/sync.sh"; }
 
 terminate() {
     log "terminating the pod: $1"
@@ -65,8 +61,9 @@ terminate() {
     sleep infinity
 }
 
-( sleep $(( ${R2G_DEADLINE_H:-12} * 3600 )); terminate "deadline of ${R2G_DEADLINE_H:-12} h" ) &
+( sleep $(( ${R2G_DEADLINE_H:-16} * 3600 )); terminate "deadline of ${R2G_DEADLINE_H:-16} h" ) &
 
+curl -fsSL "https://raw.githubusercontent.com/zouruomu/pie/$SHA/pod/sync.sh" -o "$R/sync.sh"
 git clone -q --filter=blob:none https://github.com/zouruomu/pie "$R/pie" || terminate "clone failed"
 gitcfg "$R/pie"
 git -C "$R/pie" remote add upstream https://github.com/pie-project/pie
@@ -81,6 +78,11 @@ mkdir -p "$CLAUDE_CONFIG_DIR"
 git -C "$R/pie" show "$SHA:pod/settings.json" > "$CLAUDE_CONFIG_DIR/settings.json"
 git -C "$R/pie" show "$SHA:pod/CLAUDE.md" > "$CLAUDE_CONFIG_DIR/CLAUDE.md"
 git -C "$R/pie" show "$SHA:runs/$RUN/brief.md" > "$R/brief.md" || terminate "no brief"
+git -C "$R/pie" show "$SHA:pod/PLAYBOOK.md" > "$R/PLAYBOOK.md"
+mkdir -p "$R/tools"
+for f in $(git -C "$R/pie" ls-tree --name-only "$SHA" pod/tools/); do
+    git -C "$R/pie" show "$SHA:$f" > "$R/tools/$(basename "$f")"
+done
 
 agent() {
     local i=$1
@@ -93,7 +95,9 @@ agent() {
     sync_evidence
 }
 
-agent 1 "$(cat "$R/brief.md")"
+agent 1 "Read /root/r2g/PLAYBOOK.md first and follow it. Your brief:
+
+$(cat "$R/brief.md")"
 SID=$(grep -o '"session_id": *"[^"]*"' "$R/agent-1.json" | head -1 | sed 's/.*"\([^"]*\)"$/\1/')
 log "agent session ${SID:-unknown}"
 
