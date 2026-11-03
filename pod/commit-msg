@@ -1,0 +1,7 @@
+#!/bin/sh
+# Felix's commits carry his name only: drop AI-attribution lines and record any removed.
+pattern='^(co-authored-by|claude-session):|generated with \[?claude'
+if grep -qiE "$pattern" "$1"; then
+    grep -iE "$pattern" "$1" >> /root/r2g/stripped-trailers.log
+    grep -viE "$pattern" "$1" > "$1.clean" && mv "$1.clean" "$1"
+fi
