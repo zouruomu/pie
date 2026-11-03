@@ -102,9 +102,15 @@ $(cat "$R/brief.md")"
 SID=$(grep -o '"session_id": *"[^"]*"' "$R/agent-1.json" | head -1 | sed 's/.*"\([^"]*\)"$/\1/')
 log "agent session ${SID:-unknown}"
 
+# Waiting on the orchestrator: no review and no done for R2G_IDLE_H hours means it has
+# gone away, so the pod stops; a later run picks the work up from the evidence branch.
 k=1
+idle_since=$(date +%s)
 while true; do
     sleep 120
+    if (( $(date +%s) - idle_since > ${R2G_IDLE_H:-4} * 3600 )); then
+        terminate "no review or done for ${R2G_IDLE_H:-4} h"
+    fi
     git -C "$R/pie" fetch -q origin r2g-control || continue
     if git -C "$R/pie" cat-file -e "origin/r2g-control:runs/$RUN/done" 2> /dev/null; then
         terminate "the orchestrator marked the run done"
@@ -112,5 +118,6 @@ while true; do
     if git -C "$R/pie" cat-file -e "origin/r2g-control:runs/$RUN/review-$k.md" 2> /dev/null; then
         agent $((k + 1)) --resume "$SID" "$(git -C "$R/pie" show "origin/r2g-control:runs/$RUN/review-$k.md")"
         k=$((k + 1))
+        idle_since=$(date +%s)
     fi
 done
