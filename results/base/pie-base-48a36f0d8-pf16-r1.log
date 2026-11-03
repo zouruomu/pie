@@ -1,0 +1,36 @@
+[transformers] PyTorch was not found. Models won't be available and only tokenizers, configuration and file/data utilities can be used.
+engine-cuda: bodies armed 134 of 134 compositions at load (decode 5/5, prefill 49/49, mixed 48/48, tower 0/0, wide 32/32; 0 segmented; 445 MiB of 1024 MiB, 102 of 1024 seats) (pool declared 3936 MiB, high water 480 MiB, committed 480 MiB, spare under the ceiling 457 MiB) [18 key(s) never fired — this deployment cannot synthesize them, or their present set was already refused admission; e.g. mixed c2+c0 at bucket 1 (256 seat(s) x 2048 context, 16 lane(s))] [sealed: every key attempted]
+╭─ Pie Engine ───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╮
+│ Host         127.0.0.1:37577                                                                                                       │
+│ Model        default (/root/.cache/huggingface/hub/models--openai--gpt-oss-20b/snapshots/6cee5e81ee83917806bbde320786a8fb61efebee) │
+│ Backend      cuda                                                                                                                  │
+│ Device       cuda:0                                                                                                                │
+╰────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╯
+[pie-bench] measured-start
+[pie-bench] measured-end
+[2m2026-11-03T22:45:33.015487Z[0m [33m WARN[0m [2mtarpc::client[0m[2m:[0m Connection broken: could not ready the transport for writes: an error occurred readying to send into the channel: the channel is closed and cannot accept new items for sending
+[2m2026-11-03T22:45:33.015608Z[0m [33m WARN[0m [2mtarpc::server[0m[2m:[0m Requests stream errored out: could not ready the transport for writes: an error occurred readying to send into the channel: the channel is closed and cannot accept new items for sending
+
+----------------------------------------------------
+mode:              tput
+engine:            pie
+model:             openai/gpt-oss-20b
+completed:         16/16  failed=0
+wall:              1.309 s
+requests/sec:      12.22
+output tokens:     16
+prompt tokens:     9744
+output tok/sec:    12.22
+lat mean/p50:      1063.3 / 1302.5 ms
+lat p95/p99:       1306.0 / 1306.0 ms
+ttft mean/p50:     1061.4 / 1300.6 ms
+ttft p95/p99:      1303.4 / 1304.3 ms
+total batches:     2
+avg batch latency us: 803674.5
+last batch latency us: 1276137
+total requests:    16
+max forward requests: 12
+batch size hist:   [0, 0, 1, 1, 0, 0, 0, 0]
+----------------------------------------------------
+EXIT=0
+2040 MHz, 2040 MHz, 58, 37.46 W

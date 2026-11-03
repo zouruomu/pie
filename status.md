@@ -7,4 +7,5 @@ Done:
 - Smoke: pie pf8 on main 7.7k prefill tok/s (site at 8fb7e90e6: 4.67k); vLLM pf8 6.2k.
 
 Running: results/base, 3 alternating rounds pie/vLLM over raw, pf4..pf1024, c4..c1024.
+Round 1 so far: pbatch already green on main (pie best pf8 7.67k vs vLLM best pf128 6.59k); pie batching best c512 1761; vLLM batching pending.
 Next: analyse curves, profile where pie trails.
