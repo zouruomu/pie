@@ -6,7 +6,8 @@
 # reviews, and terminates the pod when the orchestrator marks the run done or the
 # deadline passes.
 #
-# Set by the orchestrator: R2G_RUN, R2G_CONTROL_SHA, R2G_DEADLINE_H (default 16).
+# Set by the orchestrator: R2G_RUN, R2G_CONTROL_SHA (the pinned commit this script, pod/ and the
+# tools come from; briefs and reviews are read from the latest r2g-control), R2G_DEADLINE_H (default 16).
 # Runpod secrets: claude_code_oauth_token, r2g_github_token.
 #
 # Branches on zouruomu/pie:
@@ -77,7 +78,7 @@ export CLAUDE_CONFIG_DIR="$R/claude-config" IS_SANDBOX=1 R2G_EVIDENCE="$R/eviden
 mkdir -p "$CLAUDE_CONFIG_DIR"
 git -C "$R/pie" show "$SHA:pod/settings.json" > "$CLAUDE_CONFIG_DIR/settings.json"
 git -C "$R/pie" show "$SHA:pod/CLAUDE.md" > "$CLAUDE_CONFIG_DIR/CLAUDE.md"
-git -C "$R/pie" show "$SHA:runs/$RUN/brief.md" > "$R/brief.md" || terminate "no brief"
+git -C "$R/pie" show "origin/r2g-control:runs/$RUN/brief.md" > "$R/brief.md" || terminate "no brief"
 git -C "$R/pie" show "$SHA:pod/PLAYBOOK.md" > "$R/PLAYBOOK.md"
 mkdir -p "$R/tools"
 for f in $(git -C "$R/pie" ls-tree --name-only "$SHA" pod/tools/); do
