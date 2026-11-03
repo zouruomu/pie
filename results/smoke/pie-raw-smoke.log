@@ -1,0 +1,89 @@
+engine-cuda: [engine] max_forward_tokens 8192 is served at 1117: at 8192 the activation arena, attention workspaces and one fire's windowed kv rows take 5536 MiB of the 6300 MiB this card has after the weight tier under [model] device_memory_share, and the cache rows, graph bodies and guest programs need the other half. State a smaller max_forward_tokens to choose it, or a larger device_memory_share.
+engine-cuda: [engine] max_forward_tokens 1117 and max_forward_requests 512 are served at 1024 and 512: at the asked budgets a fire's working set (activation arena, attention workspaces, decoded-weight tiles, guest programs) takes 4119 MiB of the 6299 MiB this card has after the weight tier under [model] device_memory_share, past the half the cache rows are owed and what one sequence at the declared context and the bodies' floor need. State smaller budgets to choose them, or a larger device_memory_share.
+[2m2026-11-03T22:28:42.717506Z[0m [33m WARN[0m [2mkernels_cuda::jit::cache[0m[2m:[0m a device instantiation compiled with something to say [3mroot[0m[2m=[0m"linear/moe/route" [3minstantiation[0m[2m=[0m"::pie::linear::moe_topk_softmax_lane<::pie::bf16, 1>" [3march[0m[2m=[0m"sm_89" [3mlog[0m[2m=[0mlinear/moe/route(446): warning #177-D: variable "pie::linear::kRouterMaxExperts" was declared but never referenced
+  constexpr int kRouterMaxExperts = 512;
+                ^
+
+Remark: The warnings can be suppressed with "-diag-suppress <warning-number>"
+
+
+[2m2026-11-03T22:28:43.567739Z[0m [33m WARN[0m [2mkernels_cuda::jit::cache[0m[2m:[0m a device instantiation compiled with something to say [3mroot[0m[2m=[0m"linear/moe/route" [3minstantiation[0m[2m=[0m"::pie::linear::moe_route_order_scan" [3march[0m[2m=[0m"sm_89" [3mlog[0m[2m=[0mlinear/moe/route(446): warning #177-D: variable "pie::linear::kRouterMaxExperts" was declared but never referenced
+  constexpr int kRouterMaxExperts = 512;
+                ^
+
+Remark: The warnings can be suppressed with "-diag-suppress <warning-number>"
+
+
+[2m2026-11-03T22:28:44.427928Z[0m [33m WARN[0m [2mkernels_cuda::jit::cache[0m[2m:[0m a device instantiation compiled with something to say [3mroot[0m[2m=[0m"linear/moe/select_fp4_sm80" [3minstantiation[0m[2m=[0m"::pie::linear::moe_select_mxfp4_mma_staged<8, 3, 3, false, 8>" [3march[0m[2m=[0m"sm_89" [3mlog[0m[2m=[0mlinear/moe_w4.cuh(220): warning #128-D: loop is not reachable
+      for (int t = 0; t < kTiles; ++t)
+      ^
+          detected during:
+            instantiation of "void pie::linear::w4mma::w4_land<kGlu,kTiles,kNb,kTileRows,Factor>(const float (&)[kTiles][kNb][4], Factor, const pie::bf16 *, const pie::i32 *, int, int, pie::bf16 *, int, int, int, int, int, float, float) [with kGlu=3, kTiles=2, kNb=8, kTileRows=16, Factor=lambda [](int)->float]" at line 322 of linear/moe/select_fp4_sm80
+            instantiation of "void pie::linear::moe_select_mxfp4_mma_staged<kNb,kStages,kGlu,kNv,kWarps>(const pie::bf16 *, const pie::i32 *, const pie::i32 *, const pie::i32 *, const pie::u8 *, const pie::u8 *, const pie::bf16 *, pie::bf16 *, int, int, int, int, int, float, float, const float *) [with kNb=8, kStages=3, kGlu=3, kNv=false, kWarps=8]" 
+
+Remark: The warnings can be suppressed with "-diag-suppress <warning-number>"
+
+
+[2m2026-11-03T22:28:51.643432Z[0m [33m WARN[0m [2mkernels_cuda::jit::cache[0m[2m:[0m a device instantiation compiled with something to say [3mroot[0m[2m=[0m"linear/moe/select" [3minstantiation[0m[2m=[0m"::pie::linear::moe_matmul_select_mxfp4<::pie::bf16, ::pie::i32(4)>" [3march[0m[2m=[0m"sm_89" [3mlog[0m[2m=[0mlinear/moe/select(19): warning #177-D: variable "pie::linear::kGemvWarps" was declared but never referenced
+  constexpr int kGemvWarps = 4;
+                ^
+
+Remark: The warnings can be suppressed with "-diag-suppress <warning-number>"
+
+linear/moe/select(427): warning #177-D: variable "pie::linear::kBlock" was declared but never referenced
+  constexpr int kBlock = 256;
+                ^
+
+
+[2m2026-11-03T22:28:51.767395Z[0m [33m WARN[0m [2mkernels_cuda::jit::cache[0m[2m:[0m a device instantiation compiled with something to say [3mroot[0m[2m=[0m"linear/glu" [3minstantiation[0m[2m=[0m"::pie::linear::swiglu_clamp_alpha<::pie::bf16, true>" [3march[0m[2m=[0m"sm_89" [3mlog[0m[2m=[0mlinear/glu(25): warning #177-D: variable "lane" was declared but never referenced
+      const int lane = static_cast<int>(threadIdx.x % 32);
+                ^
+
+Remark: The warnings can be suppressed with "-diag-suppress <warning-number>"
+
+
+[2m2026-11-03T22:29:07.487417Z[0m [33m WARN[0m [2mkernels_cuda::jit::cache[0m[2m:[0m a device instantiation compiled with something to say [3mroot[0m[2m=[0m"linear/moe/select_fp4_sm80" [3minstantiation[0m[2m=[0m"::pie::linear::moe_select_mxfp4_mma_run<4, 4, 3, 4>" [3march[0m[2m=[0m"sm_89" [3mlog[0m[2m=[0mlinear/moe_w4.cuh(220): warning #128-D: loop is not reachable
+      for (int t = 0; t < kTiles; ++t)
+      ^
+          detected during:
+            instantiation of "void pie::linear::w4mma::w4_land<kGlu,kTiles,kNb,kTileRows,Factor>(const float (&)[kTiles][kNb][4], Factor, const pie::bf16 *, const pie::i32 *, int, int, pie::bf16 *, int, int, int, int, int, float, float) [with kGlu=3, kTiles=2, kNb=4, kTileRows=16, Factor=lambda [](int)->float]" at line 517 of linear/moe/select_fp4_sm80
+            instantiation of "void pie::linear::moe_select_mxfp4_mma_run<kNb,kStages,kGlu,kWarps>(const pie::bf16 *, const pie::i32 *, const pie::i32 *, const pie::i32 *, const pie::u8 *, const pie::u8 *, const pie::bf16 *, pie::bf16 *, int, int, int, int, int, float, float, const float *) [with kNb=4, kStages=4, kGlu=3, kWarps=4]" 
+
+Remark: The warnings can be suppressed with "-diag-suppress <warning-number>"
+
+
+engine-cuda: bodies armed 82 of 82 compositions at load (decode 9/9, prefill 25/25, mixed 24/24, tower 0/0, wide 24/24; 0 segmented; 221 MiB of 1024 MiB, 58 of 1024 seats) (pool declared 4224 MiB, high water 192 MiB, committed 192 MiB, spare under the ceiling 741 MiB) [2 key(s) never fired — this deployment cannot synthesize them, or their present set was already refused admission; e.g. mixed c2+c0 at bucket 1 (256 seat(s) x 2048 context, 512 lane(s))] [sealed: every key attempted]
+╭─ Pie Engine ───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╮
+│ Host         127.0.0.1:43719                                                                                                       │
+│ Model        default (/root/.cache/huggingface/hub/models--openai--gpt-oss-20b/snapshots/6cee5e81ee83917806bbde320786a8fb61efebee) │
+│ Backend      cuda                                                                                                                  │
+│ Device       cuda:0                                                                                                                │
+╰────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╯
+[pie-bench] measured-start
+[pie-bench] measured-end
+[2m2026-11-03T22:30:28.532175Z[0m [33m WARN[0m [2mtarpc::client[0m[2m:[0m Connection broken: could not ready the transport for writes: an error occurred readying to send into the channel: the channel is closed and cannot accept new items for sending
+[2m2026-11-03T22:30:28.532200Z[0m [33m WARN[0m [2mtarpc::server[0m[2m:[0m Requests stream errored out: could not ready the transport for writes: an error occurred readying to send into the channel: the channel is closed and cannot accept new items for sending
+
+----------------------------------------------------
+mode:              latency
+engine:            pie
+model:             openai/gpt-oss-20b
+completed:         8/8  failed=0
+wall:              34.322 s
+requests/sec:      0.23
+output tokens:     2048
+prompt tokens:     4360
+output tok/sec:    59.67
+lat mean/p50:      4290.0 / 4291.8 ms
+lat p95/p99:       4299.7 / 4302.3 ms
+ttft mean/p50:     116.9 / 118.7 ms
+ttft p95/p99:      120.8 / 121.0 ms
+intertoken p50/p99/max: 16.34 / 16.94 / 22.82 ms
+total batches:     1032
+avg batch latency us: 65386.48062015504
+last batch latency us: 49206
+total requests:    2048
+max forward requests: 2
+batch size hist:   [16, 1016, 0, 0, 0, 0, 0, 0]
+----------------------------------------------------
+EXIT=0
