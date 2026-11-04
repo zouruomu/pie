@@ -5,6 +5,7 @@
 #          raw (8 requests one at a time, 609-token prompts, 256 out)
 # Results land in $RES (default /root/r2g/evidence/results/runs).
 source /etc/pod/env.sh
+unset CLAUDE_CODE_MESSAGING_TOKEN
 eng=$1; shape=$2; label=$3; shift 3
 RES=${RES:-/root/r2g/evidence/results/runs}
 mkdir -p $RES

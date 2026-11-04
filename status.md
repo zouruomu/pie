@@ -1,8 +1,12 @@
 # Status: 20261104-1903-l4-x1-gpt-oss-20b-batching
 
-**Updated:** 2026-11-04 19:30Z (pod start 19:16Z; deadline about 03:16Z; target hand-over about 00:15Z)
+**Updated:** 2026-11-04 19:33Z (pod created about 19:03Z, bootstrap 19:16Z; deadline taken as 03:03Z; target hand-over about 00:05Z)
 
-**Phase:** builds (base engine, fix engine, bench inferlet).
+**Phase:** final A/B (since 19:31Z).
+
+* **Engines** (`results/engines.txt`):
+  * base `1b851247`, sha256 `5c7d99c7…`;
+  * fix `2f4f9cf0`, sha256 `414293e1…`.
 
 **Last result:** the branch `r2g/20261104-1903-l4-x1-gpt-oss-20b-batching` is one commit, `2f4f9cf0`,
 on upstream `1b851247`. It is `8fc6862cb` cherry-picked, with the new kernel-test case folded in. Same
@@ -18,8 +22,11 @@ subject, empty body.
   * The test's route pattern `(3t + 5s) mod 32` touches all 32 experts: 4 with 1 route, 24 with 2
     and 4 with 3.
 
-**Running:** cargo/maturin builds of base (`/root/src/pie-base`, upstream main) and fix
-(`/root/r2g/pie`); the wasm32-wasip3 bench inferlet.
+**Running:**
+
+* `scripts/ab.sh`: 3 alternating rounds of base and fix at c8, c16, c24 and c32, token ids dumped,
+  into `results/ab/`. ETA about 20:35Z.
+* `scripts/tests_build.sh`: compiles the test binaries (no run), pinned off the bench's CPUs.
 
 **Blockers:** none.
 
@@ -33,9 +40,9 @@ subject, empty body.
 * **Hugging Face download:** worked. `hf download openai/gpt-oss-20b` (excluding `original/` and
   `metal/`) gave all 3 safetensors shards, 13 GB, within a few minutes of the start. The blobs sit
   under `~/.cache/huggingface/hub/blobs/<xx>/`, a content-addressed layout.
-* **sync.sh pushed:** pending (first sync at 19:30Z).
-* **note-1.md:** not yet received.
+* **sync.sh pushed:** yes. The first sync at 19:25Z pushed `r2g-evidence/20261104-1903-l4-x1-gpt-oss-20b-batching` (remote head `4507bb7`).
+* **note-1.md:** received at the first sync (19:25Z) and acknowledged below.
 
 ## Orchestrator notes
 
-* none yet
+* **note-1.md (19:25Z), acknowledged.** Item 2: after both `moe_select` runs, if it takes under 20 minutes, I will rerun `the_routed_selects_answer_the_routed_dot` on the fix build with `CUDA_LAUNCH_BLOCKING=1` under `compute-sanitizer`, and record in report.md whether a launch or CUDA error appears and what it says. No fix (it goes to Anton).
