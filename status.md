@@ -16,3 +16,8 @@ Running: pool/admission knobs at c256/c512 (results/knobs2). Next: decide fix li
 - gptoss-20b-mini (5 layers, 16 experts): c8 794 -> 888, rest flat; raw/pf8 tokens identical; concurrency outputs are nondeterministic run to run even on one engine (noise floor measured).
 - gpt-oss-120b miniature does not fit an L4 (pie's mini keeps 36 layers); mimo all-expert mini does not fit (21.1 GB weights); running mimo 6 layers x 32 experts instead.
 Running: #1350 isolation (old engine + ws65), mimo e32 base/fix, then verification sweep (fix r1; base/fix/vLLM r2-r3).
+
+04:30Z update:
+- Fix branch rebased on upstream 59935820d -> cdf93fe44 (pushed); rebased engines built: base-59935820d c2139c4c, fix-cdf93fe44 ce9d49c1.
+- Verification sweep on the pre-rebase pair: fix r1 done (results/verify: c16 494, c8 270, rest flat); rounds 2-3 base/fix/vLLM running (results/verify2), ETA ~07:30Z.
+- Next: tests (engine-cuda GPU suite + kernels-cuda moe_select) base vs fix on the rebased trees; final A/B on rebased engines (results/final); self-review; write-up.

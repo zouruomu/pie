@@ -1,0 +1,37 @@
+[transformers] PyTorch was not found. Models won't be available and only tokenizers, configuration and file/data utilities can be used.
+/root/venv-pie/lib/python3.12/site-packages/transformers/modeling_rope_utils.py:1126: FutureWarning: `rope_config_validation` is deprecated and has been removed. Its functionality has been moved to RotaryEmbeddingConfigMixin.validate_rope method. PreTrainedConfig inherits this class, so please call self.validate_rope() instead. Also, make sure to use the new rope_parameters syntax. You can call self.standardize_rope_params() in the meantime.
+  warnings.warn(
+engine-cuda: bodies armed 133 of 133 compositions at load (decode 4/4, prefill 49/49, mixed 48/48, tower 0/0, wide 32/32; 0 segmented; 74 MiB of 1024 MiB, 101 of 1024 seats) (pool declared 3944 MiB, high water 344 MiB, committed 344 MiB, spare under the ceiling 777 MiB) [18 key(s) never fired — this deployment cannot synthesize them, or their present set was already refused admission; e.g. mixed c2+c0 at bucket 1 (256 seat(s) x 2048 context, 8 lane(s))] [sealed: every key attempted]
+╭─ Pie Engine ──────────────────────────────────────╮
+│ Host         127.0.0.1:39845                      │
+│ Model        default (/root/models/mimo-mini-e32) │
+│ Backend      cuda                                 │
+│ Device       cuda:0                               │
+╰───────────────────────────────────────────────────╯
+[pie-bench] measured-start
+[pie-bench] measured-end
+[2m2026-11-04T03:26:15.531404Z[0m [33m WARN[0m [2mtarpc::client[0m[2m:[0m Connection broken: could not ready the transport for writes: an error occurred readying to send into the channel: the channel is closed and cannot accept new items for sending
+[2m2026-11-04T03:26:15.531436Z[0m [33m WARN[0m [2mtarpc::server[0m[2m:[0m Requests stream errored out: could not ready the transport for writes: an error occurred readying to send into the channel: the channel is closed and cannot accept new items for sending
+
+----------------------------------------------------
+mode:              tput
+engine:            pie
+model:             /root/models/mimo-mini-e32
+completed:         8/8  failed=0
+wall:              0.279 s
+requests/sec:      28.66
+output tokens:     8
+prompt tokens:     4376
+output tok/sec:    28.66
+lat mean/p50:      276.3 / 276.3 ms
+lat p95/p99:       277.8 / 278.1 ms
+ttft mean/p50:     275.9 / 275.9 ms
+ttft p95/p99:      277.0 / 277.1 ms
+total batches:     1
+avg batch latency us: 266164.0
+last batch latency us: 266164
+total requests:    8
+max forward requests: 8
+batch size hist:   [0, 0, 0, 1, 0, 0, 0, 0]
+----------------------------------------------------
+EXIT=0

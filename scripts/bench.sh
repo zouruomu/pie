@@ -17,6 +17,9 @@ case $shape in
        [ $eng = vllm ] && mode=(tput --num-requests 8 --concurrency 1 --max-tokens 256 --prompts-file /root/prompts/p609.json) ;;
 esac
 cd $P/scripts/bench
+# SM clock, power and temperature once a second over the whole run (the L4 is power-capped at 72 W)
+nvidia-smi --query-gpu=timestamp,clocks.sm,power.draw,temperature.gpu --format=csv,noheader -lms 1000 > $RES/$label.clk 2>/dev/null &
+CLK=$!
 if [ $eng = pie ]; then
   PYTHONPATH=$P/packages/python/client/src:$P/packages/python/server/python \
   PIE_BENCH_INFERLET_DIR=$P/examples/text-completion-bench \
@@ -27,3 +30,4 @@ else
     --report-timing --json-out $RES/$label.json "$@" > $RES/$label.log 2>&1
 fi
 echo EXIT=$? >> $RES/$label.log
+kill $CLK 2>/dev/null
