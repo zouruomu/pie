@@ -1,6 +1,6 @@
 # Status: 20261104-1903-l4-x1-gpt-oss-20b-batching
 
-**Updated:** 2026-11-04 20:45Z (pod created about 19:03Z, bootstrap 19:16Z; deadline taken as 03:03Z; target hand-over about 00:05Z)
+**Updated:** 2026-11-04 20:50Z (pod created about 19:03Z, bootstrap 19:16Z; deadline taken as 03:03Z; target hand-over about 00:05Z)
 
 **Phase:** tests (since 20:33Z). The A/B is done (19:31–20:33Z).
 
@@ -43,6 +43,15 @@ subject, empty body.
   | c32 | 0.61–0.81 | 0.66–0.82 | 0.67–0.78 |
 
   c32 keeps its kernel and serves as the control: base against fix falls inside its reruns' range.
+
+**kernels-cuda `linear::moe_select`, fix tree: the new case passes.**
+
+* 5 passed, 1 failed, 1 ignored, in 881.5 s (`results/tests/kernels-moe-select-fix.log`).
+* The one failure, `the_routed_selects_answer_the_routed_dot`, panics only at the pipe-kernel case
+  `Mx 8x400x4 false 320x1024 None 0`, which comes after the new case. Its values are the previous
+  run's: 3.3895e38 against −928.16….
+* The cases run in order and the first failing one panics, so every earlier case passed, the new
+  `MxBias 32x16x4 true 320x2880` included.
 
 **Running** (since 20:33Z, side by side):
 
