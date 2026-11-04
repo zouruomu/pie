@@ -1,6 +1,6 @@
 # Status: 20261104-1903-l4-x1-gpt-oss-20b-batching
 
-**Updated:** 2026-11-04 21:52Z (pod created about 19:03Z, bootstrap 19:16Z; deadline taken as 03:03Z; target hand-over about 00:05Z)
+**Updated:** 2026-11-04 22:23Z (pod created about 19:03Z, bootstrap 19:16Z; deadline taken as 03:03Z; target hand-over about 00:05Z)
 
 **Phase:** tests (since 20:33Z). The A/B is done (19:31–20:33Z).
 
@@ -83,6 +83,13 @@ pipe case with the same values, in 879.4 s (`results/tests/kernels-moe-select-ba
 
 * the engine-cuda GPU suite on the fix tree (`results/tests/engine-cuda-fix.log`). Then its
   failures, if any, rerun on base;
+* **engine-cuda suite: running late.** Both debug processes sit in one test each: test 21 since
+  about 20:58Z, test 23 since 21:53Z. That is single-core debug code tracing and fusing catalog rows.
+  * At 22:23Z I started a third run of the whole suite, single-threaded, from a test binary built
+    with `CARGO_PROFILE_DEV_OPT_LEVEL=2` (debug assertions and overflow checks on; separate target
+    dir; no repo change). `scripts/tests_engine_opt.sh`, `results/tests/engine-cuda-fix-opt.log`.
+  * The debug processes keep running.
+  * New hand-over ETA: about 00:30Z, or earlier with whatever has finished by then, marked as such.
 * engine-cuda tests 22–60 in a second single-threaded process, since 21:53Z
   (`results/tests/engine-cuda-fix-b.log`). The first process has been in test 21
   (`a_joined_projection_answers_what_its_legs_answer`, catalog-wide tracing in a debug build) since
@@ -93,7 +100,7 @@ since the suite runs from this tree.
 
 **Blockers:** none.
 
-**ETA hand-over:** about 23:45Z. The engine-cuda suite sets the pace.
+**ETA hand-over:** about 00:30Z (the engine-cuda suite sets it; see Running).
 
 ## Infrastructure checks
 
