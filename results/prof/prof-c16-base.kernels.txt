@@ -1,0 +1,18 @@
+window 1084.6 ms, kernel time 1081.9 ms, 7023 kernels
+   821.74 ms     977  76.0%  moe_matmul_select_mxfp4
+   211.56 ms     998  19.6%  Kernel2
+    19.24 ms     489   1.8%  BatchPrefillWithPagedKVCacheKernel
+    10.99 ms    1487   1.0%  row_skeleton
+     5.55 ms     489   0.5%  rows_skeleton
+     2.92 ms     488   0.3%  swiglu_clamp_alpha
+     2.53 ms     489   0.2%  merge_partials_warp
+     2.20 ms     489   0.2%  moe_topk_softmax_lane
+     1.89 ms     488   0.2%  moe_bias_sum
+     1.82 ms     488   0.2%  moe_weighted_sum_vec8
+     0.78 ms      20   0.1%  ptir_fused_f067124ee0ea088b_r0
+     0.18 ms      20   0.0%  pull_validate
+     0.15 ms      20   0.0%  scatter_publish
+     0.12 ms      20   0.0%  commit_bump
+     0.10 ms      20   0.0%  settle
+     0.05 ms      21   0.0%  gather_words
+     0.05 ms      20   0.0%  gather_rows

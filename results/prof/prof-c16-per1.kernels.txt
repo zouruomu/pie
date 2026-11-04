@@ -1,0 +1,26 @@
+window 1182.3 ms, kernel time 1164.4 ms, 8154 kernels
+   463.78 ms     991  39.8%  moe_select_mxfp4_mma_run
+   339.56 ms     144  29.2%  moe_select_mxfp4_mma_staged
+   240.13 ms    1063  20.6%  Kernel2
+    25.77 ms      48   2.2%  ampere_s1688gemm_bf16_128x128__1...
+    25.11 ms     568   2.2%  BatchPrefillWithPagedKVCacheKernel
+    18.93 ms    1727   1.6%  row_skeleton
+    12.62 ms      24   1.1%  ampere_bf16_s1688gemm_bf16_128_5...
+    11.97 ms      24   1.0%  ampere_bf16_s16816gemm_bf16_64_3...
+     5.64 ms     567   0.5%  moe_bias_sum
+     4.25 ms     496   0.4%  rows_skeleton
+     3.95 ms      24   0.3%  ampere_bf16_s16816gemm_bf16_12_2...
+     2.95 ms     567   0.3%  moe_weighted_sum_vec8
+     2.65 ms     568   0.2%  moe_route_order_scan
+     2.07 ms     496   0.2%  merge_partials_warp
+     2.05 ms     568   0.2%  moe_topk_softmax_lane
+     0.94 ms      48   0.1%  ampere_s16816gemm_bf16_64x64_l_4...
+     0.74 ms      20   0.1%  ptir_fused_f067124ee0ea088b_r0
+     0.45 ms      23   0.0%  pull_validate
+     0.24 ms      72   0.0%  splitKreduce_kernel
+     0.15 ms      23   0.0%  scatter_publish
+     0.13 ms      23   0.0%  commit_bump
+     0.10 ms      23   0.0%  settle
+     0.09 ms       3   0.0%  ptir_fused_3f5208a8060db509_r0
+     0.05 ms      23   0.0%  gather_rows
+     0.04 ms      21   0.0%  gather_words

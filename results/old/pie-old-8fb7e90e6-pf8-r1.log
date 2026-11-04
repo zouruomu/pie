@@ -1,0 +1,152 @@
+[transformers] PyTorch was not found. Models won't be available and only tokenizers, configuration and file/data utilities can be used.
+[2m2026-11-04T00:49:52.468793Z[0m [32m INFO[0m [2mgateway[0m[2m:[0m gateway worker-facing listener up (workers dial in) [3mworker_addr[0m[2m=[0m127.0.0.1:36685
+[2m2026-11-04T00:49:52.468928Z[0m [32m INFO[0m [2mgateway[0m[2m:[0m gateway registered with controller [3mgateway_id[0m[2m=[0mgateway#0 [3mworker_addr[0m[2m=[0m127.0.0.1:36685
+[2m2026-11-04T00:49:52.469112Z[0m [32m INFO[0m [2mgateway[0m[2m:[0m pie-gateway client-facing edge up [3mlisten_addr[0m[2m=[0m127.0.0.1:36017
+[2m2026-11-04T00:49:52.477166Z[0m [32m INFO[0m [2mruntime::catalog[0m[2m:[0m brought up to this build's [3mpackage[0m[2m=[0m"muse_spark" [3mmodels[0m[2m=[0m"/root/.pie/models"
+[2m2026-11-04T00:49:52.477205Z[0m [32m INFO[0m [2mruntime::catalog[0m[2m:[0m brought up to this build's [3mpackage[0m[2m=[0m"qwen_3" [3mmodels[0m[2m=[0m"/root/.pie/models"
+[2m2026-11-04T00:50:07.767455Z[0m [32m INFO[0m [2mruntime::engine::load[0m[2m:[0m serving [3mdeployment[0m[2m=[0m"gptoss-20b-bf16-mxfp4-kv-bf16" [3midentified[0m[2m=[0m"gptoss-20b-bf16-mxfp4-kv-bf16" [3mcheckpoint[0m[2m=[0m"/root/.cache/huggingface/hub/models--openai--gpt-oss-20b/snapshots/6cee5e81ee83917806bbde320786a8fb61efebee"
+[2m2026-11-04T00:50:10.605600Z[0m [32m INFO[0m [2mkernels_cuda::jit::cache[0m[2m:[0m resolved a device instantiation [3mroot[0m[2m=[0m"synth/71f958f86a88682e" [3minstantiation[0m[2m=[0m"::pie::elemwise::row_skeleton<::pie::synth::Body, 1024, 1024, 1, 5, 3, 28u, 673ull, true, 0u, 0u>" [3march[0m[2m=[0m"sm_89" [3mcompiled[0m[2m=[0mtrue [3mms[0m[2m=[0m273.61257700000004
+[2m2026-11-04T00:50:11.094653Z[0m [32m INFO[0m [2mkernels_cuda::jit::cache[0m[2m:[0m resolved a device instantiation [3mroot[0m[2m=[0m"synth/71f958f86a88682e" [3minstantiation[0m[2m=[0m"::pie::elemwise::row_skeleton<::pie::synth::Body, 256, 256, 3, 5, 3, 28u, 673ull, true, 0u, 0u>" [3march[0m[2m=[0m"sm_89" [3mcompiled[0m[2m=[0mtrue [3mms[0m[2m=[0m486.09096400000004
+[2m2026-11-04T00:50:11.245464Z[0m [32m INFO[0m [2mkernels_cuda::jit::cache[0m[2m:[0m resolved a device instantiation [3mroot[0m[2m=[0m"linear/hooked/f18570fa7e2382c2" [3minstantiation[0m[2m=[0m"::pie::linear::gemv_splitk_skeleton<::pie::linear::hooked::Body, 8, 1, 1, 1, 1, false>" [3march[0m[2m=[0m"sm_89" [3mcompiled[0m[2m=[0mtrue [3mms[0m[2m=[0m147.972383
+[2m2026-11-04T00:50:11.466668Z[0m [32m INFO[0m [2mkernels_cuda::jit::cache[0m[2m:[0m resolved a device instantiation [3mroot[0m[2m=[0m"linear/hooked/f18570fa7e2382c2" [3minstantiation[0m[2m=[0m"::pie::linear::rows_skeleton<::pie::linear::hooked::Body, 1, 8, 1, 1, 1, 1, false>" [3march[0m[2m=[0m"sm_89" [3mcompiled[0m[2m=[0mtrue [3mms[0m[2m=[0m218.393785
+[2m2026-11-04T00:50:11.665901Z[0m [32m INFO[0m [2mkernels_cuda::jit::cache[0m[2m:[0m resolved a device instantiation [3mroot[0m[2m=[0m"linear/hooked/f18570fa7e2382c2" [3minstantiation[0m[2m=[0m"::pie::linear::rows_skeleton<::pie::linear::hooked::Body, 2, 8, 1, 1, 1, 1, false>" [3march[0m[2m=[0m"sm_89" [3mcompiled[0m[2m=[0mtrue [3mms[0m[2m=[0m196.426764
+[2m2026-11-04T00:50:11.888759Z[0m [32m INFO[0m [2mkernels_cuda::jit::cache[0m[2m:[0m resolved a device instantiation [3mroot[0m[2m=[0m"linear/hooked/f18570fa7e2382c2" [3minstantiation[0m[2m=[0m"::pie::linear::rows_skeleton<::pie::linear::hooked::Body, 3, 8, 1, 1, 1, 1, false>" [3march[0m[2m=[0m"sm_89" [3mcompiled[0m[2m=[0mtrue [3mms[0m[2m=[0m219.953134
+[2m2026-11-04T00:50:12.141527Z[0m [32m INFO[0m [2mkernels_cuda::jit::cache[0m[2m:[0m resolved a device instantiation [3mroot[0m[2m=[0m"linear/hooked/f18570fa7e2382c2" [3minstantiation[0m[2m=[0m"::pie::linear::rows_skeleton<::pie::linear::hooked::Body, 4, 8, 1, 1, 1, 1, false>" [3march[0m[2m=[0m"sm_89" [3mcompiled[0m[2m=[0mtrue [3mms[0m[2m=[0m249.970457
+[2m2026-11-04T00:50:12.412607Z[0m [32m INFO[0m [2mkernels_cuda::jit::cache[0m[2m:[0m resolved a device instantiation [3mroot[0m[2m=[0m"linear/hooked/f18570fa7e2382c2" [3minstantiation[0m[2m=[0m"::pie::linear::rows_skeleton<::pie::linear::hooked::Body, 5, 8, 1, 1, 1, 1, false>" [3march[0m[2m=[0m"sm_89" [3mcompiled[0m[2m=[0mtrue [3mms[0m[2m=[0m268.270936
+[2m2026-11-04T00:50:12.711310Z[0m [32m INFO[0m [2mkernels_cuda::jit::cache[0m[2m:[0m resolved a device instantiation [3mroot[0m[2m=[0m"linear/hooked/f18570fa7e2382c2" [3minstantiation[0m[2m=[0m"::pie::linear::rows_skeleton<::pie::linear::hooked::Body, 6, 8, 1, 1, 1, 1, false>" [3march[0m[2m=[0m"sm_89" [3mcompiled[0m[2m=[0mtrue [3mms[0m[2m=[0m295.90209699999997
+[2m2026-11-04T00:50:13.054531Z[0m [32m INFO[0m [2mkernels_cuda::jit::cache[0m[2m:[0m resolved a device instantiation [3mroot[0m[2m=[0m"linear/hooked/f18570fa7e2382c2" [3minstantiation[0m[2m=[0m"::pie::linear::rows_skeleton<::pie::linear::hooked::Body, 7, 8, 1, 1, 1, 1, false>" [3march[0m[2m=[0m"sm_89" [3mcompiled[0m[2m=[0mtrue [3mms[0m[2m=[0m340.40594600000003
+[2m2026-11-04T00:50:13.429789Z[0m [32m INFO[0m [2mkernels_cuda::jit::cache[0m[2m:[0m resolved a device instantiation [3mroot[0m[2m=[0m"linear/hooked/f18570fa7e2382c2" [3minstantiation[0m[2m=[0m"::pie::linear::rows_skeleton<::pie::linear::hooked::Body, 8, 8, 1, 1, 1, 1, false>" [3march[0m[2m=[0m"sm_89" [3mcompiled[0m[2m=[0mtrue [3mms[0m[2m=[0m372.36213499999997
+[2m2026-11-04T00:50:13.838311Z[0m [32m INFO[0m [2mkernels_cuda::jit::cache[0m[2m:[0m resolved a device instantiation [3mroot[0m[2m=[0m"linear/hooked/f18570fa7e2382c2" [3minstantiation[0m[2m=[0m"::pie::linear::rows_skeleton<::pie::linear::hooked::Body, 9, 8, 1, 1, 1, 1, false>" [3march[0m[2m=[0m"sm_89" [3mcompiled[0m[2m=[0mtrue [3mms[0m[2m=[0m405.70622499999996
+[2m2026-11-04T00:50:14.278401Z[0m [32m INFO[0m [2mkernels_cuda::jit::cache[0m[2m:[0m resolved a device instantiation [3mroot[0m[2m=[0m"linear/hooked/f18570fa7e2382c2" [3minstantiation[0m[2m=[0m"::pie::linear::rows_skeleton<::pie::linear::hooked::Body, 10, 8, 1, 1, 1, 1, false>" [3march[0m[2m=[0m"sm_89" [3mcompiled[0m[2m=[0mtrue [3mms[0m[2m=[0m437.281386
+[2m2026-11-04T00:50:14.734345Z[0m [32m INFO[0m [2mkernels_cuda::jit::cache[0m[2m:[0m resolved a device instantiation [3mroot[0m[2m=[0m"linear/hooked/f18570fa7e2382c2" [3minstantiation[0m[2m=[0m"::pie::linear::rows_skeleton<::pie::linear::hooked::Body, 11, 8, 1, 1, 1, 1, false>" [3march[0m[2m=[0m"sm_89" [3mcompiled[0m[2m=[0mtrue [3mms[0m[2m=[0m453.10115299999995
+[2m2026-11-04T00:50:15.238780Z[0m [32m INFO[0m [2mkernels_cuda::jit::cache[0m[2m:[0m resolved a device instantiation [3mroot[0m[2m=[0m"linear/hooked/f18570fa7e2382c2" [3minstantiation[0m[2m=[0m"::pie::linear::rows_skeleton<::pie::linear::hooked::Body, 12, 8, 1, 1, 1, 1, false>" [3march[0m[2m=[0m"sm_89" [3mcompiled[0m[2m=[0mtrue [3mms[0m[2m=[0m501.57973300000003
+[2m2026-11-04T00:50:15.781141Z[0m [32m INFO[0m [2mkernels_cuda::jit::cache[0m[2m:[0m resolved a device instantiation [3mroot[0m[2m=[0m"linear/hooked/f18570fa7e2382c2" [3minstantiation[0m[2m=[0m"::pie::linear::rows_skeleton<::pie::linear::hooked::Body, 13, 8, 1, 1, 1, 1, false>" [3march[0m[2m=[0m"sm_89" [3mcompiled[0m[2m=[0mtrue [3mms[0m[2m=[0m539.555549
+[2m2026-11-04T00:50:16.367408Z[0m [32m INFO[0m [2mkernels_cuda::jit::cache[0m[2m:[0m resolved a device instantiation [3mroot[0m[2m=[0m"linear/hooked/f18570fa7e2382c2" [3minstantiation[0m[2m=[0m"::pie::linear::rows_skeleton<::pie::linear::hooked::Body, 14, 8, 1, 1, 1, 1, false>" [3march[0m[2m=[0m"sm_89" [3mcompiled[0m[2m=[0mtrue [3mms[0m[2m=[0m583.454882
+[2m2026-11-04T00:50:17.072330Z[0m [32m INFO[0m [2mkernels_cuda::jit::cache[0m[2m:[0m resolved a device instantiation [3mroot[0m[2m=[0m"linear/hooked/f18570fa7e2382c2" [3minstantiation[0m[2m=[0m"::pie::linear::rows_skeleton<::pie::linear::hooked::Body, 15, 8, 1, 1, 1, 1, false>" [3march[0m[2m=[0m"sm_89" [3mcompiled[0m[2m=[0mtrue [3mms[0m[2m=[0m702.067477
+[2m2026-11-04T00:50:17.670726Z[0m [32m INFO[0m [2mkernels_cuda::jit::cache[0m[2m:[0m resolved a device instantiation [3mroot[0m[2m=[0m"linear/hooked/f18570fa7e2382c2" [3minstantiation[0m[2m=[0m"::pie::linear::rows_skeleton<::pie::linear::hooked::Body, 16, 8, 1, 1, 1, 1, false>" [3march[0m[2m=[0m"sm_89" [3mcompiled[0m[2m=[0mtrue [3mms[0m[2m=[0m595.585715
+[2m2026-11-04T00:50:18.182121Z[0m [32m INFO[0m [2mkernels_cuda::jit::cache[0m[2m:[0m resolved a device instantiation [3mroot[0m[2m=[0m"linear/hooked/f18570fa7e2382c2" [3minstantiation[0m[2m=[0m"::pie::linear::skinny_skeleton<::pie::linear::hooked::Body, 4, 2, 128, 1, 0, 1, 1, 1, false>" [3march[0m[2m=[0m"sm_89" [3mcompiled[0m[2m=[0mtrue [3mms[0m[2m=[0m508.59102199999995
+[2m2026-11-04T00:50:18.306008Z[0m [32m INFO[0m [2mkernels_cuda::jit::cache[0m[2m:[0m resolved a device instantiation [3mroot[0m[2m=[0m"synth/f18570fa7e2382c2" [3minstantiation[0m[2m=[0m"::pie::elemwise::row_skeleton<::pie::synth::Body, 512, 512, 1, 2, 1, 0u, 1ull, true, 0u, 0u>" [3march[0m[2m=[0m"sm_89" [3mcompiled[0m[2m=[0mtrue [3mms[0m[2m=[0m121.022747
+[2m2026-11-04T00:50:18.461364Z[0m [32m INFO[0m [2mkernels_cuda::jit::cache[0m[2m:[0m resolved a device instantiation [3mroot[0m[2m=[0m"synth/f18570fa7e2382c2" [3minstantiation[0m[2m=[0m"::pie::elemwise::row_skeleton<::pie::synth::Body, 256, 256, 2, 2, 1, 0u, 1ull, true, 0u, 0u>" [3march[0m[2m=[0m"sm_89" [3mcompiled[0m[2m=[0mtrue [3mms[0m[2m=[0m152.40567099999998
+[2m2026-11-04T00:50:18.585370Z[0m [32m INFO[0m [2mkernels_cuda::jit::cache[0m[2m:[0m resolved a device instantiation [3mroot[0m[2m=[0m"synth/f18570fa7e2382c2" [3minstantiation[0m[2m=[0m"::pie::elemwise::row_skeleton<::pie::synth::Body, 32, 4, 1, 2, 1, 0u, 1ull, true, 0u, 0u>" [3march[0m[2m=[0m"sm_89" [3mcompiled[0m[2m=[0mtrue [3mms[0m[2m=[0m121.068947
+[2m2026-11-04T00:50:18.709604Z[0m [32m INFO[0m [2mkernels_cuda::jit::cache[0m[2m:[0m resolved a device instantiation [3mroot[0m[2m=[0m"synth/f18570fa7e2382c2" [3minstantiation[0m[2m=[0m"::pie::elemwise::row_skeleton<::pie::synth::Body, 256, 4, 1, 2, 1, 0u, 1ull, true, 0u, 0u>" [3march[0m[2m=[0m"sm_89" [3mcompiled[0m[2m=[0mtrue [3mms[0m[2m=[0m121.42040499999999
+[2m2026-11-04T00:50:18.895929Z[0m [32m INFO[0m [2mkernels_cuda::jit::cache[0m[2m:[0m resolved a device instantiation [3mroot[0m[2m=[0m"synth/48a9f669b5a7798e" [3minstantiation[0m[2m=[0m"::pie::elemwise::row_skeleton<::pie::synth::Body, 512, 512, 1, 3, 2, 2u, 8ull, true, 0u, 0u>" [3march[0m[2m=[0m"sm_89" [3mcompiled[0m[2m=[0mtrue [3mms[0m[2m=[0m183.424557
+[2m2026-11-04T00:50:19.144581Z[0m [32m INFO[0m [2mkernels_cuda::jit::cache[0m[2m:[0m resolved a device instantiation [3mroot[0m[2m=[0m"synth/48a9f669b5a7798e" [3minstantiation[0m[2m=[0m"::pie::elemwise::row_skeleton<::pie::synth::Body, 256, 256, 2, 3, 2, 2u, 8ull, true, 4u, 0u>" [3march[0m[2m=[0m"sm_89" [3mcompiled[0m[2m=[0mtrue [3mms[0m[2m=[0m245.792548
+[2m2026-11-04T00:50:19.335994Z[0m [32m INFO[0m [2mkernels_cuda::jit::cache[0m[2m:[0m resolved a device instantiation [3mroot[0m[2m=[0m"synth/327ac9b31bf7eed7" [3minstantiation[0m[2m=[0m"::pie::elemwise::row_skeleton<::pie::synth::Body, 512, 512, 1, 3, 2, 0u, 0ull, true, 0u, 0u>" [3march[0m[2m=[0m"sm_89" [3mcompiled[0m[2m=[0mtrue [3mms[0m[2m=[0m188.495271
+[2m2026-11-04T00:50:19.592047Z[0m [32m INFO[0m [2mkernels_cuda::jit::cache[0m[2m:[0m resolved a device instantiation [3mroot[0m[2m=[0m"synth/327ac9b31bf7eed7" [3minstantiation[0m[2m=[0m"::pie::elemwise::row_skeleton<::pie::synth::Body, 256, 256, 2, 3, 2, 0u, 0ull, true, 4u, 0u>" [3march[0m[2m=[0m"sm_89" [3mcompiled[0m[2m=[0mtrue [3mms[0m[2m=[0m253.22653400000002
+[2m2026-11-04T00:50:19.744533Z[0m [32m INFO[0m [2mkernels_cuda::jit::cache[0m[2m:[0m resolved a device instantiation [3mroot[0m[2m=[0m"synth/316fae227d260756" [3minstantiation[0m[2m=[0m"::pie::elemwise::row_skeleton<::pie::synth::Body, 512, 512, 1, 3, 1, 0u, 0ull, true, 0u, 0u>" [3march[0m[2m=[0m"sm_89" [3mcompiled[0m[2m=[0mtrue [3mms[0m[2m=[0m148.895117
+[2m2026-11-04T00:50:19.937368Z[0m [32m INFO[0m [2mkernels_cuda::jit::cache[0m[2m:[0m resolved a device instantiation [3mroot[0m[2m=[0m"synth/316fae227d260756" [3minstantiation[0m[2m=[0m"::pie::elemwise::row_skeleton<::pie::synth::Body, 256, 256, 2, 3, 1, 0u, 0ull, true, 4u, 0u>" [3march[0m[2m=[0m"sm_89" [3mcompiled[0m[2m=[0mtrue [3mms[0m[2m=[0m190.01531999999997
+[2m2026-11-04T00:50:31.823699Z[0m [32m INFO[0m [2mkernels_cuda::jit::cache[0m[2m:[0m resolved a device instantiation [3mroot[0m[2m=[0m"attn/fa2" [3minstantiation[0m[2m=[0m"::pie::attn::fa2::BatchPrefillWithPagedKVCacheKernel<::pie::attn::fa2::PagedTraits<::pie::attn::fa2::MaskMode::kCausal, 16, 1, 2, 4, 4, 1, 4, ::pie::attn::fa2::VariantWindow>, ::pie::attn::fa2::PrefillParams>" [3march[0m[2m=[0m"sm_89" [3mcompiled[0m[2m=[0mtrue [3mms[0m[2m=[0m604.740189
+[2m2026-11-04T00:50:31.956144Z[0m [32m INFO[0m [2mkernels_cuda::jit::cache[0m[2m:[0m resolved a device instantiation [3mroot[0m[2m=[0m"attn/merge" [3minstantiation[0m[2m=[0m"::pie::attn::merge_partials_warp<64, ::pie::bf16>" [3march[0m[2m=[0m"sm_89" [3mcompiled[0m[2m=[0mtrue [3mms[0m[2m=[0m129.57925600000002
+[2m2026-11-04T00:50:32.678845Z[0m [32m INFO[0m [2mkernels_cuda::jit::cache[0m[2m:[0m resolved a device instantiation [3mroot[0m[2m=[0m"attn/fa2" [3minstantiation[0m[2m=[0m"::pie::attn::fa2::BatchPrefillWithPagedKVCacheKernel<::pie::attn::fa2::PagedTraits<::pie::attn::fa2::MaskMode::kCausal, 128, 2, 4, 4, 4, 4, 1, ::pie::attn::fa2::VariantWindow>, ::pie::attn::fa2::PrefillParams>" [3march[0m[2m=[0m"sm_89" [3mcompiled[0m[2m=[0mtrue [3mms[0m[2m=[0m719.820729
+[2m2026-11-04T00:50:32.871248Z[0m [33m WARN[0m [2mkernels_cuda::jit::cache[0m[2m:[0m a device instantiation compiled with something to say [3mroot[0m[2m=[0m"linear/moe/route" [3minstantiation[0m[2m=[0m"::pie::linear::moe_topk_softmax_lane<::pie::bf16, 1>" [3march[0m[2m=[0m"sm_89" [3mlog[0m[2m=[0mlinear/moe/route(446): warning #177-D: variable "pie::linear::kRouterMaxExperts" was declared but never referenced
+  constexpr int kRouterMaxExperts = 512;
+                ^
+
+Remark: The warnings can be suppressed with "-diag-suppress <warning-number>"
+
+
+[2m2026-11-04T00:50:32.872255Z[0m [32m INFO[0m [2mkernels_cuda::jit::cache[0m[2m:[0m resolved a device instantiation [3mroot[0m[2m=[0m"linear/moe/route" [3minstantiation[0m[2m=[0m"::pie::linear::moe_topk_softmax_lane<::pie::bf16, 1>" [3march[0m[2m=[0m"sm_89" [3mcompiled[0m[2m=[0mtrue [3mms[0m[2m=[0m57.095428
+[2m2026-11-04T00:50:32.919280Z[0m [33m WARN[0m [2mkernels_cuda::jit::cache[0m[2m:[0m a device instantiation compiled with something to say [3mroot[0m[2m=[0m"linear/moe/route" [3minstantiation[0m[2m=[0m"::pie::linear::moe_route_order_scan" [3march[0m[2m=[0m"sm_89" [3mlog[0m[2m=[0mlinear/moe/route(446): warning #177-D: variable "pie::linear::kRouterMaxExperts" was declared but never referenced
+  constexpr int kRouterMaxExperts = 512;
+                ^
+
+Remark: The warnings can be suppressed with "-diag-suppress <warning-number>"
+
+
+[2m2026-11-04T00:50:32.920283Z[0m [32m INFO[0m [2mkernels_cuda::jit::cache[0m[2m:[0m resolved a device instantiation [3mroot[0m[2m=[0m"linear/moe/route" [3minstantiation[0m[2m=[0m"::pie::linear::moe_route_order_scan" [3march[0m[2m=[0m"sm_89" [3mcompiled[0m[2m=[0mtrue [3mms[0m[2m=[0m42.779031
+[2m2026-11-04T00:50:32.970732Z[0m [33m WARN[0m [2mkernels_cuda::jit::cache[0m[2m:[0m a device instantiation compiled with something to say [3mroot[0m[2m=[0m"linear/moe/select_fp4_sm80" [3minstantiation[0m[2m=[0m"::pie::linear::moe_select_mxfp4_mma_staged<8, 3, 3, false, 8>" [3march[0m[2m=[0m"sm_89" [3mlog[0m[2m=[0mlinear/moe_w4.cuh(220): warning #128-D: loop is not reachable
+      for (int t = 0; t < kTiles; ++t)
+      ^
+          detected during:
+            instantiation of "void pie::linear::w4mma::w4_land<kGlu,kTiles,kNb,kTileRows,Factor>(const float (&)[kTiles][kNb][4], Factor, const pie::bf16 *, const pie::i32 *, int, int, pie::bf16 *, int, int, int, int, int, float, float) [with kGlu=3, kTiles=2, kNb=8, kTileRows=16, Factor=lambda [](int)->float]" at line 322 of linear/moe/select_fp4_sm80
+            instantiation of "void pie::linear::moe_select_mxfp4_mma_staged<kNb,kStages,kGlu,kNv,kWarps>(const pie::bf16 *, const pie::i32 *, const pie::i32 *, const pie::i32 *, const pie::u8 *, const pie::u8 *, const pie::bf16 *, pie::bf16 *, int, int, int, int, int, float, float, const float *) [with kNb=8, kStages=3, kGlu=3, kNv=false, kWarps=8]" 
+
+Remark: The warnings can be suppressed with "-diag-suppress <warning-number>"
+
+
+[2m2026-11-04T00:50:32.971708Z[0m [32m INFO[0m [2mkernels_cuda::jit::cache[0m[2m:[0m resolved a device instantiation [3mroot[0m[2m=[0m"linear/moe/select_fp4_sm80" [3minstantiation[0m[2m=[0m"::pie::linear::moe_select_mxfp4_mma_staged<8, 3, 3, false, 8>" [3march[0m[2m=[0m"sm_89" [3mcompiled[0m[2m=[0mtrue [3mms[0m[2m=[0m48.56891
+[2m2026-11-04T00:50:33.018565Z[0m [32m INFO[0m [2mkernels_cuda::jit::cache[0m[2m:[0m resolved a device instantiation [3mroot[0m[2m=[0m"linear/moe/select_fp4_sm80" [3minstantiation[0m[2m=[0m"::pie::linear::moe_select_mxfp4_mma_staged<8, 3, 0, false, 8>" [3march[0m[2m=[0m"sm_89" [3mcompiled[0m[2m=[0mtrue [3mms[0m[2m=[0m43.934283
+[2m2026-11-04T00:50:33.107576Z[0m [32m INFO[0m [2mkernels_cuda::jit::cache[0m[2m:[0m resolved a device instantiation [3mroot[0m[2m=[0m"linear/moe/combine" [3minstantiation[0m[2m=[0m"::pie::linear::moe_weighted_sum_vec8<::pie::bf16>" [3march[0m[2m=[0m"sm_89" [3mcompiled[0m[2m=[0mtrue [3mms[0m[2m=[0m86.12939899999999
+[2m2026-11-04T00:50:33.187312Z[0m [32m INFO[0m [2mkernels_cuda::jit::cache[0m[2m:[0m resolved a device instantiation [3mroot[0m[2m=[0m"linear/moe/combine" [3minstantiation[0m[2m=[0m"::pie::linear::moe_bias_sum<::pie::bf16>" [3march[0m[2m=[0m"sm_89" [3mcompiled[0m[2m=[0mtrue [3mms[0m[2m=[0m76.880396
+[2m2026-11-04T00:50:33.761715Z[0m [32m INFO[0m [2mkernels_cuda::jit::cache[0m[2m:[0m resolved a device instantiation [3mroot[0m[2m=[0m"attn/fa2" [3minstantiation[0m[2m=[0m"::pie::attn::fa2::BatchPrefillWithPagedKVCacheKernel<::pie::attn::fa2::PagedTraits<::pie::attn::fa2::MaskMode::kCausal, 16, 1, 2, 4, 4, 1, 4, ::pie::attn::fa2::VariantFull>, ::pie::attn::fa2::PrefillParams>" [3march[0m[2m=[0m"sm_89" [3mcompiled[0m[2m=[0mtrue [3mms[0m[2m=[0m571.448179
+[2m2026-11-04T00:50:34.473301Z[0m [32m INFO[0m [2mkernels_cuda::jit::cache[0m[2m:[0m resolved a device instantiation [3mroot[0m[2m=[0m"attn/fa2" [3minstantiation[0m[2m=[0m"::pie::attn::fa2::BatchPrefillWithPagedKVCacheKernel<::pie::attn::fa2::PagedTraits<::pie::attn::fa2::MaskMode::kCausal, 128, 2, 4, 4, 4, 4, 1, ::pie::attn::fa2::VariantFull>, ::pie::attn::fa2::PrefillParams>" [3march[0m[2m=[0m"sm_89" [3mcompiled[0m[2m=[0mtrue [3mms[0m[2m=[0m708.547041
+[2m2026-11-04T00:50:35.572291Z[0m [32m INFO[0m [2mkernels_cuda::jit::cache[0m[2m:[0m resolved a device instantiation [3mroot[0m[2m=[0m"gather/rows" [3minstantiation[0m[2m=[0m"::pie::gather::gather_rows<::int4>" [3march[0m[2m=[0m"sm_89" [3mcompiled[0m[2m=[0mtrue [3mms[0m[2m=[0m1088.415852
+[2m2026-11-04T00:50:41.496053Z[0m [33m WARN[0m [2mkernels_cuda::jit::cache[0m[2m:[0m a device instantiation compiled with something to say [3mroot[0m[2m=[0m"linear/moe/select" [3minstantiation[0m[2m=[0m"::pie::linear::moe_matmul_select_mxfp4<::pie::bf16, ::pie::i32(4)>" [3march[0m[2m=[0m"sm_89" [3mlog[0m[2m=[0mlinear/moe/select(19): warning #177-D: variable "pie::linear::kGemvWarps" was declared but never referenced
+  constexpr int kGemvWarps = 4;
+                ^
+
+Remark: The warnings can be suppressed with "-diag-suppress <warning-number>"
+
+linear/moe/select(427): warning #177-D: variable "pie::linear::kBlock" was declared but never referenced
+  constexpr int kBlock = 256;
+                ^
+
+
+[2m2026-11-04T00:50:41.496962Z[0m [32m INFO[0m [2mkernels_cuda::jit::cache[0m[2m:[0m resolved a device instantiation [3mroot[0m[2m=[0m"linear/moe/select" [3minstantiation[0m[2m=[0m"::pie::linear::moe_matmul_select_mxfp4<::pie::bf16, ::pie::i32(4)>" [3march[0m[2m=[0m"sm_89" [3mcompiled[0m[2m=[0mtrue [3mms[0m[2m=[0m45.050566
+[2m2026-11-04T00:50:41.531032Z[0m [33m WARN[0m [2mkernels_cuda::jit::cache[0m[2m:[0m a device instantiation compiled with something to say [3mroot[0m[2m=[0m"linear/glu" [3minstantiation[0m[2m=[0m"::pie::linear::swiglu_clamp_alpha<::pie::bf16, true>" [3march[0m[2m=[0m"sm_89" [3mlog[0m[2m=[0mlinear/glu(25): warning #177-D: variable "lane" was declared but never referenced
+      const int lane = static_cast<int>(threadIdx.x % 32);
+                ^
+
+Remark: The warnings can be suppressed with "-diag-suppress <warning-number>"
+
+
+[2m2026-11-04T00:50:41.531810Z[0m [32m INFO[0m [2mkernels_cuda::jit::cache[0m[2m:[0m resolved a device instantiation [3mroot[0m[2m=[0m"linear/glu" [3minstantiation[0m[2m=[0m"::pie::linear::swiglu_clamp_alpha<::pie::bf16, true>" [3march[0m[2m=[0m"sm_89" [3mcompiled[0m[2m=[0mtrue [3mms[0m[2m=[0m32.008129000000004
+[2m2026-11-04T00:50:41.671262Z[0m [32m INFO[0m [2mkernels_cuda::jit::cache[0m[2m:[0m resolved a device instantiation [3mroot[0m[2m=[0m"linear/hooked/12c33b431b556f3e" [3minstantiation[0m[2m=[0m"::pie::linear::gemv_skeleton<::pie::linear::hooked::Body, 4, 4, 1, 0, 1, true>" [3march[0m[2m=[0m"sm_89" [3mcompiled[0m[2m=[0mtrue [3mms[0m[2m=[0m133.982034
+[2m2026-11-04T00:50:41.970228Z[0m [32m INFO[0m [2mkernels_cuda::jit::cache[0m[2m:[0m resolved a device instantiation [3mroot[0m[2m=[0m"linear/hooked/12c33b431b556f3e" [3minstantiation[0m[2m=[0m"::pie::linear::rows_skeleton<::pie::linear::hooked::Body, 2, 8, 1, 1, 0, 1, true>" [3march[0m[2m=[0m"sm_89" [3mcompiled[0m[2m=[0mtrue [3mms[0m[2m=[0m255.790596
+[2m2026-11-04T00:50:42.321067Z[0m [32m INFO[0m [2mkernels_cuda::jit::cache[0m[2m:[0m resolved a device instantiation [3mroot[0m[2m=[0m"linear/hooked/12c33b431b556f3e" [3minstantiation[0m[2m=[0m"::pie::linear::rows_skeleton<::pie::linear::hooked::Body, 4, 8, 1, 1, 0, 1, true>" [3march[0m[2m=[0m"sm_89" [3mcompiled[0m[2m=[0mtrue [3mms[0m[2m=[0m307.94156
+[2m2026-11-04T00:50:42.851172Z[0m [33m WARN[0m [2mkernels_cuda::jit::cache[0m[2m:[0m a device instantiation compiled with something to say [3mroot[0m[2m=[0m"linear/moe/select_fp4_sm80" [3minstantiation[0m[2m=[0m"::pie::linear::moe_select_mxfp4_mma_run<4, 4, 3, 4>" [3march[0m[2m=[0m"sm_89" [3mlog[0m[2m=[0mlinear/moe_w4.cuh(220): warning #128-D: loop is not reachable
+      for (int t = 0; t < kTiles; ++t)
+      ^
+          detected during:
+            instantiation of "void pie::linear::w4mma::w4_land<kGlu,kTiles,kNb,kTileRows,Factor>(const float (&)[kTiles][kNb][4], Factor, const pie::bf16 *, const pie::i32 *, int, int, pie::bf16 *, int, int, int, int, int, float, float) [with kGlu=3, kTiles=2, kNb=4, kTileRows=16, Factor=lambda [](int)->float]" at line 517 of linear/moe/select_fp4_sm80
+            instantiation of "void pie::linear::moe_select_mxfp4_mma_run<kNb,kStages,kGlu,kWarps>(const pie::bf16 *, const pie::i32 *, const pie::i32 *, const pie::i32 *, const pie::u8 *, const pie::u8 *, const pie::bf16 *, pie::bf16 *, int, int, int, int, int, float, float, const float *) [with kNb=4, kStages=4, kGlu=3, kWarps=4]" 
+
+Remark: The warnings can be suppressed with "-diag-suppress <warning-number>"
+
+
+[2m2026-11-04T00:50:42.852328Z[0m [32m INFO[0m [2mkernels_cuda::jit::cache[0m[2m:[0m resolved a device instantiation [3mroot[0m[2m=[0m"linear/moe/select_fp4_sm80" [3minstantiation[0m[2m=[0m"::pie::linear::moe_select_mxfp4_mma_run<4, 4, 3, 4>" [3march[0m[2m=[0m"sm_89" [3mcompiled[0m[2m=[0mtrue [3mms[0m[2m=[0m61.126568999999996
+[2m2026-11-04T00:50:42.901676Z[0m [32m INFO[0m [2mkernels_cuda::jit::cache[0m[2m:[0m resolved a device instantiation [3mroot[0m[2m=[0m"linear/moe/select_fp4_sm80" [3minstantiation[0m[2m=[0m"::pie::linear::moe_select_mxfp4_mma_run<4, 4, 0, 4>" [3march[0m[2m=[0m"sm_89" [3mcompiled[0m[2m=[0mtrue [3mms[0m[2m=[0m46.463595000000005
+engine-cuda: bodies armed 133 of 133 compositions at load (decode 4/4, prefill 49/49, mixed 48/48, tower 0/0, wide 32/32; 0 segmented; 441 MiB of 1024 MiB, 101 of 1024 seats) (pool declared 3840 MiB, high water 480 MiB, committed 480 MiB, spare under the ceiling 327 MiB) [18 key(s) never fired — this deployment cannot synthesize them, or their present set was already refused admission; e.g. mixed c2+c0 at bucket 1 (256 seat(s) x 2048 context, 8 lane(s))] [sealed: every key attempted]
+[2m2026-11-04T00:52:09.462711Z[0m [32m INFO[0m [2mruntime::bootstrap[0m[2m:[0m kv tiers: suspended kv goes to the host, then the disk [3mdevice_pages[0m[2m=[0m5504 [3mhost_pages[0m[2m=[0m1365 [3mdisk_pages[0m[2m=[0m5460
+[2m2026-11-04T00:52:09.464062Z[0m [32m INFO[0m [1mRPC[0m[1m{[0m[3mrpc.trace_id[0m[2m=[0m00 [3mrpc.deadline[0m[2m=[0m2026-11-04T00:52:19.463734967Z [3motel.kind[0m[2m=[0m"server" [3motel.name[0m[2m=[0m"GatewayInbound.register"[1m}[0m[2m:[0m [2mgateway::worker[0m[2m:[0m worker dialed in + registered [3mworker[0m[2m=[0mworker#0
+[2m2026-11-04T00:52:09.464358Z[0m [32m INFO[0m [2mworker::link::gateway[0m[2m:[0m worker registered with gateway (dial-in) [3mworker_id[0m[2m=[0mworker#0 [3mgateway[0m[2m=[0m127.0.0.1:36685
+╭─ Pie Engine ───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╮
+│ Host         127.0.0.1:36017                                                                                                       │
+│ Model        default (/root/.cache/huggingface/hub/models--openai--gpt-oss-20b/snapshots/6cee5e81ee83917806bbde320786a8fb61efebee) │
+│ Backend      cuda                                                                                                                  │
+│ Device       cuda:0                                                                                                                │
+╰────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╯
+[2m2026-11-04T00:52:09.500523Z[0m [32m INFO[0m [2mruntime::pipeline::fire::shadow[0m[2m:[0m shadow plan: 1 phase(s): [Unknown([2, 3])]
+[2m2026-11-04T00:52:09.778141Z[0m [32m INFO[0m [2mkernels_cuda::jit::cache[0m[2m:[0m resolved a device instantiation [3mroot[0m[2m=[0m"runtime/channel" [3minstantiation[0m[2m=[0m"::pie::runtime::channel::pull_validate" [3march[0m[2m=[0m"sm_89" [3mcompiled[0m[2m=[0mtrue [3mms[0m[2m=[0m119.57829100000001
+[2m2026-11-04T00:52:09.810038Z[0m [32m INFO[0m [2mkernels_cuda::jit::cache[0m[2m:[0m resolved a device instantiation [3mroot[0m[2m=[0m"runtime/channel" [3minstantiation[0m[2m=[0m"::pie::runtime::channel::commit_bump" [3march[0m[2m=[0m"sm_89" [3mcompiled[0m[2m=[0mtrue [3mms[0m[2m=[0m25.966569
+[2m2026-11-04T00:52:09.837290Z[0m [32m INFO[0m [2mkernels_cuda::jit::cache[0m[2m:[0m resolved a device instantiation [3mroot[0m[2m=[0m"runtime/channel" [3minstantiation[0m[2m=[0m"::pie::runtime::channel::scatter_publish" [3march[0m[2m=[0m"sm_89" [3mcompiled[0m[2m=[0mtrue [3mms[0m[2m=[0m24.40444
+[2m2026-11-04T00:52:09.864819Z[0m [32m INFO[0m [2mkernels_cuda::jit::cache[0m[2m:[0m resolved a device instantiation [3mroot[0m[2m=[0m"runtime/channel" [3minstantiation[0m[2m=[0m"::pie::runtime::channel::settle" [3march[0m[2m=[0m"sm_89" [3mcompiled[0m[2m=[0mtrue [3mms[0m[2m=[0m24.623069
+[pie-bench] measured-start
+[pie-bench] measured-end
+[2m2026-11-04T00:52:10.743942Z[0m [32m INFO[0m [2mworker::serve[0m[2m:[0m leaving control plane [3mworker[0m[2m=[0mSome(WorkerId(0))
+[2m2026-11-04T00:52:10.744117Z[0m [33m WARN[0m [2mtarpc::server[0m[2m:[0m Requests stream errored out: could not ready the transport for writes: an error occurred readying to send into the channel: the channel is closed and cannot accept new items for sending
+[2m2026-11-04T00:52:10.744123Z[0m [33m WARN[0m [2mtarpc::client[0m[2m:[0m Connection broken: could not ready the transport for writes: an error occurred readying to send into the channel: the channel is closed and cannot accept new items for sending
+[2m2026-11-04T00:52:10.744186Z[0m [32m INFO[0m [2mgateway::worker[0m[2m:[0m worker link closed; evicted from registry [3mworker[0m[2m=[0mworker#0
+
+----------------------------------------------------
+mode:              tput
+engine:            pie
+model:             openai/gpt-oss-20b
+completed:         8/8  failed=0
+wall:              0.665 s
+requests/sec:      12.03
+output tokens:     8
+prompt tokens:     4872
+output tok/sec:    12.03
+lat mean/p50:      593.4 / 662.0 ms
+lat p95/p99:       663.6 / 663.8 ms
+ttft mean/p50:     592.9 / 661.5 ms
+ttft p95/p99:      662.8 / 662.9 ms
+total batches:     2
+avg batch latency us: 365897.5
+last batch latency us: 627675
+total requests:    8
+max forward requests: 7
+batch size hist:   [1, 0, 1, 0, 0, 0, 0, 0]
+----------------------------------------------------
+EXIT=0

@@ -18,10 +18,10 @@ cd $P/scripts/bench
 if [ $eng = pie ]; then
   PYTHONPATH=$P/packages/python/client/src:$P/packages/python/server/python \
   PIE_BENCH_INFERLET_DIR=$P/examples/text-completion-bench \
-  timeout 1800 /root/venv-pie/bin/python pie_bench.py "${mode[@]}" --model openai/gpt-oss-20b --warmup 2 \
+  timeout 1800 /root/venv-pie/bin/python pie_bench.py "${mode[@]}" --model ${MODEL:-openai/gpt-oss-20b} --warmup 2 \
     --pretokenized-prompts --report-timing --json-out $RES/$label.json "$@" > $RES/$label.log 2>&1
 else
-  timeout 1800 /root/venv-vllm/bin/python vllm_bench.py "${mode[@]}" --model openai/gpt-oss-20b --warmup 2 \
+  timeout 1800 /root/venv-vllm/bin/python vllm_bench.py "${mode[@]}" --model ${MODEL:-openai/gpt-oss-20b} --warmup 2 \
     --report-timing --json-out $RES/$label.json "$@" > $RES/$label.log 2>&1
 fi
 echo EXIT=$? >> $RES/$label.log
