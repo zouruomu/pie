@@ -28,7 +28,7 @@ by a script in `scripts/` (§14).
 * **One profile line fixes a real red stretch of the batching curve.** At c8 and c16, pie trailed vLLM
   by 13% and 32%. Those decodes route 32 and 64 routes over gpt-oss-20b's 32 experts. The L4's
   `moe.mxfp4_mma_per_from = 4` sent them to the by-route MXFP4 select, which reads an expert's codes
-  once for every route it serves: 40 ms of a 54 ms c16 step. With `= 0` they take the register-dequant
+  once for every route it serves: 40 ms of a c16 step whose ITL p50 is 50 ms. With `= 0` they take the register-dequant
   run kernel, which reads each touched expert once (22.5 ms):
   * c16: {{C16_BASE}} → {{C16_FIX}} (vLLM {{C16_VLLM}});
   * c8: {{C8_BASE}} → {{C8_FIX}} (vLLM {{C8_VLLM}});
@@ -208,9 +208,10 @@ Why the by-route select costs that much:
 | lanes | routes | ceil(routes/32) | base | fix |
 |---|---|---|---|---|
 | 4 | 16 | 1 | under `mxfp4_mma_from` (28): by-route | same |
-| 8 | 32 | 1 | by-route | run kernel |
-| 16 | 64 | 2 | by-route | run kernel |
-| ≥32 | ≥128 | ≥4 | run / staged kernel | same |
+| 7–16 | 28–64 | 1–2 | by-route (≤ 2 × 32 routes) | run kernel |
+| 17–24 | 68–96 | 3 | grouped wmma (`moe_matmul_select_mxfp4_wmma`, > 2 × 32 routes) | run kernel |
+| 25–128 | 100–512 | 4–16 | run kernel | same |
+| ≥129, and prefill (a 609-token prompt: 77 an expert) | > 512 | > 16 | staged kernel | same |
 
 ## 6. The fix, line by line
 
@@ -229,11 +230,18 @@ Why the by-route select costs that much:
   sm89 tier) takes the register-dequant kernels:
   * the 512-code run kernel up to `mxfp4_run_until` (16 a route average);
   * the staged kernel past that.
-* **Which selects it changes.** Only selects of 28 or more routes averaging fewer than 4 routes an
-  expert, i.e. gpt-oss-20b decodes of 7 to 24 lanes (28 to 96 routes). Prefills average hundreds of routes an expert,
-  and decodes of 32 or more lanes average at least 4, so neither is touched.
-* **Precedent.** The A40 profile has run `moe.mxfp4_mma_per_from = 0` since #1351, and the RTX 4090
-  sends its gpt-oss decodes of up to 32 routes an expert to the same run kernel (#1355).
+* **Which selects it changes.** Only selects of 28 or more routes that average fewer than 4 routes an
+  expert:
+  * gpt-oss-20b decodes of 7–24 lanes (28–96 routes), table in §5. 7–16 lanes come off the by-route
+    select and 17–24 off the grouped wmma one; both move to the run kernel. c24 is measured in §7 for
+    the second group.
+  * a prefill or chunk of 7–24 tokens.
+  Decodes of 25 lanes or more, and ordinary prefills (a 609-token prompt averages 77 routes an
+  expert), are not touched.
+* **Precedent.** The A40 profile has run `moe.mxfp4_mma_per_from = 0` since #1351. sm_86 has no run
+  kernel, so there its selects land on the register-dequant `moe_select_mxfp4_mma` and staged kernels.
+  The RTX 4090 still has `= 4` (`nvidia-geforce-rtx-4090.toml:41`), so its gpt-oss c8 and c16 decodes
+  probably take the by-route select too (§12; not measured here).
 * **A/B for this line:**
   * c16: 300 → 490 tok/s (knob A/B, `results/knobs/`, 2 rounds) and {{C16_BASE}} → {{C16_FIX}} in the
     sweep;
@@ -261,12 +269,15 @@ Full greedy token-id lists were compared request by request (`scripts/tokeq.py` 
 
 * **c8 and c16 on gpt-oss-20b:** the fix changes the kernel of every decode step, so outputs diverge,
   as two different kernels' accumulation orders would. Why this is acceptable:
-  1. The run kernel is the one pie already decodes gpt-oss-20b with at every width from c32 up, and
-     prefills it with.
+  1. The run kernel is the one pie already decodes gpt-oss-20b with from c25 to c128, the widths every
+     batching cell above c16 runs at.
   2. `the_routed_selects_answer_the_routed_dot`
-     (`crates/kernels-cuda/tests/kernels_cuda/linear/moe_select.rs:199`) checks the by-route select
-     and the register-dequant kernels at 1–3 routes an expert against the host's routed dot, and passes
-     on both builds (§10).
+     (`crates/kernels-cuda/tests/kernels_cuda/linear/moe_select.rs:199`) checks these kernels against
+     the host's routed dot:
+     * the by-route select at 1–2 routes an expert;
+     * the register-dequant kernels at 1, 6, 8 and 12 (on sm_89 the run kernel, `[8, 1, 4]` and up);
+     * the staged kernel at 50.
+     It passes on both builds (§10). No case covers the run kernel at 2–3 routes an expert.
   3. Agreement with vLLM's greedy tokens on the same prompts is no worse with the fix than with base:
      {{VLLM_AGREE}}.
 
@@ -319,8 +330,9 @@ Full greedy token-id lists were compared request by request (`scripts/tokeq.py` 
 
 **Memory fit.**
 
-* The line changes no allocation: the run kernel needs no copy of the bank and no workspace beyond
-  the select's route order, which the by-route kernel already sized.
+* The line changes no allocation. The run kernel's route order, offsets and work list come from
+  `ctx.scratch` (`crates/kernels-cuda/src/linear/moe/route.rs:487`), the same scratch the grouped, run
+  and staged selects already take at c17 and up and in every prefill. It needs no copy of the bank.
 * Load logs on both engines report the same pool, bodies and caps (`device_pages`, `seated`,
   "bodies armed … MiB") at every shape. {{MEMFIT}}
 
@@ -333,7 +345,16 @@ single-threaded (`--test-threads=1`) on this L4:
 
 ## 11. Remaining gap, broken down
 
-{{REMAINING}}
+With the fix, against vLLM 0.32.0 on this card, from §7's table:
+
+| point | fix vs vLLM | mechanism | where |
+|---|---|---|---|
+| batching cell (each engine's best: c512 for both) | {{GAP_B}} | **c256 admission.** #1368's cap seats 215 of 256, so 512 lockstep requests run in waves of 215 + 215 + 82 (§4). Without the cap c256 reaches 1,987–1,994 (#1368's parent, and main with `seated_first = false`), about 11% over vLLM's best. The cap's factor of five is engine-wide (measured on A100 Gemma-4), and on this card c512 needs it: without it, c512 is 1,574. | `crates/runtime/src/bootstrap.rs:318-341` |
+| c512, c1024 | {{GAP_C512}}, {{GAP_C1024}} | Equal pools (pie 255 seats, vLLM about 262) and device-bound steps (98.7% busy, §5). Nothing to attribute beyond the spread. | – |
+| pf512, pf1024 | {{GAP_PF512}}, {{GAP_PF1024}} | `max_forward_requests = 512` reserves a working set for 512 lanes, so fires are served at 1,024 rows instead of 8,192 (§12.5). Not part of the pbatch cell, where each engine's best is pf8–pf128. | `crates/engine-cuda/src/serve/load.rs:324, 589` |
+| c4, c8, c16 | {{GAP_C4}}, {{GAP_C8}}, {{GAP_C16}} | Level or ahead after the fix. | – |
+
+The pbatch cell has no remaining gap: pie leads at every pf-N up to pf256.
 
 ## 12. Side findings
 
@@ -363,9 +384,12 @@ single-threaded (`--test-threads=1`) on this L4:
    `max(forward_tokens, 8192)` (`serve/load.rs:72-79`).
 7. **Graph bodies at 512 MiB break arming for gpt-oss-20b** (1 of 1 compositions armed, every shape
    walking eagerly), the same as upstream found on the RTX 4090 (#1417).
-8. **nsys exports carry the process environment, including API keys.** The traces stay on the pod
+8. **The RTX 4090 profile probably has the same c8/c16 gap.** It keeps `moe.mxfp4_mma_per_from = 4`
+   (`nvidia-geforce-rtx-4090.toml:41`) on the same sm_89 kernels. Its #1355 raised `mxfp4_run_until`
+   to 32, which only moves selects of 17–32 routes an expert. Not measured here.
+9. **nsys exports carry the process environment, including API keys.** The traces stay on the pod
    (§13).
-9. **vLLM pf16 round 1 read 4,290 against 6,150–6,590 elsewhere on its curve.** {{VLLM_PF16}}
+10. **vLLM pf16 round 1 read 4,290 against 6,150–6,590 elsewhere on its curve.** {{VLLM_PF16}}
 
 ## 13. Playbook notes
 

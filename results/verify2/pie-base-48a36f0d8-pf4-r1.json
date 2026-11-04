@@ -1,0 +1,242 @@
+{
+  "summary": {
+    "mode": "tput",
+    "engine": "pie",
+    "model": "openai/gpt-oss-20b",
+    "requests": 4,
+    "completed": 4,
+    "failed": 0,
+    "wall_s": 0.3396087479777634,
+    "output_tokens": 4,
+    "prompt_tokens": 2436,
+    "req_per_s": 11.77825961144531,
+    "output_tok_per_s": 11.77825961144531,
+    "latency_mean_ms": 337.917941971682,
+    "latency_p50_ms": 338.0087539553642,
+    "latency_p95_ms": 338.6958787217736,
+    "latency_p99_ms": 338.7244348600507,
+    "config": {
+      "system": "You are a helpful benchmarking assistant.",
+      "prompt": "Write a short story about a robot.",
+      "max_tokens": 1,
+      "temperature": 0.0,
+      "top_p": 1.0,
+      "ignore_eos": true,
+      "unique_prompts": true,
+      "cuda profiler capture": false,
+      "arrival_rate": 0.0,
+      "arrival_process": "poisson",
+      "client timing epoch unix s": 1793766530.475029,
+      "client timing epoch monotonic ns": 1158934641445173,
+      "cpu affinity": "0-31,64-95",
+      "gpu clocks at start": [
+        {
+          "index": 0,
+          "sm_mhz": 1095,
+          "sm_max_mhz": 2040,
+          "util_pct": 80
+        }
+      ],
+      "gpu clocks at end": [
+        {
+          "index": 0,
+          "sm_mhz": 1170,
+          "sm_max_mhz": 2040,
+          "util_pct": 100
+        }
+      ],
+      "engine": "cuda",
+      "resolved model": "/root/.cache/huggingface/hub/models--openai--gpt-oss-20b/snapshots/6cee5e81ee83917806bbde320786a8fb61efebee",
+      "max_forward_requests": 4,
+      "max_model_len": 2048,
+      "warmup seconds": 0.0,
+      "embedded engine": "/root/r2g/pie/packages/python/server/python/pie/_engine.abi3.so",
+      "embedded engine sha256": "07db7e202f63f960fba48ae40567ee606d033c21ffe160ed8b90b0198deff916",
+      "total batches": 1,
+      "avg batch latency us": 329668.0,
+      "fire.inter_fire_us": 0.0,
+      "fire.post_dispatch_to_fire_us": 0.0,
+      "fire.accumulate.accum_loop_us": 0.0,
+      "fire.pre_dispatch.fire_prepare_us": 0.0,
+      "fire.execute.total_us": 0.0,
+      "fire.execute.batch_build_us": 0.0,
+      "fire.execute.engine_fire_us": 0.0,
+      "wave avg active pipelines": 4.0,
+      "wave avg missing pipelines": 0.0,
+      "wave fires": 1,
+      "seal events": 3,
+      "seals while executing": 0,
+      "sealed-queue blocked holds": 0,
+      "device idle us": 65026,
+      "device idle gaps": 2,
+      "idle breaks (control holds launches)": 0,
+      "idle breaks (depth cap)": 0,
+      "idle park us (control holds launches)": 0,
+      "idle park us (other)": 155634,
+      "accept us total": 9,
+      "turnaround sum us": 0,
+      "turnaround max us": 0,
+      "turnaround n": 0,
+      "lane launch us": 0,
+      "lane launch n": 0,
+      "lane prefill us": 193211,
+      "lane prefill n": 3,
+      "lane control us": 1474,
+      "lane control n": 19,
+      "lane control max us": 892,
+      "accept calls": 6,
+      "processes completed": 6,
+      "process avg admission wait us": 17,
+      "process avg instantiate us": 779,
+      "process avg wasm run us": 357367,
+      "cumulative_batch_latency_us": 329668,
+      "fire.post_dispatch.context_tick_us": 0.0,
+      "fire.post_dispatch.stats_update_us": 0.0,
+      "last batch latency us": 329668,
+      "total requests": 4,
+      "max forward requests": 4,
+      "batch size hist": [
+        0,
+        0,
+        1,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "default.fire.quorum.straggler_fires": 0,
+      "default.fire.quorum.straggler_demotions": 0,
+      "default.fire.quorum.avg_active_pipelines_at_fire": 4.0,
+      "default.fire.quorum.avg_missing_at_fire": 0.0,
+      "default.fire.quorum.wave_active_sum": 4,
+      "default.fire.quorum.wave_missing_sum": 0,
+      "default.fire.quorum.wave_fires": 1
+    },
+    "ttft_mean_ms": 336.87084895791486,
+    "ttft_p50_ms": 336.93379641044885,
+    "ttft_p95_ms": 337.2484849533066,
+    "ttft_p99_ms": 337.28983539622277,
+    "intertoken_p50_ms": null,
+    "intertoken_p99_ms": null,
+    "intertoken_max_ms": null
+  },
+  "requests": [
+    {
+      "ok": true,
+      "latency_s": 0.33752390183508396,
+      "output_tokens": 1,
+      "prompt_tokens": 609,
+      "error": null,
+      "ttft_s": 0.3373001730069518,
+      "intertoken_us": null,
+      "client_send_s": 0.000218229,
+      "token_arrival_s": [
+        0.337519592
+      ],
+      "token_arrival_monotonic_ns": null,
+      "client_return_s": 0.337741941,
+      "process_id": "e6bdff81-893c-4e82-b94d-55b2852daa28",
+      "prologue_us": [
+        6,
+        1,
+        16,
+        0,
+        2224
+      ],
+      "speculation": null,
+      "output_token_sha256": "ca6c4b39a1ce0aba6df037c1b797a69b7037d910c891500cfbb93534694ff85c",
+      "output_token_ids": [
+        200005
+      ],
+      "output_text": null
+    },
+    {
+      "ok": true,
+      "latency_s": 0.33873157389461994,
+      "output_tokens": 1,
+      "prompt_tokens": 609,
+      "error": null,
+      "ttft_s": 0.3369120068382472,
+      "intertoken_us": null,
+      "client_send_s": 0.000703255,
+      "token_arrival_s": [
+        0.337615262
+      ],
+      "token_arrival_monotonic_ns": null,
+      "client_return_s": 0.339435489,
+      "process_id": "cf18c34b-4ce6-4627-8f3f-95296ec60b34",
+      "prologue_us": [
+        6,
+        3,
+        15,
+        0,
+        1550
+      ],
+      "speculation": null,
+      "output_token_sha256": "ca6c4b39a1ce0aba6df037c1b797a69b7037d910c891500cfbb93534694ff85c",
+      "output_token_ids": [
+        200005
+      ],
+      "output_text": null
+    },
+    {
+      "ok": true,
+      "latency_s": 0.3384936060756445,
+      "output_tokens": 1,
+      "prompt_tokens": 609,
+      "error": null,
+      "ttft_s": 0.3369555859826505,
+      "intertoken_us": null,
+      "client_send_s": 0.001041453,
+      "token_arrival_s": [
+        0.337996739
+      ],
+      "token_arrival_monotonic_ns": null,
+      "client_return_s": 0.339534689,
+      "process_id": "c78cbf1f-04a9-4482-a6cc-69c8ef0cce49",
+      "prologue_us": [
+        5,
+        7,
+        16,
+        0,
+        2478
+      ],
+      "speculation": null,
+      "output_token_sha256": "ca6c4b39a1ce0aba6df037c1b797a69b7037d910c891500cfbb93534694ff85c",
+      "output_token_ids": [
+        200005
+      ],
+      "output_text": null
+    },
+    {
+      "ok": true,
+      "latency_s": 0.33692268608137965,
+      "output_tokens": 1,
+      "prompt_tokens": 609,
+      "error": null,
+      "ttft_s": 0.33631563000380993,
+      "intertoken_us": null,
+      "client_send_s": 0.001336441,
+      "token_arrival_s": [
+        0.337651951
+      ],
+      "token_arrival_monotonic_ns": null,
+      "client_return_s": 0.338259197,
+      "process_id": "8eee2694-ebed-4856-8007-9e278f899455",
+      "prologue_us": [
+        6,
+        7,
+        13,
+        0,
+        2286
+      ],
+      "speculation": null,
+      "output_token_sha256": "ca6c4b39a1ce0aba6df037c1b797a69b7037d910c891500cfbb93534694ff85c",
+      "output_token_ids": [
+        200005
+      ],
+      "output_text": null
+    }
+  ]
+}

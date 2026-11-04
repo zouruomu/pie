@@ -21,3 +21,10 @@ Running: #1350 isolation (old engine + ws65), mimo e32 base/fix, then verificati
 - Fix branch rebased on upstream 59935820d -> cdf93fe44 (pushed); rebased engines built: base-59935820d c2139c4c, fix-cdf93fe44 ce9d49c1.
 - Verification sweep on the pre-rebase pair: fix r1 done (results/verify: c16 494, c8 270, rest flat); rounds 2-3 base/fix/vLLM running (results/verify2), ETA ~07:30Z.
 - Next: tests (engine-cuda GPU suite + kernels-cuda moe_select) base vs fix on the rebased trees; final A/B on rebased engines (results/final); self-review; write-up.
+
+07:25Z update:
+- Fix amended after a code review (comment wording; c17-c24 selects come off grouped wmma, not by-route) -> 6f038ac7 on upstream 59935820d, pushed; engine fix-6f038ac7 sha 5d2bfab2.
+- Sweep (results/verify2) 80/114: fix vs base c4 +5%, c8 +14%, c16 +68%, rest within +-2%.
+- Profile-resolution tests (chip::, tuning) pass on both rebased trees.
+- Queued (after.sh): post-rebase base/fix A/B on pf8 c8 c16 c24 c256 c512 raw (2 rounds), then engine-cuda GPU suite + kernels-cuda moe_select on both trees.
+- ETA hand-over ~10:30-11:00Z.

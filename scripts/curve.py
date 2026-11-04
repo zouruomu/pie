@@ -1,9 +1,10 @@
 # Curve table across rounds: for each engine group and shape, the metric's mean, min-max and spread.
 # usage: curve.py name=glob_prefix[,glob_prefix...] ...   (a run file is <prefix>-<shape>-r<N>.json)
+# RATIO="a:b,c:d" adds columns mean(a)/mean(b) - 1 for those group pairs.
 # metric: pf* -> prefill tok/s (sum prompt tokens / wall); c* -> output tok/s; raw -> decode tok/s
 # (per-request (n-1)/(latency-ttft), median) and TTFT p50.
 import glob, json, statistics as st, sys, os
-SHAPES = "pf4 pf8 pf16 pf32 pf64 pf128 pf256 pf512 pf1024 c4 c8 c16 c32 c64 c128 c256 c512 c1024 raw".split()
+SHAPES = "pf4 pf8 pf16 pf32 pf64 pf128 pf256 pf512 pf1024 c4 c8 c16 c24 c32 c64 c128 c256 c512 c1024 raw".split()
 groups = [a.split("=", 1) for a in sys.argv[1:]]
 
 def metric(d, shape):
@@ -29,13 +30,20 @@ for name, prefixes in groups:
                     vals.append(metric(d, shape))
         table[(name, shape)] = vals
 names = [g[0] for g in groups]
-print("| shape | " + " | ".join(f"{n} mean (min-max, n)" for n in names) + " |")
-print("|---|" + "---|" * len(names))
+ratios = [r.split(":") for r in os.environ.get("RATIO", "").split(",") if r]
+print("| shape | " + " | ".join(f"{n} mean (min-max, n)" for n in names)
+      + "".join(f" | {a} vs {b}" for a, b in ratios) + " |")
+print("|---|" + "---|" * (len(names) + len(ratios)))
 for shape in SHAPES:
+    if not any(table[(n, shape)] for n in names):
+        continue
     cells = []
     for n in names:
         v = table[(n, shape)]
         cells.append(f"{st.mean(v):.1f} ({min(v):.0f}-{max(v):.0f}, {len(v)})" if v else "-")
+    for a, b in ratios:
+        va, vb = table[(a, shape)], table[(b, shape)]
+        cells.append(f"{100 * (st.mean(va) / st.mean(vb) - 1):+.1f}%" if va and vb else "-")
     print(f"| {shape} | " + " | ".join(cells) + " |")
 for n in names:
     best = max(((st.mean(v), s) for (m, s), v in table.items() if m == n and v and s != "raw" and s.startswith("c")), default=None)
