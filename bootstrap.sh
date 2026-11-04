@@ -7,8 +7,8 @@
 # deadline passes.
 #
 # Set by the orchestrator: R2G_RUN, R2G_CONTROL_SHA (the pinned commit this script, pod/ and the
-# tools come from; briefs and reviews are read from the latest r2g-control), R2G_DEADLINE_H (default 16).
-# Runpod secrets: claude_code_oauth_token, r2g_github_token.
+# tools come from; briefs, notes and reviews are read from the latest r2g-control), R2G_DEADLINE_H
+# (default 16). Runpod secrets: claude_code_oauth_token, r2g_github_token, hf_token, tailscale_auth_key.
 #
 # Branches on zouruomu/pie:
 #   r2g-control             this script, pod config, briefs, reviews, done flags (orchestrator writes)
@@ -23,22 +23,52 @@ log() { echo "[$(date -u +%FT%TZ)] $*"; }
 RUN=${R2G_RUN:?}
 SHA=${R2G_CONTROL_SHA:?}
 export CLAUDE_CODE_OAUTH_TOKEN=${RUNPOD_SECRET_claude_code_oauth_token:-}
-export R2G_GH_TOKEN=${RUNPOD_SECRET_r2g_github_token:-}
-export HF_TOKEN=${HF_TOKEN:-${RUNPOD_SECRET_HF_TOKEN:-}}
+gh_token=${RUNPOD_SECRET_r2g_github_token:-}
+hf_token=${HF_TOKEN:-${RUNPOD_SECRET_HF_TOKEN:-}}
 unset RUNPOD_SECRET_claude_code_oauth_token RUNPOD_SECRET_r2g_github_token
 log "run $RUN, control $SHA, pod ${RUNPOD_POD_ID:-?}," \
     "claude token $([ -n "$CLAUDE_CODE_OAUTH_TOKEN" ] && echo set || echo MISSING)," \
-    "github token $([ -n "$R2G_GH_TOKEN" ] && echo set || echo MISSING)"
+    "github token $([ -n "$gh_token" ] && echo set || echo MISSING)," \
+    "hf token $([ -n "$hf_token" ] && echo set || echo MISSING)"
 
-# Tailscale SSH, sshd and pod-update, without the two tokens in their environment.
-env -u CLAUDE_CODE_OAUTH_TOKEN -u R2G_GH_TOKEN /usr/local/bin/start.sh > "$R/start.log" 2>&1 &
+# Secrets stay in this script's environment only. start.sh snapshots its environment into
+# /etc/rp_environment, which every shell sources, and nsys records the environment in its traces.
+# git and Hugging Face read their tokens from files, and sync.sh refuses to push any secret's value.
+secrets=()
+for v in $(compgen -e); do
+    case $v in
+        PUBLIC_KEY) ;;
+        RUNPOD_SECRET_* | *TOKEN* | *KEY* | *PASSWORD* | *SECRET*) secrets+=("$v") ;;
+    esac
+done
+{
+    printf '%s\n' "$gh_token"
+    for v in "${secrets[@]}"; do printf '%s\n' "${!v}"; done
+} | awk 'length >= 16' > /root/.r2g-secrets
+printf 'https://x-access-token:%s@github.com\n' "$gh_token" > /root/.r2g-git-credentials
+chmod 600 /root/.r2g-secrets /root/.r2g-git-credentials
+if [ -n "$hf_token" ]; then
+    mkdir -p "${HF_HOME:-/root/.cache/huggingface}"
+    printf '%s' "$hf_token" > "${HF_HOME:-/root/.cache/huggingface}/token"
+fi
+
+# without <var>... -- <command>: runs the command with only the named secrets in its environment.
+without() {
+    local keep=() strip=()
+    while [ "$1" != -- ]; do keep+=("$1"); shift; done
+    shift
+    for v in "${secrets[@]}"; do [[ " ${keep[*]} " == *" $v "* ]] || strip+=(-u "$v"); done
+    env "${strip[@]}" "$@"
+}
+
+# Tailscale SSH, sshd and pod-update.
+without RUNPOD_SECRET_TAILSCALE_AUTH_KEY -- /usr/local/bin/start.sh > "$R/start.log" 2>&1 &
 
 gitcfg() {
     git -C "$1" config user.name zouruomu
     git -C "$1" config user.email zouruomu@gmail.com
     git -C "$1" config commit.gpgsign false
-    git -C "$1" config credential.helper \
-        '!f() { echo username=x-access-token; echo "password=$R2G_GH_TOKEN"; }; f'
+    git -C "$1" config credential.helper "store --file=/root/.r2g-git-credentials"
 }
 
 git -C "$R/evidence" init -q
@@ -65,6 +95,7 @@ terminate() {
 ( sleep $(( ${R2G_DEADLINE_H:-16} * 3600 )); terminate "deadline of ${R2G_DEADLINE_H:-16} h" ) &
 
 curl -fsSL "https://raw.githubusercontent.com/zouruomu/pie/$SHA/pod/sync.sh" -o "$R/sync.sh"
+chmod +x "$R/sync.sh"
 git clone -q --filter=blob:none https://github.com/zouruomu/pie "$R/pie" || terminate "clone failed"
 gitcfg "$R/pie"
 git -C "$R/pie" remote add upstream https://github.com/pie-project/pie
@@ -89,8 +120,8 @@ agent() {
     local i=$1
     shift
     log "agent run $i starting"
-    (cd "$R/pie" && claude -p --model claude-opus-5-5 --dangerously-skip-permissions \
-        --output-format json "$@") > "$R/agent-$i.json" 2> "$R/agent-$i.err"
+    (cd "$R/pie" && without CLAUDE_CODE_OAUTH_TOKEN -- claude -p --model claude-opus-5-5 \
+        --dangerously-skip-permissions --output-format json "$@") > "$R/agent-$i.json" 2> "$R/agent-$i.err"
     log "agent run $i exited with $?"
     tail -c 2000 "$R/agent-$i.err"
     sync_evidence
