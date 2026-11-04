@@ -1,5 +1,5 @@
 # Status: 20261103-2218-l4-x1-gpt-oss-20b-batching
-Phase: 3/4 (attribution, fix candidates). Updated 2026-11-04 02:00Z. Deadline ~2026-11-04 14:20Z.
+Phase: 5 (verification). Updated 2026-11-04 03:00Z. Deadline ~2026-11-04 14:20Z.
 
 Findings so far (current main 48a36f0d8 unless said):
 - Site picks each engine's best point of the sweep (pie pbatch = pf8, vLLM pf64; pie batching c512, vLLM c512/c1024).
@@ -9,3 +9,10 @@ Findings so far (current main 48a36f0d8 unless said):
 - c16: pie 300 vs vLLM 429; moe.mxfp4_mma_per_from 4 -> 0 gives ~490 (grouped wmma -> run kernel, nsys in results/prof). Commit 003d8ba06 on the fix branch (not pushed yet).
 
 Running: pool/admission knobs at c256/c512 (results/knobs2). Next: decide fix lines, then base/fix/vLLM rounds, cross-model (gpt-oss-120b mini, mimo mini), tests.
+
+03:00Z update:
+- Fix decided: L4 profile moe.mxfp4_mma_per_from 4 -> 0 (commit 003d8ba06, engine sha 4662a3bd). Mechanism: c8/c16 decode selects (32/64 routes over 32 experts) ran the by-route mxfp4 select (`moe_matmul_select_mxfp4`, reads an expert once a route), 41 ms of a 54 ms step at c16; the run kernel 22.5 ms.
+- No profile knob recovers c256 (admission cap): rec512 breaks graph arming, seated_first=false c256 +15% but c512 -11%, seat_to_end/ws55 no gain.
+- gptoss-20b-mini (5 layers, 16 experts): c8 794 -> 888, rest flat; raw/pf8 tokens identical; concurrency outputs are nondeterministic run to run even on one engine (noise floor measured).
+- gpt-oss-120b miniature does not fit an L4 (pie's mini keeps 36 layers); mimo all-expert mini does not fit (21.1 GB weights); running mimo 6 layers x 32 experts instead.
+Running: #1350 isolation (old engine + ws65), mimo e32 base/fix, then verification sweep (fix r1; base/fix/vLLM r2-r3).

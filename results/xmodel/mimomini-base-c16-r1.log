@@ -1,0 +1,37 @@
+[transformers] PyTorch was not found. Models won't be available and only tokenizers, configuration and file/data utilities can be used.
+/root/venv-pie/lib/python3.12/site-packages/transformers/modeling_rope_utils.py:1126: FutureWarning: `rope_config_validation` is deprecated and has been removed. Its functionality has been moved to RotaryEmbeddingConfigMixin.validate_rope method. PreTrainedConfig inherits this class, so please call self.validate_rope() instead. Also, make sure to use the new rope_parameters syntax. You can call self.standardize_rope_params() in the meantime.
+  warnings.warn(
+engine-cuda: [engine] max_forward_tokens 8192 is served at 1024: at 8192 the activation arena, attention workspaces and one fire's windowed kv rows take 3309 MiB of the 0 MiB this card has after the weight tier under [model] device_memory_share, and the cache rows, graph bodies and guest programs need the other half. State a smaller max_forward_tokens to choose it, or a larger device_memory_share.
+Traceback (most recent call last):
+  File "/root/r2g/pie/scripts/bench/pie_bench.py", line 1914, in <module>
+    main()
+  File "/root/r2g/pie/scripts/bench/pie_bench.py", line 1909, in main
+    summary, results = asyncio.run(run(args))
+                       ^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/asyncio/runners.py", line 194, in run
+    return runner.run(main)
+           ^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/asyncio/runners.py", line 118, in run
+    return self._loop.run_until_complete(task)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/asyncio/base_events.py", line 687, in run_until_complete
+    return future.result()
+           ^^^^^^^^^^^^^^^
+  File "/root/r2g/pie/scripts/bench/pie_bench.py", line 765, in run
+    async with pie_client(args) as (client, engine_config):
+  File "/usr/lib/python3.12/contextlib.py", line 210, in __aenter__
+    return await anext(self.gen)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/root/r2g/pie/scripts/bench/pie_bench.py", line 574, in python_pie_client
+    async with Server(cfg) as server:
+  File "/root/r2g/pie/packages/python/server/python/pie/server.py", line 69, in __aenter__
+    self._handle = await asyncio.to_thread(
+                   ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/asyncio/threads.py", line 25, in to_thread
+    return await loop.run_in_executor(None, func_call)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/concurrent/futures/thread.py", line 58, in run
+    result = self.fn(*self.args, **self.kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+RuntimeError: start: boot embedded worker: creating engine for model "default" group 0: impossible submission: weight residency: the card does not hold this deployment: 23661248512 bytes on the device, of which `[model] device_memory_share` allows pie 21295123660; this load's weight tier takes 21149890560 and the driver's safety floor holds back 134217728, leaving the elastic pool 11015372 bytes — and the cache rows need 55574528: `[model] device_kv_budget`, or one sequence at the declared context when that is omitted. weight tier + elastic pool + safety floor must fit inside the fraction of the card, and here they do not. Lower `[model] max_context` or `[model] slots`, raise `[model] device_memory_share`, or state a `[model] device_weight_budget` that streams the weight tier down.
+EXIT=1

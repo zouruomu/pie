@@ -79,3 +79,34 @@ engine-cuda: bodies armed 82 of 82 compositions at load (decode 9/9, prefill 25/
 [2m2026-11-04T01:44:49.940579Z[0m [32m INFO[0m [2mruntime::pipeline::fire[0m[2m:[0m kv supply: over keyed passes, what sealed pages held and what was mapped in [3mpasses[0m[2m=[0m1024 [3mtokens[0m[2m=[0m230400 [3mheld[0m[2m=[0m0 [3mfound[0m[2m=[0m81840 [3mmapped[0m[2m=[0m81840 [3msealed_pages[0m[2m=[0m165
 [2m2026-11-04T01:45:54.915672Z[0m [32m INFO[0m [2mruntime::pipeline::fire[0m[2m:[0m kv supply: over keyed passes, what sealed pages held and what was mapped in [3mpasses[0m[2m=[0m1280 [3mtokens[0m[2m=[0m288000 [3mheld[0m[2m=[0m0 [3mfound[0m[2m=[0m102320 [3mmapped[0m[2m=[0m102320 [3msealed_pages[0m[2m=[0m15344
 [2m2026-11-04T01:45:55.115183Z[0m [32m INFO[0m [2mruntime::pipeline::fire[0m[2m:[0m kv supply: over keyed passes, what sealed pages held and what was mapped in [3mpasses[0m[2m=[0m1536 [3mtokens[0m[2m=[0m345600 [3mheld[0m[2m=[0m0 [3mfound[0m[2m=[0m122800 [3mmapped[0m[2m=[0m122800 [3msealed_pages[0m[2m=[0m15359
+[2m2026-11-04T01:46:49.129700Z[0m [32m INFO[0m [2mruntime::pipeline::fire[0m[2m:[0m kv supply: over keyed passes, what sealed pages held and what was mapped in [3mpasses[0m[2m=[0m1792 [3mtokens[0m[2m=[0m403200 [3mheld[0m[2m=[0m0 [3mfound[0m[2m=[0m143280 [3mmapped[0m[2m=[0m143280 [3msealed_pages[0m[2m=[0m27976
+[2m2026-11-04T01:46:49.443718Z[0m [32m INFO[0m [2mruntime::pipeline::fire[0m[2m:[0m kv supply: over keyed passes, what sealed pages held and what was mapped in [3mpasses[0m[2m=[0m2048 [3mtokens[0m[2m=[0m460800 [3mheld[0m[2m=[0m0 [3mfound[0m[2m=[0m163760 [3mmapped[0m[2m=[0m163760 [3msealed_pages[0m[2m=[0m27981
+[pie-bench] measured-end
+[2m2026-11-04T01:47:23.197817Z[0m [32m INFO[0m [2mworker::serve[0m[2m:[0m leaving control plane [3mworker[0m[2m=[0mSome(WorkerId(0))
+[2m2026-11-04T01:47:23.198045Z[0m [33m WARN[0m [2mtarpc::client[0m[2m:[0m Connection broken: could not ready the transport for writes: an error occurred readying to send into the channel: the channel is closed and cannot accept new items for sending
+[2m2026-11-04T01:47:23.198061Z[0m [33m WARN[0m [2mtarpc::server[0m[2m:[0m Requests stream errored out: could not ready the transport for writes: an error occurred readying to send into the channel: the channel is closed and cannot accept new items for sending
+[2m2026-11-04T01:47:23.198194Z[0m [32m INFO[0m [2mgateway::worker[0m[2m:[0m worker link closed; evicted from registry [3mworker[0m[2m=[0mworker#0
+
+----------------------------------------------------
+mode:              tput
+engine:            pie
+model:             openai/gpt-oss-20b
+completed:         2048/2048  failed=0
+wall:              153.702 s
+requests/sec:      13.32
+output tokens:     262144
+prompt tokens:     460800
+output tok/sec:    1705.53
+lat mean/p50:      63303.7 / 67354.1 ms
+lat p95/p99:       87625.1 / 96297.1 ms
+ttft mean/p50:     42504.3 / 49739.9 ms
+ttft p95/p99:      62324.9 / 71368.7 ms
+intertoken p50/p99/max: 93.01 / 2194.76 / 17456.12 ms
+total batches:     727
+avg batch latency us: 417535.6327372765
+last batch latency us: 118024
+total requests:    276697
+max forward requests: 512
+batch size hist:   [1, 2, 39, 7, 9, 28, 21, 620]
+----------------------------------------------------
+EXIT=0

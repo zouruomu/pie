@@ -8,8 +8,8 @@ for r in $(seq 1 $rounds); do
   for e in "$@"; do
     eng=${e%%:*}; tag=$eng
     if [ "$e" != "$eng" ]; then so=${e#*:}; cp /root/engines/$so.so $E; tag=pie-$so; fi
-    for s in $SHAPES; do
-      RES=$out /root/r2g/evidence/scripts/bench.sh $eng $s $tag-$s-r$r
+    for s in $SHAPES; do [ -n "$ONLY" ] && [ "$r" = 1 ] && [ "$tag" != "$ONLY" ] && continue
+      RES=$out /root/r2g/evidence/scripts/bench.sh $eng $s $tag-$s-r$r --dump-all-token-ids
       nvidia-smi --query-gpu=clocks.sm,clocks.max.sm,temperature.gpu,power.draw --format=csv,noheader >> $out/$tag-$s-r$r.log
     done
   done

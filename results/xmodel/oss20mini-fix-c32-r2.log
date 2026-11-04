@@ -1,0 +1,36 @@
+[transformers] PyTorch was not found. Models won't be available and only tokenizers, configuration and file/data utilities can be used.
+engine-cuda: bodies armed 135 of 135 compositions at load (decode 6/6, prefill 49/49, mixed 48/48, tower 0/0, wide 32/32; 0 segmented; 82 MiB of 1024 MiB, 103 of 1024 seats) (pool declared 13620 MiB, high water 120 MiB, committed 120 MiB, spare under the ceiling 799 MiB) [18 key(s) never fired — this deployment cannot synthesize them, or their present set was already refused admission; e.g. mixed c2+c0 at bucket 1 (256 seat(s) x 2048 context, 32 lane(s))] [sealed: every key attempted]
+╭─ Pie Engine ───────────────────────────────────╮
+│ Host         127.0.0.1:38253                   │
+│ Model        default (/root/models/oss20-mini) │
+│ Backend      cuda                              │
+│ Device       cuda:0                            │
+╰────────────────────────────────────────────────╯
+[pie-bench] measured-start
+[pie-bench] measured-end
+[2m2026-11-04T02:47:15.165728Z[0m [33m WARN[0m [2mtarpc::client[0m[2m:[0m Connection broken: could not ready the transport for writes: an error occurred readying to send into the channel: the channel is closed and cannot accept new items for sending
+[2m2026-11-04T02:47:15.165751Z[0m [33m WARN[0m [2mtarpc::server[0m[2m:[0m Requests stream errored out: could not ready the transport for writes: an error occurred readying to send into the channel: the channel is closed and cannot accept new items for sending
+
+----------------------------------------------------
+mode:              tput
+engine:            pie
+model:             /root/models/oss20-mini
+completed:         64/64  failed=0
+wall:              3.020 s
+requests/sec:      21.19
+output tokens:     8192
+prompt tokens:     14400
+output tok/sec:    2712.87
+lat mean/p50:      1505.1 / 1504.2 ms
+lat p95/p99:       1513.9 / 1521.2 ms
+ttft mean/p50:     108.8 / 146.8 ms
+ttft p95/p99:      155.5 / 155.9 ms
+intertoken p50/p99/max: 10.68 / 13.70 / 141.08 ms
+total batches:     134
+avg batch latency us: 42719.15671641791
+last batch latency us: 33476
+total requests:    8192
+max forward requests: 64
+batch size hist:   [0, 0, 3, 2, 1, 2, 126, 0]
+----------------------------------------------------
+EXIT=0
