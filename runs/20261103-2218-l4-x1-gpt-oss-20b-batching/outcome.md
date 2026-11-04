@@ -38,5 +38,6 @@
 ## Cost
 
 - Pod wkwrx6vogbaev0: NVIDIA L4, $0.59/h, US-MO-2.
-- Ran 2026-11-03 22:19Z to about 2026-11-04 11:55Z, about 13.6 h, so about $8.0.
+- Ran 2026-11-03 22:19Z to 2026-11-04 11:58Z, 13.6 h, about $8.05.
+- The orchestrator deleted the pod (DELETE 204, then GET 404 at 11:58Z). Its agent was still running the GPU suite, so the bootstrap never reached its done check. Evidence after the 11:36Z sync was not pushed.
 - No review rounds were needed for the verdict.
