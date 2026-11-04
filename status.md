@@ -1,6 +1,6 @@
 # Status: 20261104-1903-l4-x1-gpt-oss-20b-batching
 
-**Updated:** 2026-11-04 20:50Z (pod created about 19:03Z, bootstrap 19:16Z; deadline taken as 03:03Z; target hand-over about 00:05Z)
+**Updated:** 2026-11-04 20:48Z (pod created about 19:03Z, bootstrap 19:16Z; deadline taken as 03:03Z; target hand-over about 00:05Z)
 
 **Phase:** tests (since 20:33Z). The A/B is done (19:31–20:33Z).
 
