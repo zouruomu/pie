@@ -82,7 +82,8 @@ The profile hunk is `8fc6862cb`'s, unchanged. The test hunk:
 * **`select_mxfp4_mma`** (`select_fp4.rs:192-207`): `ada_run` holds, since the arch is sm_89,
   K = 2880 = 45 × 64, there are no tensor scales and no cvt. per = 2 ≤ `mxfp4_run_until` (16, the
   default), so the select is not staged and `run` holds.
-* **On the GPU:** confirmed by the fire trace of the rerun in §5. Pending.
+* **On the GPU:** in the rerun of §5 the case is fires 42–43 of the routed test: `fused.moe_select_glu`'s
+  `moe_route_order_scan`, then `moe_select_mxfp4_mma_run<4, 4, 3, 4>`, and it passes.
 * **The route pattern** (`moe_select.rs:56`, `(3t + 5s) mod 32`) touches all 32 experts: 4 with 1
   route, 24 with 2 and 4 with 3.
 
@@ -175,8 +176,20 @@ On this L4, logs in `results/tests/`.
 | suite | fix | base `1b851247` |
 |---|---|---|
 | kernels-cuda `linear::moe_select` filter: 7 tests, 1 of them timing-only and 1 from `moe_select_mlxu4`. `2f4f9cf0`, with the case's earlier no-GLU form (`kernels-moe-select-{fix,base}.log`) | 5 passed, 1 failed (`the_routed_selects_answer_the_routed_dot`), 1 ignored; 881.5 s | the same 5 passed and the same failure, the same message and values; 879.4 s |
-| the same, `f79b846c`, the case's final GLU form, fire trace on (`kernels-moe-select-fix2.log`) | pending | – |
+| the same, `f79b846c`, the case's final GLU form, fire trace on (`kernels-moe-select-fix2.log`) | the same 5 passed and the same failure, the same message and values; 874.1 s | – |
 | engine-cuda GPU suite `--test engine_cuda`, 60 tests (`engine-cuda-fix.log`) | pending | failures only: pending |
+
+**engine-cuda's suite ran in two processes.**
+
+* `engine-cuda-fix.log` (`tests_engine.sh`, `cargo test`) started at 20:33Z. Its 21st test,
+  `a_joined_projection_answers_what_its_legs_answer`, traces and fuses a list of catalog rows in a
+  debug build on one core. It was still running after 55 minutes, which is where the previous run's
+  suite also stood at its hand-over.
+* So at 21:53Z a second single-threaded process started on the same test binary with tests 22–60
+  (`engine-cuda-fix-b.log`, `scripts/tests_engine_b.sh`).
+* Both binaries were compiled at 19:32Z from `2f4f9cf0`, which differs from `f79b846c` only in a
+  kernels-cuda test file that is not part of this binary. The `-b` log's header names the tree at its
+  start, `f79b846c`.
 
 **The new case passes.**
 
@@ -189,7 +202,10 @@ On this L4, logs in `results/tests/`.
 * In that trace the case in its no-GLU form is fires 42–43: `moe_route_order_scan`, then
   `moe_select_mxfp4_mma_run<4, 4, 0, 4>`. Every case before the W4A8 one fires and passes, the new
   case, the pipe case and the three after it included.
-* The final GLU form: pending (`kernels-moe-select-fix2.log`).
+* The final GLU form (`f79b846c`, `kernels-moe-select-fix2.log`, fire trace on) is fires 42–43 of the routed test:
+  `fused.moe_select_glu`'s `moe_route_order_scan`, then `moe_select_mxfp4_mma_run<4, 4, 3, 4>`.
+  It is followed, as before, by the staged cases, the pipe case (fires 52–53) and the three after it.
+  The panic is again the W4A8 case's, with the same values, so the new case passes.
 
 ## 6. note-1: the known `moe_select` failure
 

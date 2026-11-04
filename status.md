@@ -1,6 +1,6 @@
 # Status: 20261104-1903-l4-x1-gpt-oss-20b-batching
 
-**Updated:** 2026-11-04 21:29Z (pod created about 19:03Z, bootstrap 19:16Z; deadline taken as 03:03Z; target hand-over about 00:05Z)
+**Updated:** 2026-11-04 21:52Z (pod created about 19:03Z, bootstrap 19:16Z; deadline taken as 03:03Z; target hand-over about 00:05Z)
 
 **Phase:** tests (since 20:33Z). The A/B is done (19:31–20:33Z).
 
@@ -28,7 +28,9 @@
 * **The engine is unchanged by this:** only the test file differs from `2f4f9cf0`, the A/B's fix
   build.
 * **The previous form passed:** fires 42–43 in `results/tests/firetrace-fix.log`, `run<4, 4, 0, 4>`.
-  The new form is rerunning (`results/tests/kernels-moe-select-fix2.log`, with the fire trace on).
+  The new form passes too (`results/tests/kernels-moe-select-fix2.log`, fire trace on).
+  It is fires 42–43 of the routed test, `fused.moe_select_glu` → `moe_select_mxfp4_mma_run<4, 4, 3, 4>`,
+  and the panic is again the W4A8 case's, with the same values.
 
 **A/B checkpoint (done; `results/ab/`, `results/curve-ab.md`):** 3 alternating rounds, output tok/s, mean (min–max).
 
@@ -81,7 +83,10 @@ pipe case with the same values, in 879.4 s (`results/tests/kernels-moe-select-ba
 
 * the engine-cuda GPU suite on the fix tree (`results/tests/engine-cuda-fix.log`). Then its
   failures, if any, rerun on base;
-* the `moe_select` rerun of `f79b846c` (about 15 min).
+* engine-cuda tests 22–60 in a second single-threaded process, since 21:53Z
+  (`results/tests/engine-cuda-fix-b.log`). The first process has been in test 21
+  (`a_joined_projection_answers_what_its_legs_answer`, catalog-wide tracing in a debug build) since
+  about 20:58Z.
 
 At hand-over: rebase onto `48399500` (#1429, `models/glm_5_next.poem` only) once the suite is done,
 since the suite runs from this tree.
