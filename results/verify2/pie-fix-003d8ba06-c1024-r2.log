@@ -1,0 +1,39 @@
+[transformers] PyTorch was not found. Models won't be available and only tokenizers, configuration and file/data utilities can be used.
+engine-cuda: [engine] max_forward_tokens 8192 is served at 1024: at 8192 the activation arena, attention workspaces and one fire's windowed kv rows take 9784 MiB of the 6300 MiB this card has after the weight tier under [model] device_memory_share, and the cache rows, graph bodies and guest programs need the other half. State a smaller max_forward_tokens to choose it, or a larger device_memory_share.
+engine-cuda: [engine] max_forward_tokens 1024 and max_forward_requests 1024 are served at 1024 and 512: at the asked budgets a fire's working set (activation arena, attention workspaces, decoded-weight tiles, guest programs) takes 6898 MiB of the 6299 MiB this card has after the weight tier under [model] device_memory_share, past the half the cache rows are owed and what one sequence at the declared context and the bodies' floor need. State smaller budgets to choose them, or a larger device_memory_share.
+engine-cuda: bodies armed 82 of 82 compositions at load (decode 9/9, prefill 25/25, mixed 24/24, tower 0/0, wide 24/24; 0 segmented; 221 MiB of 1024 MiB, 58 of 1024 seats) (pool declared 4224 MiB, high water 192 MiB, committed 192 MiB, spare under the ceiling 775 MiB) [2 key(s) never fired — this deployment cannot synthesize them, or their present set was already refused admission; e.g. mixed c2+c0 at bucket 1 (256 seat(s) x 2048 context, 512 lane(s))] [sealed: every key attempted]
+╭─ Pie Engine ───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╮
+│ Host         127.0.0.1:34655                                                                                                       │
+│ Model        default (/root/.cache/huggingface/hub/models--openai--gpt-oss-20b/snapshots/6cee5e81ee83917806bbde320786a8fb61efebee) │
+│ Backend      cuda                                                                                                                  │
+│ Device       cuda:0                                                                                                                │
+╰────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╯
+[pie-bench] measured-start
+[pie-bench] measured-end
+[2m2026-11-04T08:02:01.305685Z[0m [33m WARN[0m [2mtarpc::server[0m[2m:[0m Requests stream errored out: could not ready the transport for writes: an error occurred readying to send into the channel: the channel is closed and cannot accept new items for sending
+[2m2026-11-04T08:02:01.305698Z[0m [33m WARN[0m [2mtarpc::client[0m[2m:[0m Connection broken: could not ready the transport for writes: an error occurred readying to send into the channel: the channel is closed and cannot accept new items for sending
+
+----------------------------------------------------
+mode:              tput
+engine:            pie
+model:             openai/gpt-oss-20b
+completed:         2048/2048  failed=0
+wall:              152.822 s
+requests/sec:      13.40
+output tokens:     262144
+prompt tokens:     460800
+output tok/sec:    1715.35
+lat mean/p50:      62277.7 / 72228.8 ms
+lat p95/p99:       82740.2 / 83625.4 ms
+ttft mean/p50:     46748.4 / 57236.5 ms
+ttft p95/p99:      66522.0 / 68168.9 ms
+intertoken p50/p99/max: 90.74 / 408.98 / 5955.41 ms
+total batches:     698
+avg batch latency us: 412086.8524355301
+last batch latency us: 179165
+total requests:    267854
+max forward requests: 510
+batch size hist:   [1, 4, 23, 3, 15, 6, 3, 643]
+----------------------------------------------------
+EXIT=0
+2040 MHz, 2040 MHz, 58, 37.67 W

@@ -4,7 +4,7 @@
 # metric: pf* -> prefill tok/s (sum prompt tokens / wall); c* -> output tok/s; raw -> decode tok/s
 # (per-request (n-1)/(latency-ttft), median) and TTFT p50.
 import glob, json, statistics as st, sys, os
-SHAPES = "pf4 pf8 pf16 pf32 pf64 pf128 pf256 pf512 pf1024 c4 c8 c16 c24 c32 c64 c128 c256 c512 c1024 raw".split()
+SHAPES = "pf4 pf8 pf16 pf32 pf64 pf128 pf256 pf512 pf1024 c4 c8 c16 c20 c24 c32 c64 c128 c256 c512 c1024 raw".split()
 groups = [a.split("=", 1) for a in sys.argv[1:]]
 
 def metric(d, shape):
