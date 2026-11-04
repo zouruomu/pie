@@ -1,6 +1,6 @@
 # Status: 20261104-1903-l4-x1-gpt-oss-20b-batching
 
-**Updated:** 2026-11-04 22:23Z (pod created about 19:03Z, bootstrap 19:16Z; deadline taken as 03:03Z; target hand-over about 00:05Z)
+**Updated:** 2026-11-04 23:10Z (pod created about 19:03Z, bootstrap 19:16Z; deadline taken as 03:03Z; target hand-over about 00:05Z)
 
 **Phase:** tests (since 20:33Z). The A/B is done (19:31–20:33Z).
 
@@ -79,24 +79,24 @@ pipe case with the same values, in 879.4 s (`results/tests/kernels-moe-select-ba
   * This is a test bug, for Anton. It corrects the previous run's attribution.
 * The trace also shows the new case firing `moe_select_mxfp4_mma_run<4, 4, 0, 4>`.
 
+**engine-cuda so far** (opt-level-2 dev build, debug assertions on): 30 passed and 1 failed of the
+first 32 (`results/tests/engine-cuda-fix-opt.log`).
+
+* The failure is `a_joined_projection_answers_what_its_legs_answer`. Run alone with `--nocapture`
+  on fix and on base (`joined-{fix,base}.log`), both fail the same way on
+  `glm45-air-mini-bf16-kv-bf16: … the joined model picks the same token`. That is a bf16 model,
+  which the MXFP4 profile line cannot reach, so the failure is pre-existing.
+* In those two reruns some rows also ran out of device memory: I had run them side by side with
+  three suite processes. They are being rerun one at a time (`joined-{fix,base}2.log`).
+* The two debug processes (stuck in tests 21 and 23) were stopped at 23:10Z. The opt-level run
+  covers them.
+
 **Running:**
 
-* the engine-cuda GPU suite on the fix tree (`results/tests/engine-cuda-fix.log`). Then its
-  failures, if any, rerun on base;
-* **engine-cuda suite: running late.** Both debug processes sit in one test each: test 21 since
-  about 20:58Z, test 23 since 21:53Z. That is single-core debug code tracing and fusing catalog rows.
-  * At 22:23Z I started a third run of the whole suite, single-threaded, from a test binary built
-    with `CARGO_PROFILE_DEV_OPT_LEVEL=2` (debug assertions and overflow checks on; separate target
-    dir; no repo change). `scripts/tests_engine_opt.sh`, `results/tests/engine-cuda-fix-opt.log`.
-  * The debug processes keep running.
-  * New hand-over ETA: about 00:30Z, or earlier with whatever has finished by then, marked as such.
-* engine-cuda tests 22–60 in a second single-threaded process, since 21:53Z
-  (`results/tests/engine-cuda-fix-b.log`). The first process has been in test 21
-  (`a_joined_projection_answers_what_its_legs_answer`, catalog-wide tracing in a debug build) since
-  about 20:58Z.
-
-At hand-over: rebase onto `48399500` (#1429, `models/glm_5_next.poem` only) once the suite is done,
-since the suite runs from this tree.
+* the opt-level engine-cuda suite (tests 32–60);
+* `scripts/joined_rerun2.sh`: the joined test alone, fix then base;
+* the rebase: `8e8b19b0` = `f79b846c` on upstream `48399500` (#1429, a GLM poem file only). Its
+  base and fix engines are building, for a final 1-round c8/c16 check once the GPU is free.
 
 **Blockers:** none.
 

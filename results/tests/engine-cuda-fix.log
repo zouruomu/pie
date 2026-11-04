@@ -27,4 +27,8 @@ test a_fused_geglu_reads_its_affine_bank_as_planes::a_fused_geglu_reads_its_affi
 test a_fused_router_answers_what_its_product_and_pick_answer::a_fused_router_answers_what_its_product_and_pick_answer ... ok
 test a_fused_swiglu_sizes_the_decoded_tile_to_its_packed_plane::a_fused_swiglu_sizes_the_decoded_tile_to_its_packed_plane ... ok
 test a_grouped_window_is_one_window_and_a_segment_list::the_segment_lists_are_staged_beside_the_boundaries_in_the_one_copy ... ok
-test a_joined_projection_answers_what_its_legs_answer::a_joined_projection_answers_what_its_legs_answer ... 
+test a_joined_projection_answers_what_its_legs_answer::a_joined_projection_answers_what_its_legs_answer ... error: test failed, to rerun pass `-p engine-cuda --test engine_cuda`
+
+Caused by:
+  process didn't exit successfully: `/root/r2g/pie/target/debug/deps/engine_cuda-31e35b6bdf05c52f --test-threads=1` (signal: 15, SIGTERM: termination signal)
+STOPPED at 23:10Z by the agent (redundant with engine-cuda-fix-opt.log; the test in progress had not finished)
