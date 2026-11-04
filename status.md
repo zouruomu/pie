@@ -1,8 +1,8 @@
 # Status: 20261104-1903-l4-x1-gpt-oss-20b-batching
 
-**Updated:** 2026-11-04 20:04Z (pod created about 19:03Z, bootstrap 19:16Z; deadline taken as 03:03Z; target hand-over about 00:05Z)
+**Updated:** 2026-11-04 20:45Z (pod created about 19:03Z, bootstrap 19:16Z; deadline taken as 03:03Z; target hand-over about 00:05Z)
 
-**Phase:** final A/B (since 19:31Z).
+**Phase:** tests (since 20:33Z). The A/B is done (19:31–20:33Z).
 
 * **Engines** (`results/engines.txt`):
   * base `1b851247`, sha256 `5c7d99c7…`;
@@ -22,25 +22,38 @@ subject, empty body.
   * The test's route pattern `(3t + 5s) mod 32` touches all 32 experts: 4 with 1 route, 24 with 2
     and 4 with 3.
 
-**Running:**
+**A/B checkpoint (done; `results/ab/`, `results/curve-ab.md`):** 3 alternating rounds, output tok/s, mean (min–max).
 
-* `scripts/ab.sh`: 3 alternating rounds of base and fix at c8, c16, c24 and c32, token ids dumped,
-  into `results/ab/`. ETA about 20:35Z.
-* Test binaries for kernels-cuda and engine-cuda: compiled on both trees (`results/tests/build-*.log`,
-  EXIT=0).
+| shape | base `1b851247` | fix `2f4f9cf0` | fix vs base | vLLM 0.32.0 (previous run) |
+|---|---|---|---|---|
+| c8 | 242.9 (239–245) | 277.4 (273–282) | +14.2% | 275.6 |
+| c16 | 301.0 (296–306) | 485.9 (482–488) | +61.4% | 441.9 |
+| c24 | 673.6 (668–681) | 664.5 (660–669) | −1.3% | – |
+| c32 | 835.7 (814–851) | 839.0 (828–853) | +0.4% | 737.0 |
 
-**Partial A/B (round 1 complete, round 2 under way; output tok/s, `curve.py`):**
+* Every JSON records its engine's sha256: 12 base and 12 fix.
+* At-cap SM clock medians are 1,200–1,230 MHz in every run (`results/clocks-ab.txt`).
+* **Tokens** (`results/tokens-ab.txt`, mean prefix share per pair):
 
-| shape | base (n) | fix (n) | fix vs base |
-|---|---|---|---|
-| c8 | 244.8 (2) | 277.3 (1) | +13.2% |
-| c16 | 298.3 (2) | 482.2 (1) | +61.7% |
-| c24 | 676.3 (2) | 660.4 (1) | −2.3% |
-| c32 | 813.6 (1) | 852.7 (1) | +4.8% (single runs; c32's selects don't change kernel, so this is not yet read as an effect) |
+  | shape | base vs base | fix vs fix | base vs fix, same round |
+  |---|---|---|---|
+  | c8 | 0.49–0.97 | 0.63–0.90 | 0.41–0.55 |
+  | c16 | 0.45–0.56 | 0.72–0.82 | 0.36–0.57 |
+  | c24 | 0.76–0.83 | 0.60–0.68 | 0.52–0.67 |
+  | c32 | 0.61–0.81 | 0.66–0.82 | 0.67–0.78 |
+
+  c32 keeps its kernel and serves as the control: base against fix falls inside its reruns' range.
+
+**Running** (since 20:33Z, side by side):
+
+* engine-cuda GPU suite on the fix tree, `results/tests/engine-cuda-fix.log`, ETA about 23:00Z;
+* kernels-cuda `linear::moe_select`, fix then base, `results/tests/kernels-moe-select-{fix,base}.log`,
+  about 15 min each;
+* then compute-sanitizer (note-1).
 
 **Blockers:** none.
 
-**ETA hand-over:** about 00:00Z.
+**ETA hand-over:** about 23:45Z. The engine-cuda suite sets the pace.
 
 ## Infrastructure checks
 
