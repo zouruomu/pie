@@ -1,0 +1,76 @@
+tree 2f4f9cf0 L4 profile: gpt-oss decode selects of fewer than 4 routes an expert on the run kernel; PIE_CUDA_TRACE_FIRES=1 CUDA_LAUNCH_BLOCKING=1, no sanitizer
+
+running 1 test
+test linear::moe_select::the_routed_selects_answer_the_routed_dot ... fire: 0 linear.moe_select ::pie::linear::moe_matmul_select_gemv_by_token<::pie::bf16, 4>
+fire: 278123 linear.moe_select ::pie::linear::moe_matmul_select_gemv_by_route<::pie::bf16, 4>
+fire: 4778659 linear.moe_select ::pie::linear::moe_align_decode<::pie::i32>
+fire: 14653 linear.moe_select ::pie::linear::gather_moe_aligned_inputs<::pie::bf16>
+fire: 14360 linear.moe_select ::pie::linear::build_moe_leg_ptrs<::pie::bf16>
+fire: 197976 linear.moe_select ::pie::linear::reorder_moe_aligned_output<::pie::bf16>
+fire: 111676 linear.moe_select ::pie::linear::moe_route_order_scan
+fire: 14748 linear.moe_select ::pie::linear::moe_select_bf16_gemm<3, 0, 2, 64>
+fire: 1199002 linear.moe_select ::pie::linear::moe_route_order_scan
+fire: 164 linear.moe_select ::pie::linear::moe_select_bf16_gemm<3, 0, 2, 64>
+fire: 1171735 linear.moe_select ::pie::linear::moe_route_order_scan
+fire: 144 linear.moe_select ::pie::linear::moe_select_bf16_gemm<3, 0, 2, 64>
+fire: 754861 linear.moe_select ::pie::linear::moe_route_order_scan
+fire: 154 linear.moe_select ::pie::linear::moe_select_bf16_mma<1>
+fire: 1955876 linear.moe_select ::pie::linear::moe_route_order_scan
+fire: 423 linear.moe_select ::pie::linear::moe_select_bf16_mma<1>
+fire: 650829 linear.moe_select ::pie::linear::moe_route_order_scan
+fire: 153 linear.moe_select ::pie::linear::moe_select_bf16_mma<2>
+fire: 687029 linear.moe_select ::pie::linear::moe_route_order_scan
+fire: 145 linear.moe_select ::pie::linear::moe_select_bf16_mma<1>
+fire: 10371465 linear.moe_select ::pie::linear::moe_matmul_select_mlxu4<::pie::bf16, ::pie::i32(4), ::pie::i32(64), ::pie::i32(4)>
+fire: 3449717 linear.moe_select ::pie::linear::moe_route_order
+fire: 14904 linear.moe_select ::pie::linear::moe_matmul_select_mlxu4_wmma<::pie::i32(4), ::pie::i32(64)>
+fire: 962144 linear.moe_select ::pie::linear::moe_matmul_select_mxfp4<::pie::bf16, ::pie::i32(4)>
+fire: 372241 linear.moe_select ::pie::linear::moe_matmul_select_mxfp4<::pie::bf16, ::pie::i32(4), true>
+fire: 699479 linear.moe_select ::pie::linear::moe_matmul_select_mxfp4<::pie::bf16, ::pie::i32(4), true>
+fire: 356148 linear.moe_select ::pie::linear::moe_route_order
+fire: 165 linear.moe_select ::pie::linear::moe_matmul_select_mxfp4_wmma
+fire: 1099161 linear.moe_select ::pie::linear::moe_route_order
+fire: 161 linear.moe_select ::pie::linear::moe_matmul_select_mxfp4_grouped<::pie::bf16>
+fire: 911990 linear.moe_select ::pie::linear::moe_route_order_scan
+fire: 179 linear.moe_select ::pie::linear::moe_select_mxfp4_mma_run<4, 4, 0, 4>
+fire: 1176401 linear.moe_select ::pie::linear::moe_route_order_scan
+fire: 151 linear.moe_select ::pie::linear::moe_select_mxfp4_mma_run<4, 4, 0, 4>
+fire: 4438443 linear.moe_select ::pie::linear::moe_route_order_scan
+fire: 162 linear.moe_select ::pie::linear::moe_select_mxfp4_mma_staged<8, 3, 0, false, 8>
+fire: 28619090 fused.moe_select_glu ::pie::linear::moe_route_order_scan
+fire: 161 fused.moe_select_glu ::pie::linear::moe_select_mxfp4_mma_run<4, 4, 3, 4>
+fire: 4437878 linear.moe_select ::pie::linear::moe_select_mxfp4_mma_run<4, 4, 0, 4>
+fire: 871529 linear.moe_select ::pie::linear::moe_route_order_scan
+fire: 146 linear.moe_select ::pie::linear::moe_select_mxfp4_mma_run<4, 4, 0, 4>
+fire: 9077524 linear.moe_select ::pie::linear::moe_route_order_scan
+fire: 149 linear.moe_select ::pie::linear::moe_select_mxfp4_mma_run<4, 4, 0, 4>
+fire: 4436421 linear.moe_select ::pie::linear::moe_route_order_scan
+fire: 153 linear.moe_select ::pie::linear::moe_select_mxfp4_mma_staged<8, 3, 0, false, 8>
+fire: 18103895 linear.moe_select ::pie::linear::moe_route_order_scan
+fire: 152 linear.moe_select ::pie::linear::moe_select_mxfp4_mma_staged<8, 3, 0, false, 8>
+fire: 10796170 fused.moe_select_glu ::pie::linear::moe_route_order_scan
+fire: 162 fused.moe_select_glu ::pie::linear::moe_select_mxfp4_mma_staged<8, 3, 3, false, 8>
+fire: 22613652 linear.moe_select ::pie::linear::moe_route_order_scan
+fire: 164 linear.moe_select ::pie::linear::moe_select_mxfp4_mma_staged<8, 3, 0, false, 8>
+fire: 2038365 linear.moe_select ::pie::linear::moe_route_order_scan
+fire: 157 linear.moe_select ::pie::linear::moe_select_mxfp4_mma_pipe<0, 3>
+fire: 33867857 fused.moe_select_glu ::pie::linear::moe_route_order_scan
+fire: 160 fused.moe_select_glu ::pie::linear::moe_select_mxfp4_mma_pipe<3, 3>
+fire: 78763601 linear.moe_select ::pie::linear::moe_route_order_scan
+fire: 178 linear.moe_select ::pie::linear::moe_select_mxfp4_mma_staged<8, 3, 0, false, 8>
+fire: 5819758 fused.moe_select_glu ::pie::linear::moe_route_order_scan
+fire: 159 fused.moe_select_glu ::pie::linear::moe_select_mxfp4_mma_staged<8, 3, 3, false, 8>
+fire: 110966427 linear.moe_select ::pie::linear::moe_select_mxfp4_mma_staged<8, 3, 0, false, 8>
+
+thread 'linear::moe_select::the_routed_selects_answer_the_routed_dot' (72784) panicked at crates/kernels-cuda/tests/kernels_cuda/common/linear_ref.rs:130:5:
+Mx 8x400x4 false 320x1024 None 0 even false: 512000 off: [(0, (3.3895313892515355e38, (-928.1639613509178, 216.29599112085998))), (1, (3.3895313892515355e38, (-281.6262198090553, 130.25559726171196))), (2, (3.3895313892515355e38, (424.74415278434753, 243.23024497181177))), (3, (3.3895313892515355e38, (-67.6502857208252, 125.25854116678238)))]
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+FAILED
+
+failures:
+
+failures:
+    linear::moe_select::the_routed_selects_answer_the_routed_dot
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 143 filtered out; finished in 400.10s
+

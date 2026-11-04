@@ -123,18 +123,79 @@ As in the previous run:
 
 ## 5. Tests
 
-All single-threaded, on this L4, logs in `results/tests/`. Fix tree `/root/r2g/pie` at `2f4f9cf0`;
-base tree `/root/src/pie-base` at `1b851247`, without the new case. The test binaries are debug builds,
-with the same commands on both trees (`scripts/tests_build.sh`, `tests_moe.sh`, `tests_engine.sh`).
+All single-threaded, on this L4, logs in `results/tests/`.
+
+* **Trees:**
+  * fix: `/root/r2g/pie` at `2f4f9cf0`;
+  * base: `/root/src/pie-base` at `1b851247`, without the new case.
+* **Builds:** the test binaries are debug builds, compiled with the same commands on both trees
+  (`scripts/tests_build.sh`, `tests_moe.sh`, `tests_engine.sh`).
 
 | suite | fix `2f4f9cf0` | base `1b851247` |
 |---|---|---|
-| kernels-cuda `linear::moe_select` (`kernels-moe-select-{fix,base}.log`) | pending | pending |
+| kernels-cuda `linear::moe_select`, 6 tests + 1 timing-only (`kernels-moe-select-{fix,base}.log`) | 5 passed, 1 failed (`the_routed_selects_answer_the_routed_dot`), 1 ignored; 881.5 s | the same 5 passed and the same failure, the same message and values; 879.4 s |
 | engine-cuda GPU suite `--test engine_cuda`, 60 tests (`engine-cuda-fix.log`) | pending | failures only: pending |
 
-## 6. note-1: the known `moe_select` failure under compute-sanitizer
+**The new case passes.** Both trees panic with
+`Mx 8x400x4 false 320x1024 None 0 even false: 512000 off: [(0, (3.3895313892515355e38,
+(-928.1639613509178, 216.29599112085998))), …`, the previous run's message and values.
+`routed` panics at the first case that fails. The fire trace of §6 shows which case that is:
 
-pending
+* The new case is fire 46 of `results/tests/firetrace-fix.log`: a `moe_route_order_scan`, then
+  `moe_select_mxfp4_mma_run<4, 4, 0, 4>`. On the GPU it takes the run kernel, as §2 reads from the
+  code.
+* Every case before it, the new one and four cases past the pipe-kernel case all fire and pass.
+
+## 6. note-1: the known `moe_select` failure
+
+**compute-sanitizer finds no launch or CUDA error.** The run was `CUDA_LAUNCH_BLOCKING=1
+compute-sanitizer --tool memcheck` on the fix build, the test alone, and took 401 s
+(`results/tests/sanitizer-fix.log`, compute-sanitizer 2026.3.0).
+
+* It ends with "ERROR SUMMARY: 46 errors". All 46 are one benign kind, reported twice a kernel load
+  (22 + 23, once at the probe and once at the error code):
+  `cuFuncGetParamInfo` returning `CUDA_ERROR_INVALID_VALUE` past a kernel's last parameter.
+* That is pie's own probe for a kernel's parameter count. `param_sizes`
+  (`crates/kernels-cuda/src/jit/cache.rs:136-158`) asks for parameters until the driver says there
+  are no more.
+* There is no memory-access error, no launch failure and no other API error. The test fails exactly
+  as without the sanitizer.
+
+**The failing case is not the pipe kernel's.** It is the first W4A8 case.
+
+* **The trace.** I reran the test alone with pie's fire trace (`PIE_CUDA_TRACE_FIRES=1`,
+  `crates/kernels-cuda/src/jit/ctx.rs:730-733`; `results/tests/firetrace-fix.log`, 59 fires, 400 s).
+  It shows:
+
+  | fires | case (`moe_select.rs`) | outcome |
+  |---|---|---|
+  | 55–56: `moe_route_order_scan`, `moe_select_mxfp4_mma_pipe<0, 3>` | `(K::Mx, mma, [8, 400, 4, 320, 1024], f, None, 0)`, the pipe case | passes |
+  | 57–58: `pipe<3, 3>` | `(K::MxBias, mma, [8, 400, 4, 192, 2048], t, alpha, 2)` | passes |
+  | 59–60: `staged<8, 3, 0, false, 8>` | `(K::Mx, mma, [8, 48, 4, 384, 1024], t, None, 0)` | passes |
+  | 61–63: `staged<8, 3, 3, …>`, then `staged<8, 3, 0, …>` with no route scan (flag 8's "select after", in the kept order) | `(K::MxBias, mma, [8, 400, 4, 192, 2880], t, alpha, 8)` | passes |
+  | none | `(K::Mx, w4a8, [8, 400, 4, 320, 1024], f, None, 0)` (`moe_select.rs:291`; 290 on upstream) | **fails**: every output is the sentinel |
+
+* **Why the W4A8 case fails on sm_89.**
+  * `select_mxfp4_w4a8` returns `Ok(false)` off sm_120a: `w4a8_takes`
+    (`select_fp4.rs:413-422`) requires `features().warp_block_scale`.
+  * The test accepts that: `assert_eq!(took, w4a8_here(), "the arm takes the fire")`,
+    `moe_select.rs:139`.
+  * It then still compares `y` against the routed dot (`moe_select.rs:185`). `y` was never written,
+    so all 512,000 outputs read back as the 0x7f7f fill (`moe_select.rs:113`), 3.3895e38.
+* **Why it looked like the pipe case.** The description `what` (`moe_select.rs:53`) leaves out the
+  tuning, so this case prints exactly as the pipe case before it does:
+  `Mx 8x400x4 false 320x1024 None 0`.
+* **Where it comes from.** The W4A8 cases came with #1274 (`fc7ade063`, "sm_120a: MXFP4 selects of
+  W4A8 deployments on the block-scaled mma.sync"). The group's comment says "(elsewhere the bf16
+  arms)", but on a card without the block-scaled mma, nothing in the W4A8 branch fires a bf16 arm.
+* **For Anton.**
+  * This is a test failure, not a kernel failure, on every card without `warp_block_scale`, which
+    only sm_120a and sm_121a have (`crates/kernels-cuda/src/jit/root.rs:252`). The cases after it (the TMA and warp-specialized W4A8 cases, and the rest) do not
+    run there.
+  * The pipe kernel passes on sm_89.
+  * Not fixed here, as note-1 asks.
+* **This corrects the previous run's report.** Its §10 and §12.11, and the brief, put the failure on
+  the pipe kernel. The panic names a description, and two cases share it.
 
 ## 7. New in this run
 
@@ -151,7 +212,13 @@ pending
   * A maturin build that starts while the nightly toolchain is still installing fails in
     `crates/builtins/build.rs`. Install `nightly-2026-10-18` with the `wasm32-wasip3` target before
     any build.
-  * The `engine-cuda` suite ran much faster than in the previous run (pending: the total time).
+
+* **The known `moe_select` failure is a test issue, not the pipe kernel** (§6). It needs a fix by
+  the test's owner. On any card without sm_120a's block-scaled mma, it hides every case after the
+  first W4A8 one.
+* **Playbook note:** a kernel test's panic names a description, and two cases can share it. Before
+  attributing a failure to a kernel, run the test with `PIE_CUDA_TRACE_FIRES=1` and match the fires
+  to the case list.
 
 ## 8. Files
 

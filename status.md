@@ -1,6 +1,6 @@
 # Status: 20261104-1903-l4-x1-gpt-oss-20b-batching
 
-**Updated:** 2026-11-04 21:07Z (pod created about 19:03Z, bootstrap 19:16Z; deadline taken as 03:03Z; target hand-over about 00:05Z)
+**Updated:** 2026-11-04 21:19Z (pod created about 19:03Z, bootstrap 19:16Z; deadline taken as 03:03Z; target hand-over about 00:05Z)
 
 **Phase:** tests (since 20:33Z). The A/B is done (19:31–20:33Z).
 
@@ -56,13 +56,21 @@ subject, empty body.
 **kernels-cuda `linear::moe_select`, base tree:** the same 5 passed, and the same failure at the same
 pipe case with the same values, in 879.4 s (`results/tests/kernels-moe-select-base.log`).
 
-**Running:**
+**note-1 (done; report §6):**
 
-* engine-cuda GPU suite on the fix tree, `results/tests/engine-cuda-fix.log`, ETA about 23:00Z;
-* compute-sanitizer (note-1), since 21:03Z, capped at 20 min (`results/tests/sanitizer-fix.log`). So
-  far it reports only `cuFuncGetParamInfo` returning `CUDA_ERROR_INVALID_VALUE` past a kernel's last
-  parameter. That is pie's own probe for the parameter count (`crates/kernels-cuda/src/jit/cache.rs:136-158`).
-* report.md and pr.md are drafted, with the engine-cuda suite marked pending.
+* compute-sanitizer memcheck with `CUDA_LAUNCH_BLOCKING=1` took 401 s. It found no launch or CUDA
+  error, only pie's own `cuFuncGetParamInfo` parameter-count probe (`jit/cache.rs:136-158`).
+* A fire trace (`PIE_CUDA_TRACE_FIRES=1`, `results/tests/firetrace-fix.log`) shows the failing case
+  is not the pipe kernel's.
+  * The pipe case fires `moe_select_mxfp4_mma_pipe<0, 3>` and passes, as do the 4 cases after it.
+  * The failure is the first W4A8 case `(K::Mx, w4a8, [8, 400, 4, 320, 1024], f, None, 0)` (#1274),
+    which prints the same description. Off sm_120a its select declines (`Ok(false)`, which the test
+    accepts), and the test then compares the never-written output: the 0x7f7f fill.
+  * This is a test bug, for Anton. It corrects the previous run's attribution.
+* The trace also shows the new case firing `moe_select_mxfp4_mma_run<4, 4, 0, 4>`.
+
+**Running:** engine-cuda GPU suite on the fix tree (`results/tests/engine-cuda-fix.log`). Then its
+failures, if any, rerun on base.
 
 **Blockers:** none.
 
