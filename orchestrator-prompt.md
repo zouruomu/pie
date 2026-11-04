@@ -125,7 +125,7 @@ When status.md says `READY FOR REVIEW`, fetch both branches and do a rigorous re
 5. **Freshness:** the branch must be rebased on recent upstream main, with the final A/B rerun after the rebase. Check whether anything that landed on main, or any open PR, now overlaps or conflicts.
 6. **Report completeness:** remaining gap broken down, side findings, playbook notes.
 
-If anything needs work, write `runs/<run>/review-<N>.md` with specific, numbered requests, then commit and push. The pod agent resumes, answers and sets READY FOR REVIEW again. Up to 4 rounds. Spend them on what changes correctness or a claim. Fix wording, and numbers you recomputed, in pr.md yourself.
+If anything needs work, write `runs/<run>/review-<N>.md` with specific, numbered requests, then commit and push. The pod agent resumes, answers and sets READY FOR REVIEW again. Up to 4 rounds. Spend them on what changes correctness or a claim. Fix wording, and numbers you recomputed, in the PR text yourself, and say so in your report.
 
 **When to ship:** when there is a verified fix that closes, or clearly narrows, a gap of 4.5% or more at some point of the target model × hardware curve. The gap must be measured on the pod, on current main, against the best competitor at that same point, with no regression beyond spread elsewhere. Points the site doesn't score count, so a fix for a mid-curve gap ships even when the site's cell is already green. Don't open a PR when there is no such fix, when the cause is outside pie, or when the work still isn't shippable after the review rounds: report the findings instead.
 

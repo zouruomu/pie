@@ -141,4 +141,5 @@ Push the fix branch, set status.md to `READY FOR REVIEW`, run sync.sh, and end y
 - **TOML comments:** each entry in a profile carries a comment with the measured win and "greedy tokens unchanged".
 - **Power-capped cards:** the L4 is capped at 72 W and its clocks follow power. Record clocks with every run; its pf8 is bimodal.
 - **Slow suites:** in a debug build, the engine-cuda GPU suite ran about 25 tests an hour on an L4.
+- **Claude Code's own token:** your shell has `CLAUDE_CODE_MESSAGING_TOKEN`. Start builds, benchmarks, tests and profiles with `env -u CLAUDE_CODE_MESSAGING_TOKEN`.
 - **Nondeterminism:** under concurrency, pie's greedy outputs differ between reruns of one engine, because the lanes sharing a step change. Compare base against fix next to base against base.
