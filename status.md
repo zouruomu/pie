@@ -1,6 +1,6 @@
 # Status: 20261104-1903-l4-x1-gpt-oss-20b-batching
 
-**Updated:** 2026-11-04 23:10Z (pod created about 19:03Z, bootstrap 19:16Z; deadline taken as 03:03Z; target hand-over about 00:05Z)
+**Updated:** 2026-11-04 23:39Z (pod created about 19:03Z, bootstrap 19:16Z; deadline taken as 03:03Z; target hand-over about 00:05Z)
 
 **Phase:** tests (since 20:33Z). The A/B is done (19:31–20:33Z).
 
@@ -79,28 +79,31 @@ pipe case with the same values, in 879.4 s (`results/tests/kernels-moe-select-ba
   * This is a test bug, for Anton. It corrects the previous run's attribution.
 * The trace also shows the new case firing `moe_select_mxfp4_mma_run<4, 4, 0, 4>`.
 
-**engine-cuda so far** (opt-level-2 dev build, debug assertions on): 30 passed and 1 failed of the
-first 32 (`results/tests/engine-cuda-fix-opt.log`).
+**engine-cuda suite done** (opt-level-2 dev build, debug assertions on, `results/tests/engine-cuda-fix-opt.log`):
+55 passed, 4 failed, 1 ignored, in 4,412 s. All 4 failures trace to device memory taken by my own
+concurrent reruns of the joined test.
 
-* The failure is `a_joined_projection_answers_what_its_legs_answer`. Run alone with `--nocapture`
-  on fix and on base (`joined-{fix,base}.log`), both fail the same way on
-  `glm45-air-mini-bf16-kv-bf16: … the joined model picks the same token`. That is a bf16 model,
-  which the MXFP4 profile line cannot reach, so the failure is pre-existing.
-* In those two reruns some rows also ran out of device memory: I had run them side by side with
-  three suite processes. They are being rerun one at a time (`joined-{fix,base}2.log`).
-* The two debug processes (stuck in tests 21 and 23) were stopped at 23:10Z. The opt-level run
-  covers them.
+* `a_joined_projection_answers_what_its_legs_answer`: hy4-mini `OutOfMemory { need: 13340644096,
+  have: 7877754880 }`.
+* `a_synthesized_region_serves_the_logits_of_its_ops`: dots3-note-mini "this fire wants 81788928
+  bytes of elastic device memory and the shell reserved 0". `bodies_mem` was held down to 2,380 MiB.
+* `an_anchored_region_serves_the_logits_of_its_ops` and
+  `two_models_served_at_once_answer_what_each_answers_alone`: "one at a time lock poisoned", from
+  the panic above.
+* glm45-air-mini's "joined model picks the same token" failed once on fix and once on base (when
+  memory was short), then passed on fix (`joined-fix2.log`). It is a flaky near-tie; a bf16 model.
 
-**Running:**
+**Running / queued (sequential, the GPU otherwise idle):**
 
-* the opt-level engine-cuda suite (tests 32–60);
-* `scripts/joined_rerun2.sh`: the joined test alone, fix then base;
-* the rebase: `8e8b19b0` = `f79b846c` on upstream `48399500` (#1429, a GLM poem file only). Its
-  base and fix engines are building, for a final 1-round c8/c16 check once the GPU is free.
+1. the joined test alone on base (`joined-base2.log`, to about 23:50Z);
+2. the final A/B on the rebased engines (`base-48399500`, `fix-8e8b19b0`): 1 round of c8, c16, c24
+   and c32 (`results/final/`, to about 00:10Z);
+3. the 4 failing tests rerun alone on the idle GPU, fix then base (`results/tests/idle-*.log`, to
+   about 01:00Z).
 
 **Blockers:** none.
 
-**ETA hand-over:** about 00:30Z (the engine-cuda suite sets it; see Running).
+**ETA hand-over:** about 01:15Z, later than planned because the engine-cuda suite runs slowly and its memory-starved failures need reruns on an idle GPU. The deadline is 03:03Z.
 
 ## Infrastructure checks
 

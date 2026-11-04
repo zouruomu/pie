@@ -40,4 +40,114 @@ test a_second_fire_reads_the_input_cells_it_was_handed::the_second_fire_lands_th
 test a_shared_adapter_is_one_slot_and_one_load::a_shared_adapter_is_one_slot_and_one_load_every_case ... ok
 test a_shifted_body_admits_the_split_that_moved::a_shifted_body_admits_the_split_that_moved_every_case ... ok
 test a_stored_k_quant_row_serves_as_stored::a_stored_declaration_interns_one_byte_rectangle ... ok
-test a_synthesized_region_serves_the_logits_of_its_ops::a_paged_epilogue_serves_the_logits_of_its_kv_append ... 
+test a_synthesized_region_serves_the_logits_of_its_ops::a_paged_epilogue_serves_the_logits_of_its_kv_append ... ok
+test a_synthesized_region_serves_the_logits_of_its_ops::a_synthesized_region_serves_the_logits_of_its_ops ... FAILED
+test a_synthesized_region_serves_the_logits_of_its_ops::an_anchored_region_serves_the_logits_of_its_ops ... FAILED
+test a_synthesized_region_serves_the_logits_of_its_ops::two_models_served_at_once_answer_what_each_answers_alone ... FAILED
+test a_tapped_fire_reads_each_layer_out_as_the_pool_holds_it::a_tapped_fire_reads_each_layer_out_as_the_pool_holds_it ... ok
+test a_tower_region_reads_the_patch_window::a_tower_region_reads_the_patch_window_every_case ... ok
+test a_two_axis_plan_arms_its_token_bodies::the_token_regions_arm_while_the_voxel_regions_stay_eager ... ok
+test a_two_class_plan_reads_each_lane_back_from_its_own_seam::each_lane_reads_back_its_own_arms_seam ... ok
+test a_verify_lands_what_the_point_rule_reads::a_verify_lands_what_the_point_rule_reads ... ok
+test a_wide_class_attends_every_key_without_a_mask::a_wide_class_attends_every_key_without_a_mask_every_case ... ok
+test a_windowed_row_reads_what_the_full_row_reads::a_windowed_row_reads_what_the_full_row_reads ... ok
+test an_adapter_is_not_a_lanes_scratch::an_adapter_is_not_a_lanes_scratch_every_case ... ok
+test an_epilogue_agrees_with_the_host_interpreter::an_epilogue_agrees_with_the_host_interpreter_every_case ... ok
+test an_exported_kv_stays_mapped::an_exported_kv_stays_mapped ... ok
+test an_output_of_ids_reads_as_stored::an_output_of_ids_reads_as_stored ... ok
+test every_catalog_deployment_dispatches::every_catalog_deployment_dispatches_every_case ... ok
+test every_diagnostic_is_a_word_the_boot_states::every_diagnostic_is_a_word_the_boot_states ... ok
+test every_op_agrees_with_the_host_interpreter::every_op_agrees_with_the_host_interpreter ... ok
+test every_suite_step_agrees_with_the_host_interpreter::every_suite_step_agrees_with_the_host_interpreter ... ok
+test masked_axis::the_masked_axis_is_declared_by_gemma_and_qwen_and_by_nobody_else ... ok
+test no_shell_reads_the_environment::no_shell_reads_the_environment ... ok
+test routed_experts_stream::routed_experts_stream_every_case ... ok
+test the_operators_fraction_sizes_the_pool::the_operators_fraction_sizes_the_pool_every_case ... ok
+
+failures:
+
+---- a_joined_projection_answers_what_its_legs_answer::a_joined_projection_answers_what_its_legs_answer stdout ----
+engine-cuda: engine.graphs is off, a diagnostic mode — every fire walks eagerly (~470 kernel launches of host time per decode step) with nothing captured; a profile serves `on` with bodies
+engine-cuda: engine.graphs is off, a diagnostic mode — every fire walks eagerly (~470 kernel launches of host time per decode step) with nothing captured; a profile serves `on` with bodies
+qwen3-0.6b-bf16-kv-bf16: 56 joins, worst gap 0.046875 over a spread of 7
+engine-cuda: engine.graphs is off, a diagnostic mode — every fire walks eagerly (~470 kernel launches of host time per decode step) with nothing captured; a profile serves `on` with bodies
+engine-cuda: engine.graphs is off, a diagnostic mode — every fire walks eagerly (~470 kernel launches of host time per decode step) with nothing captured; a profile serves `on` with bodies
+llama33-70b-mini-l4-bf16-kv-bf16: 8 joins, worst gap 0.1574707 over a spread of 18.25
+engine-cuda: engine.graphs is off, a diagnostic mode — every fire walks eagerly (~470 kernel launches of host time per decode step) with nothing captured; a profile serves `on` with bodies
+engine-cuda: engine.graphs is off, a diagnostic mode — every fire walks eagerly (~470 kernel launches of host time per decode step) with nothing captured; a profile serves `on` with bodies
+glm45-air-mini-bf16-kv-bf16: 15 joins, worst gap 0.078125 over a spread of 12.3125
+engine-cuda: engine.graphs is off, a diagnostic mode — every fire walks eagerly (~470 kernel launches of host time per decode step) with nothing captured; a profile serves `on` with bodies
+engine-cuda: engine.graphs is off, a diagnostic mode — every fire walks eagerly (~470 kernel launches of host time per decode step) with nothing captured; a profile serves `on` with bodies
+gemma4-e4b-mini-l6-bf16-kv-bf16: 12 joins, worst gap 0.0625 over a spread of 9.25
+engine-cuda: engine.graphs is off, a diagnostic mode — every fire walks eagerly (~470 kernel launches of host time per decode step) with nothing captured; a profile serves `on` with bodies
+
+thread 'a_joined_projection_answers_what_its_legs_answer::a_joined_projection_answers_what_its_legs_answer' (91420) panicked at crates/engine-cuda/tests/engine_cuda/a_joined_projection_answers_what_its_legs_answer.rs:173:6:
+the model loads: OutOfMemory { need: 13340644096, have: 7877754880 }
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+engine-cuda: engine.graphs is off, a diagnostic mode — every fire walks eagerly (~470 kernel launches of host time per decode step) with nothing captured; a profile serves `on` with bodies
+engine-cuda: engine.graphs is off, a diagnostic mode — every fire walks eagerly (~470 kernel launches of host time per decode step) with nothing captured; a profile serves `on` with bodies
+minimax-m3-mini-bf16-kv-bf16: 15 joins, worst gap 0.265625 over a spread of 32.75
+engine-cuda: engine.graphs is off, a diagnostic mode — every fire walks eagerly (~470 kernel launches of host time per decode step) with nothing captured; a profile serves `on` with bodies
+engine-cuda: engine.graphs is off, a diagnostic mode — every fire walks eagerly (~470 kernel launches of host time per decode step) with nothing captured; a profile serves `on` with bodies
+nemotron3-nano-mini-bf16-kv-bf16: 1 joins, worst gap 0.03125 over a spread of 10.5625
+engine-cuda: engine.graphs is off, a diagnostic mode — every fire walks eagerly (~470 kernel launches of host time per decode step) with nothing captured; a profile serves `on` with bodies
+engine-cuda: engine.graphs is off, a diagnostic mode — every fire walks eagerly (~470 kernel launches of host time per decode step) with nothing captured; a profile serves `on` with bodies
+qwen3-30b-a3b-mini-bf16-kv-bf16: 8 joins, worst gap 0.03125 over a spread of 9.375
+engine-cuda: engine.graphs is off, a diagnostic mode — every fire walks eagerly (~470 kernel launches of host time per decode step) with nothing captured; a profile serves `on` with bodies
+engine-cuda: engine.graphs is off, a diagnostic mode — every fire walks eagerly (~470 kernel launches of host time per decode step) with nothing captured; a profile serves `on` with bodies
+qwen35-d0.8b-bf16-kv-bf16: 66 joins, worst gap 0.14453125 over a spread of 13.1875
+engine-cuda: engine.graphs is off, a diagnostic mode — every fire walks eagerly (~470 kernel launches of host time per decode step) with nothing captured; a profile serves `on` with bodies
+engine-cuda: engine.graphs is off, a diagnostic mode — every fire walks eagerly (~470 kernel launches of host time per decode step) with nothing captured; a profile serves `on` with bodies
+dots3-note-mini-bf16-kv-bf16: 11 joins, worst gap 0.0625 over a spread of 14.90625
+engine-cuda: engine.graphs is off, a diagnostic mode — every fire walks eagerly (~470 kernel launches of host time per decode step) with nothing captured; a profile serves `on` with bodies
+engine-cuda: engine.graphs is off, a diagnostic mode — every fire walks eagerly (~470 kernel launches of host time per decode step) with nothing captured; a profile serves `on` with bodies
+inkling-mini-l7-e8-bf16-kv-bf16: 14 joins, worst gap 0.001953125 over a spread of 0.671875
+
+thread 'a_joined_projection_answers_what_its_legs_answer::a_joined_projection_answers_what_its_legs_answer' (91420) panicked at crates/engine-cuda/tests/engine_cuda/a_joined_projection_answers_what_its_legs_answer.rs:245:5:
+hy4-mini-bf16-kv-bf16: the model loads: OutOfMemory { need: 13340644096, have: 7877754880 }
+
+---- a_synthesized_region_serves_the_logits_of_its_ops::a_synthesized_region_serves_the_logits_of_its_ops stdout ----
+engine-cuda: bodies armed 10 of 10 compositions at load (decode 1/1, prefill 9/9, mixed 0/0, tower 0/0, wide 0/0; 0 segmented; 0 MiB of 4096 MiB, 10 of 1024 seats) (10 unweighed) (pool declared 13968 MiB, high water 72 MiB, committed 72 MiB, spare under the ceiling 4107 MiB) [18 key(s) never fired — this deployment cannot synthesize them, or their present set was already refused admission; e.g. mixed c2+c0 at bucket 1 (1 seat(s) x 512 context, 1 lane(s))] [sealed: every key attempted]
+engine-cuda: bodies armed 10 of 10 compositions at load (decode 1/1, prefill 9/9, mixed 0/0, tower 0/0, wide 0/0; 0 segmented; 0 MiB of 4096 MiB, 10 of 1024 seats) (10 unweighed) (pool declared 13968 MiB, high water 72 MiB, committed 72 MiB, spare under the ceiling 4107 MiB) [18 key(s) never fired — this deployment cannot synthesize them, or their present set was already refused admission; e.g. mixed c2+c0 at bucket 1 (1 seat(s) x 512 context, 1 lane(s))] [sealed: every key attempted]
+engine-cuda: bodies armed 10 of 10 compositions at load (decode 1/1, prefill 9/9, mixed 0/0, tower 0/0, wide 0/0; 0 segmented; 0 MiB of 4096 MiB, 10 of 1024 seats) (10 unweighed) (pool declared 13968 MiB, high water 72 MiB, committed 72 MiB, spare under the ceiling 953 MiB) [18 key(s) never fired — this deployment cannot synthesize them, or their present set was already refused admission; e.g. mixed c2+c0 at bucket 1 (1 seat(s) x 512 context, 1 lane(s))] [sealed: every key attempted]
+qwen3-micro-text's unfused ops, step 0: logits at most 0 apart over a spread of 3.1953125; the ops in another order 0 apart
+qwen3-micro-text's unfused ops, step 1: logits at most 0 apart over a spread of 2.875; the ops in another order 0 apart
+qwen3-micro-text's unfused ops, step 2: logits at most 0 apart over a spread of 3.4453125; the ops in another order 0 apart
+qwen3-micro-text's unfused ops, step 3: logits at most 0 apart over a spread of 3.328125; the ops in another order 0 apart
+qwen3-micro-text's unfused ops, step 4: logits at most 0 apart over a spread of 3.1328125; the ops in another order 0 apart
+engine-cuda: [engine] bodies_mem 4096 MiB is held down to 3220 MiB on this card: with the weights, activations and inputs resident, one sequence at the declared context and the guests' programs seated, 12882 MiB is left for the graph bodies and the cache rows together, and the bodies take at most a quarter of it. State a smaller bodies_mem to choose it.
+engine-cuda: bodies armed 10 of 10 compositions at load (decode 1/1, prefill 9/9, mixed 0/0, tower 0/0, wide 0/0; 0 segmented; 0 MiB of 3220 MiB, 10 of 1024 seats) (10 unweighed) (pool declared 9664 MiB, high water 64 MiB, committed 64 MiB, spare under the ceiling 6841 MiB) [18 key(s) never fired — this deployment cannot synthesize them, or their present set was already refused admission; e.g. mixed c2+c0 at bucket 1 (1 seat(s) x 512 context, 1 lane(s))] [sealed: every key attempted]
+engine-cuda: bodies armed 10 of 10 compositions at load (decode 1/1, prefill 9/9, mixed 0/0, tower 0/0, wide 0/0; 0 segmented; 0 MiB of 4096 MiB, 10 of 1024 seats) (10 unweighed) (pool declared 12416 MiB, high water 64 MiB, committed 64 MiB, spare under the ceiling 4089 MiB) [18 key(s) never fired — this deployment cannot synthesize them, or their present set was already refused admission; e.g. mixed c2+c0 at bucket 1 (1 seat(s) x 512 context, 1 lane(s))] [sealed: every key attempted]
+engine-cuda: bodies armed 10 of 10 compositions at load (decode 1/1, prefill 9/9, mixed 0/0, tower 0/0, wide 0/0; 0 segmented; 0 MiB of 4096 MiB, 10 of 1024 seats) (10 unweighed) (pool declared 12352 MiB, high water 64 MiB, committed 64 MiB, spare under the ceiling 4151 MiB) [18 key(s) never fired — this deployment cannot synthesize them, or their present set was already refused admission; e.g. mixed c2+c0 at bucket 1 (1 seat(s) x 512 context, 1 lane(s))] [sealed: every key attempted]
+gemma4-e4b-mini-l1's unfused ops, step 0: logits at most 0 apart over a spread of 28.6875; the ops in another order 0 apart
+gemma4-e4b-mini-l1's unfused ops, step 1: logits at most 0 apart over a spread of 29.96875; the ops in another order 0 apart
+gemma4-e4b-mini-l1's unfused ops, step 2: logits at most 0 apart over a spread of 29.625; the ops in another order 0 apart
+gemma4-e4b-mini-l1's unfused ops, step 3: logits at most 0 apart over a spread of 28.90625; the ops in another order 0 apart
+gemma4-e4b-mini-l1's unfused ops, step 4: logits at most 0 apart over a spread of 29.28125; the ops in another order 0 apart
+engine-cuda: [engine] bodies_mem 4096 MiB is held down to 2380 MiB on this card: with the weights, activations and inputs resident, one sequence at the declared context and the guests' programs seated, 9520 MiB is left for the graph bodies and the cache rows together, and the bodies take at most a quarter of it. State a smaller bodies_mem to choose it.
+engine-cuda: bodies armed 10 of 10 compositions at load (decode 1/1, prefill 9/9, mixed 0/0, tower 0/0, wide 0/0; 0 segmented; 0 MiB of 2380 MiB, 10 of 1024 seats) (10 unweighed) (pool declared 7146 MiB, high water 54 MiB, committed 54 MiB, spare under the ceiling 2415 MiB) [18 key(s) never fired — this deployment cannot synthesize them, or their present set was already refused admission; e.g. mixed c1+c0 at bucket 1 (1 seat(s) x 512 context, 1 lane(s))] [sealed: every key attempted]
+
+thread 'a_synthesized_region_serves_the_logits_of_its_ops::a_synthesized_region_serves_the_logits_of_its_ops' (148402) panicked at crates/engine-cuda/tests/engine_cuda/a_synthesized_region_serves_the_logits_of_its_ops.rs:180:27:
+dots3-note-mini loads under "[compiler]\nsynth_regions = false\nsynth_anchors = false\n[kernel]\nelemwise.rows_vec = true\n": this fire wants 81788928 bytes of elastic device memory and the shell reserved 0
+
+---- a_synthesized_region_serves_the_logits_of_its_ops::an_anchored_region_serves_the_logits_of_its_ops stdout ----
+
+thread 'a_synthesized_region_serves_the_logits_of_its_ops::an_anchored_region_serves_the_logits_of_its_ops' (149842) panicked at crates/engine-cuda/tests/engine_cuda/a_synthesized_region_serves_the_logits_of_its_ops.rs:37:26:
+one at a time lock poisoned: PoisonError { .. }
+
+---- a_synthesized_region_serves_the_logits_of_its_ops::two_models_served_at_once_answer_what_each_answers_alone stdout ----
+
+thread 'a_synthesized_region_serves_the_logits_of_its_ops::two_models_served_at_once_answer_what_each_answers_alone' (149843) panicked at crates/engine-cuda/tests/engine_cuda/a_synthesized_region_serves_the_logits_of_its_ops.rs:37:26:
+one at a time lock poisoned: PoisonError { .. }
+
+
+failures:
+    a_joined_projection_answers_what_its_legs_answer::a_joined_projection_answers_what_its_legs_answer
+    a_synthesized_region_serves_the_logits_of_its_ops::a_synthesized_region_serves_the_logits_of_its_ops
+    a_synthesized_region_serves_the_logits_of_its_ops::an_anchored_region_serves_the_logits_of_its_ops
+    a_synthesized_region_serves_the_logits_of_its_ops::two_models_served_at_once_answer_what_each_answers_alone
+
+test result: FAILED. 55 passed; 4 failed; 1 ignored; 0 measured; 0 filtered out; finished in 4411.61s
+
+error: test failed, to rerun pass `-p engine-cuda --test engine_cuda`
+EXIT=101
