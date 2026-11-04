@@ -1,0 +1,41 @@
+[transformers] PyTorch was not found. Models won't be available and only tokenizers, configuration and file/data utilities can be used.
+engine-cuda: [engine] bodies_mem 1024 MiB is held down to 814 MiB on this card: with the weights, activations and inputs resident, one sequence at the declared context and the guests' programs seated, 3259 MiB is left for the graph bodies and the cache rows together, and the bodies take at most a quarter of it. State a smaller bodies_mem to choose it.
+engine-cuda: bodies armed 67 of 67 compositions at load (decode 5/5, prefill 14/14, mixed 48/48, tower 0/0, wide 0/0; 0 segmented; 303 MiB of 814 MiB, 67 of 1024 seats) (pool declared 2496 MiB, high water 480 MiB, committed 480 MiB, spare under the ceiling 403 MiB) [18 key(s) never fired — this deployment cannot synthesize them, or their present set was already refused admission; e.g. mixed c2+c0 at bucket 1 (256 seat(s) x 2048 context, 16 lane(s))] [sealed partial: 67 key(s) never attempted, the ceiling's spare ran out (511 MiB left beyond the elastic pool's growth) at bucket 395, and they walk eagerly for the life of this load]
+╭─ Pie Engine ───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╮
+│ Host         127.0.0.1:36059                                                                                                       │
+│ Model        default (/root/.cache/huggingface/hub/models--openai--gpt-oss-20b/snapshots/6cee5e81ee83917806bbde320786a8fb61efebee) │
+│ Backend      cuda                                                                                                                  │
+│ Device       cuda:0                                                                                                                │
+╰────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╯
+[pie-bench] measured-start
+engine-cuda: the sealed map holds no body for b1024[c0:1024] (no body is resident for it) — this shape walks eagerly for the life of the load (BodyTally::sealed_declines counts each such fire; 1 so far) [body-stats] hits=134 misses=134 reshapes=0 captures=67 declines=0 refusals=0 evictions=0 armed_at_load=67 sealed_declines=1 sealed_short=0 eager_rotating=0 eager_buffered=0 eager_copy_world=0 | last-capture: nodes=387 edges=433 islands=0 | resident: bodies=67 segmented=0 bytes=317741037
+engine-cuda: the sealed map holds no body for b1328[c0:1328] (no body is resident for it) — this shape walks eagerly for the life of the load (BodyTally::sealed_declines counts each such fire; 2 so far) [body-stats] hits=134 misses=134 reshapes=0 captures=67 declines=0 refusals=0 evictions=0 armed_at_load=67 sealed_declines=2 sealed_short=0 eager_rotating=0 eager_buffered=0 eager_copy_world=0 | last-capture: nodes=387 edges=433 islands=0 | resident: bodies=67 segmented=0 bytes=317741037
+engine-cuda: the sealed map holds no body for b2436[c0:2436] (no body is resident for it) — this shape walks eagerly for the life of the load (BodyTally::sealed_declines counts each such fire; 3 so far) [body-stats] hits=261 misses=134 reshapes=0 captures=67 declines=0 refusals=0 evictions=0 armed_at_load=67 sealed_declines=3 sealed_short=0 eager_rotating=0 eager_buffered=0 eager_copy_world=0 | last-capture: nodes=387 edges=433 islands=0 | resident: bodies=67 segmented=0 bytes=317741037
+[pie-bench] measured-end
+[2m2026-11-04T10:54:16.500085Z[0m [33m WARN[0m [2mtarpc::client[0m[2m:[0m Connection broken: could not ready the transport for writes: an error occurred readying to send into the channel: the channel is closed and cannot accept new items for sending
+[2m2026-11-04T10:54:16.500111Z[0m [33m WARN[0m [2mtarpc::server[0m[2m:[0m Requests stream errored out: could not ready the transport for writes: an error occurred readying to send into the channel: the channel is closed and cannot accept new items for sending
+
+----------------------------------------------------
+mode:              tput
+engine:            pie
+model:             openai/gpt-oss-20b
+completed:         32/32  failed=0
+wall:              13.595 s
+requests/sec:      2.35
+output tokens:     4096
+prompt tokens:     7200
+output tok/sec:    301.28
+lat mean/p50:      6795.4 / 6795.1 ms
+lat p95/p99:       6846.2 / 6846.4 ms
+ttft mean/p50:     329.7 / 367.3 ms
+ttft p95/p99:      386.1 / 386.2 ms
+intertoken p50/p99/max: 50.06 / 56.05 / 265.41 ms
+total batches:     131
+avg batch latency us: 201723.87022900765
+last batch latency us: 160125
+total requests:    4096
+max forward requests: 32
+batch size hist:   [0, 0, 1, 1, 3, 126, 0, 0]
+----------------------------------------------------
+EXIT=0
+2040 MHz, 2040 MHz, 53, 38.51 W

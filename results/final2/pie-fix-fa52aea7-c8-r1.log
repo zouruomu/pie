@@ -1,0 +1,36 @@
+[transformers] PyTorch was not found. Models won't be available and only tokenizers, configuration and file/data utilities can be used.
+engine-cuda: [engine] max_forward_tokens 8192 is served at 1024: at 8192 the activation arena, attention workspaces and one fire's windowed kv rows take 1343 MiB of the 0 MiB this card has after the weight tier under [model] device_memory_share, and the cache rows, graph bodies and guest programs need the other half. State a smaller max_forward_tokens to choose it, or a larger device_memory_share.
+Traceback (most recent call last):
+  File "/root/r2g/pie/scripts/bench/pie_bench.py", line 1914, in <module>
+    main()
+  File "/root/r2g/pie/scripts/bench/pie_bench.py", line 1909, in main
+    summary, results = asyncio.run(run(args))
+                       ^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/asyncio/runners.py", line 194, in run
+    return runner.run(main)
+           ^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/asyncio/runners.py", line 118, in run
+    return self._loop.run_until_complete(task)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/asyncio/base_events.py", line 687, in run_until_complete
+    return future.result()
+           ^^^^^^^^^^^^^^^
+  File "/root/r2g/pie/scripts/bench/pie_bench.py", line 765, in run
+    async with pie_client(args) as (client, engine_config):
+  File "/usr/lib/python3.12/contextlib.py", line 210, in __aenter__
+    return await anext(self.gen)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/root/r2g/pie/scripts/bench/pie_bench.py", line 574, in python_pie_client
+    async with Server(cfg) as server:
+  File "/root/r2g/pie/packages/python/server/python/pie/server.py", line 69, in __aenter__
+    self._handle = await asyncio.to_thread(
+                   ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/asyncio/threads.py", line 25, in to_thread
+    return await loop.run_in_executor(None, func_call)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/concurrent/futures/thread.py", line 58, in run
+    result = self.fn(*self.args, **self.kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+RuntimeError: start: boot embedded worker: creating engine for model "default" group 0: device memory exhausted: wanted 13796671232, 12998868992 available
+EXIT=1
+2025 MHz, 2040 MHz, 54, 64.17 W

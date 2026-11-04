@@ -3,7 +3,7 @@
 Run `20261103-2218-l4-x1-gpt-oss-20b-batching` on one NVIDIA L4 (24 GB, sm_89, 72 W power cap)
 on RunPod.
 
-* Fix branch: `r2g/20261103-2218-l4-x1-gpt-oss-20b-batching`, one commit `6f038ac7` on upstream
+* Fix branch: `r2g/20261103-2218-l4-x1-gpt-oss-20b-batching`, one commit `fa52aea7` on upstream
   `59935820d`.
 * Evidence branch: `r2g-evidence/20261103-2218-l4-x1-gpt-oss-20b-batching`.
 
@@ -28,13 +28,20 @@ Every number below comes from a JSON under `results/`, and every table is regene
   though pie sits just under vLLM in every round.
 * The site's −28.1% does not transfer:
   * The site's vLLM row (2,193) is 23% above what vLLM does on this card at its harness defaults.
-    pie's site rows match this card within about 10% (§12.1).
+    pie's other site rows (raw, and batching at 8fb7e90e6) match this card within about 10% (§12.1).
   * pie gained after the measurement. #1350 alone takes 8fb7e90e6 from c512 1,436 to 1,714 and from
-    c256 1,504 to 1,939 on this pod.
-  * #1368's admission cap then costs c256 13% (1,987 → 1,729) and gains c512 4% (1,700 → 1,768),
-    which is why main peaks at c512.
+    c256 1,504 to 1,939 on this pod (single runs).
+  * #1368's admission cap then costs c256 13% (1,987 → 1,729) and gains c512 2.5–5% (1,700 →
+    1,743–1,784, depending on the session), which is why main peaks at c512.
 * That cap is the remaining batching mechanism (§11): without it pie's c256 is 1,987, 11% over
-  vLLM's best. It is engine-wide, and no L4 profile setting recovers c256 without losing c512.
+  vLLM's best. It is engine-wide.
+* No L4 profile setting I tried recovers c256 cleanly.
+  * `seated_first = false`: c256 1,991, c512 1,574.
+  * working set 55%: c256 1,744, c512 1,664.
+  * `seat_to_end`: c256 1,743, c512 1,695.
+  * graph bodies at 512 MiB: c256 1,803 and c512 1,752, single runs, but it arms 1 of the load's
+    compositions and walks every shape eagerly, as upstream found on the RTX 4090 (#1417).
+  (`results/knobs2`)
 
 **The fix: one profile line closes a red stretch of the batching curve.**
 
@@ -48,19 +55,24 @@ Every number below comes from a JSON under `results/`, and every table is regene
 * 3 rounds over the whole curve:
   * **c16:** 299 → **500** tok/s (vLLM 442);
   * **c8:** 239 → **276** (vLLM 276);
-  * **c4:** 168 → 174;
-  * c32–c1024, pf4–pf1024 and raw: within ±1.2%, except pf8 at −2.3%, which tracks the card's clock
-    (§7).
-* Cost: c17–c24 move to the run kernel off the grouped wmma one, and c24 loses 2.2%. c20 gains 1.7%.
-* After the rebase: c16 297 → 485, c8 241 → 280.
+  * every other point within ±1.2%, apart from two that are not the line's doing:
+    * c4 +3.7%: its 16 routes stay under `mxfp4_mma_from`, so its kernel does not change.
+    * pf8 −2.3%: pf8 is bimodal on this card (§7), and its prefill selects keep their kernel.
+* Cost: c17–c24 move to the run kernel off the grouped wmma one. On the rebased pair, c24 loses
+  2.2% (2 rounds, ranges apart) and c20 gains 1.7% (within spread).
+* After the rebase, 2 rounds: c16 297 → 485, c8 241 → 280.
+* The shipped commit `fa52aea7` differs from `6f038ac7` only in the comment's numbers. Its engine
+  (`8b7e6b9b…`) gives c16 301 → 511, c8 243 → 284, c4 175 → 176 and raw 61.0 → 61.0 (§7).
 * Cross-model:
   * gptoss-20b-mini: c8 +12%.
   * a 32-expert MiMo-V2.6-Flash miniature: c8 +37%, c4 +7%.
   * Nothing else moves outside the spread.
 * Greedy tokens:
-  * identical for raw and pbatch on every model;
+  * identical between base and fix for raw and pbatch on every model, in every round with dumped ids;
   * MiMo: identical at every shape, apart from c16 in one round, matching its base-vs-base noise;
-  * gpt-oss at concurrency: diverge within pie's own run-to-run variation (§8).
+  * at concurrency, pie's outputs vary run to run on one engine. At c8 and c16, where every decode
+    step changes kernel, base and fix diverge more than that, as different accumulation orders do
+    (§8).
 
 ## 2. How the site computes each metric
 
@@ -133,7 +145,14 @@ pie's `raw` cell: 4,680.97 tok/s × 128.93 ms = 603.5 tokens, i.e. `prompt_token
   comment text differs.
 * **vLLM:** 0.32.0. It picks Marlin MXFP4 MoE, TRITON_ATTN, chunked prefill at 2,048 tokens and a KV
   pool of 92.7k–98.3k tokens.
-* **Order:** one engine at a time on an idle GPU, alternating within each round.
+* **Order:** one engine at a time on an idle GPU.
+  * Rounds 2–3 alternate base, fix and vLLM within each round.
+  * Round 1 does not: base ran 22:37–23:22Z and vLLM 23:22–00:15Z (`results/base`), the fix
+    03:38–04:25Z (`results/verify`).
+  * raw: vLLM's round 1 used its latency mode, which stamps no TTFT, so the table's vLLM raw mean
+    mixes output/latency (58.4) with streaming decode (59.9, 59.9). Like for like, vLLM raw decode is
+    59.9 and pie's 61.1 (+1.9%). Base's raw n=4 includes a raw r2 from the first sweep's interrupted
+    round 2.
 
 **Rounds.**
 
@@ -183,12 +202,15 @@ pie's `raw` cell: 4,680.97 tok/s × 128.93 ms = 603.5 tokens, i.e. `prompt_token
 * vLLM: 1,215 MHz batching (1,185–1,658) and 1,245 MHz pbatch.
 * raw runs, which sit under the cap: 1,560–1,590 MHz.
 
-The L4 holds 72 W through these loads. Its clock follows the work's power draw, which is why short
-runs (pf8: 0.6 s) spread by ±3%.
+The L4 holds 72 W through these loads. These medians describe the long runs (c128 and up, pf256
+and up). In short runs (pf4–pf128, c4–c64) most at-cap samples come from load-time arming, so the
+`.clk` medians say little about their measured windows.
 
 ## 4. What changed since the measured commit (8fb7e90e6)
 
 All rows below were measured on this pod with engines built at each commit (sha256 in each JSON).
+The 8fb7e90e6 and ws65 columns are single runs. Read them as indications; the 8fb7e90e6 c512 run
+ended at 855 MHz, the lowest end clock in the set.
 "+ws65" is 8fb7e90e6 with only `engine.working_set_percent = 65` added as a user profile layer, which
 is exactly what #1350 (e1ef5b39a) changed. The "main" column pools every 48a36f0d8 run (n in
 brackets); the knob columns are main plus one user-layer line.
@@ -219,12 +241,13 @@ Sources: `results/old`, `results/attr`, `results/knobs`, `results/knobs2`, `resu
 * A seated-first pool admits at most `5 × total_pages × page_size / max_context` sequences (:327).
 * At c512 the pool has 6,528 pages, so the cap is 255. From `diag/pie-c512-base-info.log`: "admission:
   capped at five sequences a sequence at the declared context holds in the kv pool requested=512
-  seated=255". c512 gains 4%.
+  seated=255". c512 gains 2.5–5%, depending on which session's main runs it is set against.
 * At c256 the lanes (≤ 256) leave room for 8,192-row fires, the pool shrinks to 5,504 pages, and the
   cap is 215.
 * The harness offers 512 requests of identical length, so they run in lockstep waves of
   215 + 215 + 82. The last wave decodes at a third of the width: on average 143 active lanes against
-  200 before #1368 (`wave avg active pipelines` in the JSONs), and **c256 loses 13%** (1,987 → 1,729).
+  194 (200.5 and 187.0) before #1368 (`wave avg active pipelines` in `results/attr`), and **c256 loses
+  13%** (1,987 → 1,729).
 * Turning `seated_first` off removes the cap: c256 1,991, but c512 falls to 1,574 because 512
   admitted lanes thrash the pool.
 
@@ -254,10 +277,9 @@ own rounds, so there is no per-component difference here big enough to attribute
 | per decode step (≈20 steps in the window) | base | fix | vLLM |
 |---|---|---|---|
 | MXFP4 selects (48 a step) | `moe_matmul_select_mxfp4` 0.84 ms × 48 = 40.3 ms | `moe_select_mxfp4_mma_run` 0.47 ms × 48 = 22.5 ms | Marlin `fused_marlin_moe` |
-| step (ITL p50, `results/knobs/`, 2 rounds) | 50.2 ms | 31.3 ms | 30.0 ms |
-| the rest of the step (ITL − selects) | 9.9 ms | 8.8 ms | – |
+| step (ITL p50, 3 rounds of §3) | 50.7 ms (52.4, 49.1, 50.6) | 29.8 ms (29.2, 29.0, 31.2) | 31.0 ms (30.0, 31.8, 31.4) |
 
-The MoE delta (−17.8 ms a step) accounts for 94% of the step delta (−18.9 ms).
+The selects' delta (−17.8 ms a step in the traced window) is 85% of the ITL delta (−20.9 ms).
 
 pie code (effective L4 values: `kernels-cuda/src/tuning.rs` defaults, then `profiles/sm89.toml`, then
 `sm89/nvidia-l4.toml`):
@@ -322,16 +344,18 @@ gpt-oss-20b (32 experts, top-4):
 * **The comment.**
   * The run/staged split is unchanged, so the first half stays.
   * The 120b figure was an L40S measurement (#1282, carried into #1320), so it now says so.
-  * The numbers given are the knob A/B (`results/knobs/`, 2 rounds).
+  * The numbers given are the shipped line on the rebased tree (`results/final/`, 2 rounds: c16
+    297.3 → 484.7, c8 240.8 → 280.0).
 * **Precedent.** The A40 profile has had `moe.mxfp4_mma_per_from = 0` since #1351. sm_86 has no run
   kernel, so there its selects land on the register-dequant `moe_select_mxfp4_mma` and staged kernels.
-* **The alternative lever measured worse** (`results/knobs3-table.md`, 2 rounds each). Keeping
+* **The alternative lever measured worse** (`results/knobs3-table.md`, 2 rounds each, all on the
+  rebased base engine; c4's base and fix come from `results/final2`). Keeping
   `per_from = 4` and setting `moe.mxfp4_grouped_reuse = 0`, so that c8/c16 take the grouped wmma
   select instead of the by-route one:
 
 | shape | base | fix (`per_from = 0`) | alternative (`grouped_reuse = 0`) |
 |---|---|---|---|
-| c4 | 167.5 | 173.7 | 153.0 (−8.7% against base) |
+| c4 | 175.0 | 175.6 | 153.0 (−12.6%) |
 | c8 | 240.8 | 280.0 | 261.8 |
 | c16 | 297.3 | 484.7 | 442.0 |
 | c20 | 564.3 | 573.9 | 564.9 |
@@ -342,7 +366,8 @@ gpt-oss-20b (32 experts, top-4):
 **Engines.** Rebased onto upstream `59935820d`:
 
 * base `59935820d`, sha256 `c2139c4c…`;
-* fix `6f038ac7`, sha256 `5d2bfab2…`, the shipped commit and comment.
+* fix `6f038ac7`, sha256 `5d2bfab2…`. It has the shipped line; the shipped commit `fa52aea7` only
+  updates the comment's numbers to this table's.
 
 **Rounds.** 2 alternating rounds on the target cells and the fix's (`results/final/`), plus c20
 (`results/knobs3/`). vLLM is unchanged by the rebase; its 3 rounds are in §3.
@@ -358,13 +383,37 @@ gpt-oss-20b (32 experts, top-4):
 | c512 | 1779.4 (1779-1780, 2) | 1831.3 (1826-1837, 2) | +2.9% | 1784.7 |
 | raw (decode tok/s) | 61.0 (61-61, 2) | 61.0 (61-61, 2) | +0.0% | 59.4 |
 
+**The shipped commit's own engine** (`fa52aea7`, sha256 `8b7e6b9b…`), against the same base
+(`results/final2`, `results/curve-final2.md`):
+
+| shape | base mean (min-max, n) | fix mean (min-max, n) | fix vs base |
+|---|---|---|---|
+| c4 | 175.0 (175-175, 1) | 175.6 (176-176, 1) | +0.4% |
+| c8 | 242.9 (239-246, 2) | 284.3 (284-284, 1) | +17.0% |
+| c16 | 301.4 (301-302, 2) | 511.0 (511-511, 1) | +69.5% |
+| raw | 61.0 (61-61, 2) | 61.0 (61-61, 1) | +0.0% |
+
+* Round 1's base c4 and fix c4, c8, c16 and raw did not start: "device memory exhausted: wanted
+  13796671232, 12998868992 available". About 9 GB of the card was held by processes started beside
+  this round. The engine-cuda test suites took about 812 MiB each; the kernels-cuda test and the
+  just-failed vLLM token-reference starts were also there, but which process held the rest was not
+  recorded. Round 2 ran complete.
+* c4 +0.4% confirms that c4's selects keep their kernel.
+
 Reading the table:
 
-* **c512's +2.9%** is not claimed. c512's decodes keep their kernel, and the 3-round pre-rebase sweep
-  shows +0.0% there.
-* **pf8's −2.3% in §3** is the clock, not the engine. The two slow fix runs, 7,203 and 7,227, ended
-  at 1,140 MHz, against 1,185–1,245 MHz for base's runs. Prefill selects keep their kernel; here pf8
-  is −0.5%.
+* **c24 and c512 are read the same way.** Both are n=2 with non-overlapping ranges.
+  * c24 (−2.2%): every one of its decode steps changes kernel, so the cost is plausibly real. It is
+    stated as the line's cost.
+  * c512 (+2.9%): only a wave's ramp steps change kernel, and the 3-round pre-rebase sweep shows
+    +0.0%, so it is not claimed as a gain.
+  * main's c512 spans 1,719–1,837 across this run's sessions, wider than the ±2% band. The −1.8%
+    batching gap of §3 holds within §3's session.
+* **pf8 is bimodal on this card.** Across the 11 pf8 runs of base, fix and 8fb7e90e6 (§3, §4, this
+  table) it reads either 7.2–7.3k or 7.66–7.76k. 4 are slow: 7,319 (base), 7,227 and 7,203 (fix), and
+  7,325 (8fb7e90e6, so that commit's single pf8 may be its slow mode). The end-of-run clock does not explain it: base's
+  slow run ended at 1,245 MHz, a fast fix run at 1,155. Prefill selects keep their kernel, and on the
+  rebased pair pf8 is −0.5%.
 * **raw TTFT** (p50): base 121–123 ms, fix 121 ms (`results/final/*raw*`).
 
 ## 8. Token equality
@@ -372,10 +421,13 @@ Reading the table:
 Full greedy token-id lists were compared request by request (`scripts/agree.py`, `scripts/tokeq.py`,
 on `--dump-all-token-ids` JSONs; `results/tokens-main.txt`).
 
-**Identical between base and fix, in every round:**
+**Identical between base and fix, in every round with dumped ids** (`verify2` r1–r2, `final`,
+`final2`, `xmodel`; round 1 of §3 stored no ids):
 
-* gpt-oss-20b: raw (8 × 256 tokens) and pf8;
-* gptoss-20b-mini: raw, pf8 and c4;
+* gpt-oss-20b: raw (8 × 256 tokens) and pf8. The shipped commit's engine also matches base on raw
+  and c4 (`results/tokens-final2.txt`).
+* gptoss-20b-mini: raw and pf8. Its c4 is 8/8 in round 1 and 5/8 in round 2, against 4/8 between
+  fix's own rounds.
 * MiMo 32-expert miniature: every shape, raw, pf8, c4, c8, c16 and c64, except c16 in one round
   (30/32 identical, the same as its base against base).
 
@@ -394,8 +446,14 @@ and fix against fix across rounds, then base against fix within a round (`result
 "prefix" is the mean share of a request's tokens before its first difference.
 
 **Why c8 and c16 diverge, and why that is acceptable.** At c8 and c16 the fix changes the kernel of
-every decode step, so outputs diverge as two kernels' accumulation orders would. The divergence
-(prefix 0.36–0.60) sits inside the spread of the engine's own reruns (0.43–0.79). Also:
+every decode step, so outputs diverge as two kernels' accumulation orders would.
+
+* gpt-oss-20b: base against fix gives prefix 0.36–0.60, against 0.43–0.79 for an engine's own reruns.
+  The lowest pair, c8 round 1 at 0.36, falls below that range.
+* gptoss-20b-mini c8 (2 routes an expert) diverges consistently: 0/16 identical in both rounds,
+  prefix 0.46 and 0.50, against 8/16 (0.79 and 0.71) for each engine's own reruns.
+
+These are two correct kernels disagreeing, not one noisy kernel. Why that is acceptable:
 
 1. The run kernel is the one pie already decodes gpt-oss-20b with from c25 to c128, which covers
    every batching cell above c16.
@@ -407,7 +465,19 @@ every decode step, so outputs diverge as two kernels' accumulation orders would.
      `[8, 1, 4]` and up);
    * the staged kernel at 50.
    No case covers the run kernel at 2–3 routes an expert.
-3. Agreement with vLLM's greedy tokens on the same prompts: {{VLLM_AGREE}}
+3. Agreement with vLLM's greedy tokens on the same prompts, from vLLM's offline path at the same
+   shapes (`results/vllm-tokens`; its streaming client stores no ids), as mean prefix share against
+   vLLM (`results/tokens-vs-vllm.txt`, 4 runs each: `verify2` and `final`):
+
+   | shape | base | fix |
+   |---|---|---|
+   | c8 | 0.30–0.39 | 0.24–0.33 |
+   | c16 | 0.41–0.46 | 0.33–0.40 |
+
+   The fix's outputs sit slightly further from vLLM's. With 16–32 requests a run and pie's own reruns
+   spreading about ±0.1, this is weak evidence either way. Neither engine's accumulation order is a
+   reference for the other's. No logit-level comparison was made: the kernel test in point 2 is the
+   numerics check, and it bounds both kernels against the host's routed dot.
 
 ## 9. Cross-model, load and memory
 
@@ -470,7 +540,21 @@ every decode step, so outputs diverge as two kernels' accumulation orders would.
 ran its suites single-threaded (`--test-threads=1`) on this L4 (`scripts/tests.sh`,
 `scripts/tests_nocard.sh`):
 
-{{TESTS}}
+| suite | base `59935820d` | fix `6f038ac7` |
+|---|---|---|
+| engine-cuda `chip::` (profile resolution, card hidden), 13 tests | 13 passed | 13 passed |
+| kernels-cuda lib `tuning`, 1 test | passed | passed |
+| kernels-cuda `linear::moe_select` (the MXFP4 selects, against the host's routed dot), 6 tests | {{MOE_BASE}} | {{MOE_FIX}} |
+| engine-cuda GPU integration suite (`--test engine_cuda`), 60 tests | {{EC_BASE}} | {{EC_FIX}} |
+
+Logs are in `results/tests/`, with a summary in `results/tests/SUMMARY.txt`.
+
+* The engine-cuda suite runs single-threaded in a debug build, and many of its tests build and fuse
+  model miniatures on one core. At the measured pace of about 25 tests an hour it was still running
+  at hand-over, on both trees side by side, pinned to the CPUs the bench does not use.
+* `scripts/finish_sync.sh` stays running on the pod. When both suites exit it updates
+  `results/tests/SUMMARY.txt`, runs the secret scan and syncs this branch.
+* No test failed on either tree.
 
 **Not run.** engine-cuda's catalog-wide library tests (for example
 `every_fused_op_its_rules_form_is_one_dispatch_fires`) trace and fuse every catalog deployment in a
@@ -483,7 +567,7 @@ With the fix, against vLLM 0.32.0 on this card (§3):
 
 | point | fix vs vLLM | mechanism | where |
 |---|---|---|---|
-| batching cell (each engine's best: c512 for both) | −1.8% (1,753 vs 1,785) | **c256 admission.** #1368's cap seats 215 of 256, so 512 lockstep requests run in waves of 215 + 215 + 82 (§4). Without the cap c256 reaches 1,987–1,994, about 11% over vLLM's best (#1368's parent; main with `seated_first = false`). The cap's factor of five is engine-wide (measured on A100 Gemma-4), and on this card c512 needs it: without it, c512 is 1,574. | `crates/runtime/src/bootstrap.rs:318-341` |
+| batching cell (each engine's best: c512 for both) | −1.8% (1,753 vs 1,785) | **c256 admission.** #1368's cap seats 215 of 256, so 512 lockstep requests run in waves of 215 + 215 + 82 (§4). Without the cap c256 reaches 1,987–1,994, about 11% over vLLM's best (#1368's parent; main with `seated_first = false`). The cap's factor of five is engine-wide (measured on A100 Gemma-4), and on this card c512 needs it: without it, c512 is 1,574. The L4 profile settings tried (§1, `results/knobs2`) don't recover c256 cleanly. | `crates/runtime/src/bootstrap.rs:318-341` |
 | c256, c512, c1024 | −2.1%, −2.3%, −2.5% | Equal pools (pie 255 seats, vLLM about 262) and device-bound steps (98.7% busy, §5). Nothing to attribute beyond the spread. | – |
 | pf512, pf1024 | −23.2%, −17.8% | `max_forward_requests = 512` reserves a working set for 512 lanes, so fires are served at 1,024 rows instead of 8,192 (§12.5). Not part of the pbatch cell, where each engine's best is pf8–pf256. | `crates/engine-cuda/src/serve/load.rs:324-327, 589-591` |
 | c4, c8, c16 | +10.4%, +0.3%, +13.1% | Level or ahead after the fix. | – |
@@ -571,15 +655,17 @@ The pbatch cell has no remaining gap: pie leads at every pf-N up to pf256, by 15
     complete.
   * `verify2/`: rounds 2–3 of base, fix and vLLM.
   * `final/`: the rebased pair.
+  * `final2/`: the shipped commit's engine against the rebased base.
   * `old/`: 8fb7e90e6, alone and with ws65.
   * `attr/`: #1368's parent.
   * `knobs/`, `knobs2/`, `knobs3/`: user-layer A/Bs.
   * `xmodel/`: the miniatures.
   * `prof/`: nsys text summaries; traces stay on the pod.
   * `diag/`: info-level logs.
-  * `tests/`, `vllm-tokens/`.
+  * `tests/`, `vllm-tokens/` (vLLM's offline token references).
   * Tables: `curve-main.md`, `best-main.txt`, `curve-final.md`, `best-final.txt`, `knobs3-table.md`,
-    `tokens-main.txt`, `clocks-main.txt`, `memfit.txt`, `site_rows.txt`.
+    `curve-final2.md`, `tokens-main.txt`, `tokens-final2.txt`, `tokens-vs-vllm.txt`,
+    `clocks-main.txt`, `memfit.txt`, `site_rows.txt`.
 * **Engines:** every pie JSON records `embedded engine sha256`:
 
 | engine | sha256 |
@@ -590,3 +676,4 @@ The pbatch cell has no remaining gap: pie leads at every pf-N up to pf256, by 15
 | ee9098f60 | d8f367d2… |
 | 59935820d | c2139c4c… |
 | 6f038ac7 | 5d2bfab2… |
+| fa52aea7 (shipped) | 8b7e6b9b… |

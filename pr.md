@@ -1,17 +1,5 @@
 # Decode throughput part of the pie vs vLLM gap on L4 (gpt-oss c8/c16 selects on the run kernel)
 
-gpt-oss-20b's c8 and c16 decodes route 32 and 64 routes over 32 experts: 1 and 2 an expert, under
-the L4 profile's `moe.mxfp4_mma_per_from = 4`, which the file copied from the L40S's. Those
-selects missed the register-dequant kernels. Not past the 2-an-expert grouping threshold either, they
-ran the by-route `moe_matmul_select_mxfp4`, which streams an expert's codes once for each route: 0.84
-ms a select, 40 ms of a c16 step (nsys), where vLLM runs Marlin at every width. With `= 0`, as the
-A40 has, they take the 512-code run kernel that c25-c128 already decode on, reading each touched
-expert once (0.47 ms a select); c17-c24 move to it off the grouped wmma kernel too. On an L4, 3
-alternating rounds over the site's whole curve: c16 299 -> 500 tok/s (vLLM 0.32.0 442), c8 239 ->
-276 (vLLM 276), c4 168 -> 174; every other point c32-c1024 and pf4-pf1024 within ±1.2% (pf8 -2.3%,
-tracking the power-capped card's SM clock), raw decode 61.1 -> 61.0. After the rebase: {{FINAL_PR}}.
-gptoss-20b-mini (16 experts) c8 794 -> 888, a 32-expert MiMo-V2.6-Flash miniature c8 463 -> 637 and
-c4 309 -> 331, nothing slower. Greedy tokens are identical for raw and pbatch on all three models;
-at c8/c16 the kernel changes on every decode step and outputs differ as much as base's own runs do
-from each other. The engine-cuda GPU suite, the profile tests and kernels-cuda's routed-select tests
-pass on both builds: {{TESTS_PR}}.
+gpt-oss-20b's c8 and c16 decodes route 32 and 64 routes over its 32 experts, 1 and 2 an expert, and the L4 profile's `moe.mxfp4_mma_per_from = 4` (copied from the L40S file) kept them off the register-dequant kernels. Being under the 2-an-expert grouping threshold too, they ran the by-route `moe_matmul_select_mxfp4`, which streams an expert's codes once for each route: 0.84 ms a select, about 40 ms of a c16 step whose ITL is 50 ms (nsys). vLLM 0.32.0 runs Marlin at every width. With `= 0`, as on the A40, they take the 512-code run kernel that c25–c128 already decode on, which reads each touched expert once (0.47 ms a select). c17–c24 move to it as well, off the grouped wmma select.
+
+On an L4, 3 rounds over the site's whole curve (c4–c1024, pf4–pf1024, raw): c16 299 → 500 tok/s (vLLM 442), c8 239 → 276 (vLLM 276), and every other point within ±1.2% apart from two the line does not cause: c4 +3.7%, whose selects keep their kernel, and pf8 −2.3%, which is bimodal on this card. After the rebase, c16 297 → 485 and c8 241 → 280 (2 rounds), and the shipped engine gives c16 301 → 511 and c8 243 → 284. The cost is c24 641.7 against 656.2 (−2.2%, 2 rounds), where the grouped wmma select beat the run kernel at 3 routes an expert; c20 is +1.7%. The alternative, `moe.mxfp4_grouped_reuse = 0`, gave c8 262 and c16 442, and cost c4 13%. Cross-model: gptoss-20b-mini c8 794 → 888 and a 32-expert MiMo-V2.6-Flash miniature c8 463 → 637, c4 309 → 331, the rest within spread. Greedy tokens are identical for raw and pbatch on all three models. At c8/c16 every decode step changes kernel, and outputs diverge further than one engine's reruns do. Against vLLM's greedy tokens at c8/c16, the fix's mean prefix share is 0.24–0.40 against base's 0.30–0.46 (16–32 requests a run). {{TESTS_PR}}

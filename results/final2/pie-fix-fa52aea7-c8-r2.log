@@ -1,0 +1,40 @@
+[transformers] PyTorch was not found. Models won't be available and only tokenizers, configuration and file/data utilities can be used.
+engine-cuda: [engine] bodies_mem 1024 MiB is held down to 817 MiB on this card: with the weights, activations and inputs resident, one sequence at the declared context and the guests' programs seated, 3269 MiB is left for the graph bodies and the cache rows together, and the bodies take at most a quarter of it. State a smaller bodies_mem to choose it.
+engine-cuda: bodies armed 68 of 68 compositions at load (decode 4/4, prefill 16/16, mixed 48/48, tower 0/0, wide 0/0; 0 segmented; 307 MiB of 817 MiB, 68 of 1024 seats) (pool declared 2496 MiB, high water 480 MiB, committed 480 MiB, spare under the ceiling 403 MiB) [18 key(s) never fired — this deployment cannot synthesize them, or their present set was already refused admission; e.g. mixed c2+c0 at bucket 1 (256 seat(s) x 2048 context, 8 lane(s))] [sealed partial: 65 key(s) never attempted, the ceiling's spare ran out (509 MiB left beyond the elastic pool's growth) at bucket 470, and they walk eagerly for the life of this load]
+╭─ Pie Engine ───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╮
+│ Host         127.0.0.1:46335                                                                                                       │
+│ Model        default (/root/.cache/huggingface/hub/models--openai--gpt-oss-20b/snapshots/6cee5e81ee83917806bbde320786a8fb61efebee) │
+│ Backend      cuda                                                                                                                  │
+│ Device       cuda:0                                                                                                                │
+╰────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╯
+[pie-bench] measured-start
+engine-cuda: the sealed map holds no body for b940[c0:940] (no body is resident for it) — this shape walks eagerly for the life of the load (BodyTally::sealed_declines counts each such fire; 1 so far) [body-stats] hits=134 misses=136 reshapes=0 captures=68 declines=0 refusals=0 evictions=0 armed_at_load=68 sealed_declines=1 sealed_short=0 eager_rotating=0 eager_buffered=0 eager_copy_world=0 | last-capture: nodes=363 edges=409 islands=0 | resident: bodies=68 segmented=0 bytes=322492236
+engine-cuda: the sealed map holds no body for b1218[c0:1218] (no body is resident for it) — this shape walks eagerly for the life of the load (BodyTally::sealed_declines counts each such fire; 2 so far) [body-stats] hits=262 misses=136 reshapes=0 captures=68 declines=0 refusals=0 evictions=0 armed_at_load=68 sealed_declines=2 sealed_short=0 eager_rotating=0 eager_buffered=0 eager_copy_world=0 | last-capture: nodes=363 edges=409 islands=0 | resident: bodies=68 segmented=0 bytes=322492236
+[pie-bench] measured-end
+[2m2026-11-04T10:59:17.403041Z[0m [33m WARN[0m [2mtarpc::client[0m[2m:[0m Connection broken: could not ready the transport for writes: an error occurred readying to send into the channel: the channel is closed and cannot accept new items for sending
+[2m2026-11-04T10:59:17.403066Z[0m [33m WARN[0m [2mtarpc::server[0m[2m:[0m Requests stream errored out: could not ready the transport for writes: an error occurred readying to send into the channel: the channel is closed and cannot accept new items for sending
+
+----------------------------------------------------
+mode:              tput
+engine:            pie
+model:             openai/gpt-oss-20b
+completed:         16/16  failed=0
+wall:              7.204 s
+requests/sec:      2.22
+output tokens:     2048
+prompt tokens:     3600
+output tok/sec:    284.30
+lat mean/p50:      3600.4 / 3600.5 ms
+lat p95/p99:       3682.9 / 3683.9 ms
+ttft mean/p50:     189.2 / 205.7 ms
+ttft p95/p99:      232.7 / 232.9 ms
+intertoken p50/p99/max: 27.79 / 31.98 / 107.75 ms
+total batches:     131
+avg batch latency us: 106926.77099236641
+last batch latency us: 92843
+total requests:    2048
+max forward requests: 16
+batch size hist:   [0, 1, 1, 3, 126, 0, 0, 0]
+----------------------------------------------------
+EXIT=0
+2040 MHz, 2040 MHz, 55, 37.95 W

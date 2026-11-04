@@ -1,0 +1,40 @@
+[transformers] PyTorch was not found. Models won't be available and only tokenizers, configuration and file/data utilities can be used.
+engine-cuda: [engine] max_forward_tokens 8192 is served at 1024: at 8192 the activation arena, attention workspaces and one fire's windowed kv rows take 5536 MiB of the 4665 MiB this card has after the weight tier under [model] device_memory_share, and the cache rows, graph bodies and guest programs need the other half. State a smaller max_forward_tokens to choose it, or a larger device_memory_share.
+engine-cuda: [engine] max_forward_tokens 1024 and max_forward_requests 512 are served at 1024 and 256: at the asked budgets a fire's working set (activation arena, attention workspaces, decoded-weight tiles, guest programs) takes 4068 MiB of the 4665 MiB this card has after the weight tier under [model] device_memory_share, past the half the cache rows are owed and what one sequence at the declared context and the bodies' floor need. State smaller budgets to choose them, or a larger device_memory_share.
+engine-cuda: [engine] bodies_mem 1024 MiB is held down to 933 MiB on this card: with the weights, activations and inputs resident, one sequence at the declared context and the guests' programs seated, 3734 MiB is left for the graph bodies and the cache rows together, and the bodies take at most a quarter of it. State a smaller bodies_mem to choose it.
+engine-cuda: bodies armed 82 of 82 compositions at load (decode 9/9, prefill 25/25, mixed 24/24, tower 0/0, wide 24/24; 0 segmented; 221 MiB of 933 MiB, 58 of 1024 seats) (pool declared 2880 MiB, high water 192 MiB, committed 192 MiB, spare under the ceiling 693 MiB) [2 key(s) never fired — this deployment cannot synthesize them, or their present set was already refused admission; e.g. mixed c2+c0 at bucket 1 (256 seat(s) x 2048 context, 256 lane(s))] [sealed: every key attempted]
+╭─ Pie Engine ───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╮
+│ Host         127.0.0.1:34387                                                                                                       │
+│ Model        default (/root/.cache/huggingface/hub/models--openai--gpt-oss-20b/snapshots/6cee5e81ee83917806bbde320786a8fb61efebee) │
+│ Backend      cuda                                                                                                                  │
+│ Device       cuda:0                                                                                                                │
+╰────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╯
+[pie-bench] measured-start
+[pie-bench] measured-end
+[2m2026-11-04T10:56:00.847506Z[0m [33m WARN[0m [2mtarpc::client[0m[2m:[0m Connection broken: could not ready the transport for writes: an error occurred readying to send into the channel: the channel is closed and cannot accept new items for sending
+[2m2026-11-04T10:56:00.847537Z[0m [33m WARN[0m [2mtarpc::server[0m[2m:[0m Requests stream errored out: could not ready the transport for writes: an error occurred readying to send into the channel: the channel is closed and cannot accept new items for sending
+
+----------------------------------------------------
+mode:              latency
+engine:            pie
+model:             openai/gpt-oss-20b
+completed:         8/8  failed=0
+wall:              34.373 s
+requests/sec:      0.23
+output tokens:     2048
+prompt tokens:     4872
+output tok/sec:    59.58
+lat mean/p50:      4296.3 / 4299.0 ms
+lat p95/p99:       4302.5 / 4303.4 ms
+ttft mean/p50:     118.8 / 120.7 ms
+ttft p95/p99:      122.2 / 122.5 ms
+intertoken p50/p99/max: 16.37 / 16.84 / 19.31 ms
+total batches:     1032
+avg batch latency us: 65468.832364341084
+last batch latency us: 49051
+total requests:    2048
+max forward requests: 2
+batch size hist:   [16, 1016, 0, 0, 0, 0, 0, 0]
+----------------------------------------------------
+EXIT=0
+2040 MHz, 2040 MHz, 55, 38.71 W
