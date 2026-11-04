@@ -1,6 +1,6 @@
 # Status: 20261104-1903-l4-x1-gpt-oss-20b-batching
 
-**Updated:** 2026-11-04 21:19Z (pod created about 19:03Z, bootstrap 19:16Z; deadline taken as 03:03Z; target hand-over about 00:05Z)
+**Updated:** 2026-11-04 21:29Z (pod created about 19:03Z, bootstrap 19:16Z; deadline taken as 03:03Z; target hand-over about 00:05Z)
 
 **Phase:** tests (since 20:33Z). The A/B is done (19:31–20:33Z).
 
@@ -8,19 +8,27 @@
   * base `1b851247`, sha256 `5c7d99c7…`;
   * fix `2f4f9cf0`, sha256 `414293e1…`.
 
-**Last result:** the branch `r2g/20261104-1903-l4-x1-gpt-oss-20b-batching` is one commit, `2f4f9cf0`,
-on upstream `1b851247`. It is `8fc6862cb` cherry-picked, with the new kernel-test case folded in. Same
-subject, empty body.
+**Last result:**
 
-* The new case: `(K::MxBias, mma, [32, 16, 4, 320, 2880], t, None, 0)`, in the
-  "An Ada's few routes an expert on its 512-code runs" group.
-* From the code, on sm_89 it takes the run kernel:
-  * `mxfp4_mma_spans`: `mma` sets from 1 and until 65,536, and per_from 0 is the default. So 64
-    routes are admitted.
-  * `select_mxfp4_mma`: `ada_run` holds (sm_89, K 2880 = 45 × 64, no tensor scales, no cvt), and
-    per = ⌈64/32⌉ = 2 ≤ `mxfp4_run_until` (16), so the select is not staged and `run` holds.
-  * The test's route pattern `(3t + 5s) mod 32` touches all 32 experts: 4 with 1 route, 24 with 2
-    and 4 with 3.
+* **The commit is now `f79b846c`** (pushed; on upstream `1b851247`).
+* **The self-review** (a fresh-context agent) recomputed the numbers. It found errors in my drafts,
+  now fixed in report.md and pr.md:
+  * c24's ranges touch, so I cite the per-round pairs;
+  * clocks over the measured windows, which show both engines at the 72 W cap, and the fix's higher
+    clock at c8/c16;
+  * the fire ordinals;
+  * the sanitizer's 23 + 23;
+  * the GPU sharing between test binaries.
+* **It also found that the brief's example case (no GLU, by token) is a form gpt-oss never fires.**
+  gpt-oss's gate/up select on sm_89 is `run<4, 4, 3, 4>` (GLU, by token), and its down select is
+  `run<4, 4, 0, 4>` by route. So the case is now
+  `(K::MxBias, mma, [32, 16, 4, 320, 2880], t, alpha, 0)`: the brief's line with `alpha`, gpt-oss's
+  c16 gate/up select. The comment reads "partial row tile; gpt-oss-20b's c16 GLU, two routes an
+  expert."
+* **The engine is unchanged by this:** only the test file differs from `2f4f9cf0`, the A/B's fix
+  build.
+* **The previous form passed:** fires 42–43 in `results/tests/firetrace-fix.log`, `run<4, 4, 0, 4>`.
+  The new form is rerunning (`results/tests/kernels-moe-select-fix2.log`, with the fire trace on).
 
 **A/B checkpoint (done; `results/ab/`, `results/curve-ab.md`):** 3 alternating rounds, output tok/s, mean (min–max).
 
@@ -69,8 +77,14 @@ pipe case with the same values, in 879.4 s (`results/tests/kernels-moe-select-ba
   * This is a test bug, for Anton. It corrects the previous run's attribution.
 * The trace also shows the new case firing `moe_select_mxfp4_mma_run<4, 4, 0, 4>`.
 
-**Running:** engine-cuda GPU suite on the fix tree (`results/tests/engine-cuda-fix.log`). Then its
-failures, if any, rerun on base.
+**Running:**
+
+* the engine-cuda GPU suite on the fix tree (`results/tests/engine-cuda-fix.log`). Then its
+  failures, if any, rerun on base;
+* the `moe_select` rerun of `f79b846c` (about 15 min).
+
+At hand-over: rebase onto `48399500` (#1429, `models/glm_5_next.poem` only) once the suite is done,
+since the suite runs from this tree.
 
 **Blockers:** none.
 

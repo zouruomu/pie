@@ -1,0 +1,14 @@
+tree f79b846c L4 profile: gpt-oss decode selects of fewer than 4 routes an expert on the run kernel; PIE_CUDA_TRACE_FIRES=1
+   Compiling kernels-cuda v0.6.0 (/root/r2g/pie/crates/kernels-cuda)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 1.75s
+     Running tests/kernels_cuda/main.rs (target/debug/deps/kernels_cuda-1e2064174ae32a18)
+
+running 7 tests
+test linear::moe_select::nvfp4_wide_selects_answer_the_routed_dot ... fire: 0 linear.moe_select ::pie::linear::moe_route_order_scan
+fire: 22034 linear.moe_select ::pie::linear::moe_select_mxfp4_mma_staged<8, 3, 0, true, 8>
+fire: 40063255 linear.moe_select ::pie::linear::moe_route_order_scan
+fire: 146 linear.moe_select ::pie::linear::moe_select_mxfp4_mma_staged<8, 3, 0, true, 8>
+fire: 60242068 fused.moe_select_glu ::pie::linear::moe_route_order_scan
+fire: 156 fused.moe_select_glu ::pie::linear::moe_select_mxfp4_mma_staged<8, 3, 1, true, 8>
+fire: 81066105 linear.moe_select ::pie::linear::moe_route_order_scan
+fire: 164 linear.moe_select ::pie::linear::moe_select_mxfp4_mma_staged<8, 3, 0, true, 8>
