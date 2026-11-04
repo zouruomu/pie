@@ -1,6 +1,6 @@
 # Status: 20261104-1903-l4-x1-gpt-oss-20b-batching
 
-**Updated:** 2026-11-04 19:33Z (pod created about 19:03Z, bootstrap 19:16Z; deadline taken as 03:03Z; target hand-over about 00:05Z)
+**Updated:** 2026-11-04 20:04Z (pod created about 19:03Z, bootstrap 19:16Z; deadline taken as 03:03Z; target hand-over about 00:05Z)
 
 **Phase:** final A/B (since 19:31Z).
 
@@ -26,7 +26,17 @@ subject, empty body.
 
 * `scripts/ab.sh`: 3 alternating rounds of base and fix at c8, c16, c24 and c32, token ids dumped,
   into `results/ab/`. ETA about 20:35Z.
-* `scripts/tests_build.sh`: compiles the test binaries (no run), pinned off the bench's CPUs.
+* Test binaries for kernels-cuda and engine-cuda: compiled on both trees (`results/tests/build-*.log`,
+  EXIT=0).
+
+**Partial A/B (round 1 complete, round 2 under way; output tok/s, `curve.py`):**
+
+| shape | base (n) | fix (n) | fix vs base |
+|---|---|---|---|
+| c8 | 244.8 (2) | 277.3 (1) | +13.2% |
+| c16 | 298.3 (2) | 482.2 (1) | +61.7% |
+| c24 | 676.3 (2) | 660.4 (1) | −2.3% |
+| c32 | 813.6 (1) | 852.7 (1) | +4.8% (single runs; c32's selects don't change kernel, so this is not yet read as an effect) |
 
 **Blockers:** none.
 
