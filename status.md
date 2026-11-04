@@ -1,6 +1,6 @@
 # Status: 20261104-1903-l4-x1-gpt-oss-20b-batching
 
-**Updated:** 2026-11-04 20:48Z (pod created about 19:03Z, bootstrap 19:16Z; deadline taken as 03:03Z; target hand-over about 00:05Z)
+**Updated:** 2026-11-04 21:07Z (pod created about 19:03Z, bootstrap 19:16Z; deadline taken as 03:03Z; target hand-over about 00:05Z)
 
 **Phase:** tests (since 20:33Z). The A/B is done (19:31–20:33Z).
 
@@ -53,12 +53,16 @@ subject, empty body.
 * The cases run in order and the first failing one panics, so every earlier case passed, the new
   `MxBias 32x16x4 true 320x2880` included.
 
-**Running** (since 20:33Z, side by side):
+**kernels-cuda `linear::moe_select`, base tree:** the same 5 passed, and the same failure at the same
+pipe case with the same values, in 879.4 s (`results/tests/kernels-moe-select-base.log`).
+
+**Running:**
 
 * engine-cuda GPU suite on the fix tree, `results/tests/engine-cuda-fix.log`, ETA about 23:00Z;
-* kernels-cuda `linear::moe_select`, fix then base, `results/tests/kernels-moe-select-{fix,base}.log`,
-  about 15 min each;
-* then compute-sanitizer (note-1).
+* compute-sanitizer (note-1), since 21:03Z, capped at 20 min (`results/tests/sanitizer-fix.log`). So
+  far it reports only `cuFuncGetParamInfo` returning `CUDA_ERROR_INVALID_VALUE` past a kernel's last
+  parameter. That is pie's own probe for the parameter count (`crates/kernels-cuda/src/jit/cache.rs:136-158`).
+* report.md and pr.md are drafted, with the engine-cuda suite marked pending.
 
 **Blockers:** none.
 
