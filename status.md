@@ -1,7 +1,7 @@
 # Status: 20261105-2035-a100-sxm-x1-gemma-4-31b-batching
 
-**Phase:** attribution: cap experiments done, seat_to_end trace running
-**UTC:** 2026-11-05 22:55
+**Phase:** fix v1 built and being measured; knob A/B for pool size running
+**UTC:** 2026-11-05 23:40
 
 ## Preliminary verdict (1 round so far; rounds 2-3 running)
 
@@ -30,6 +30,15 @@ pie's memory at c512, from the arm-trace log (results/diag): weights 57.5 GiB, c
 | x7 | 36 | 548.3 | 49.2 / 317 |
 | x7 + seat_to_end | 36 | 559.5 | 49.3 / 52.3 |
 | no cap + seat_to_end | 512 | 559.4 | 49.3 / 51.8 |
+
+More results: no cap + seat_to_end at c128 591 (base 458, vLLM 657). Gate oversubscribed 10% and 20% (PIE_TO_END_OVER): 559.5 and 559.4, unchanged. A trace of the gate (results/exp/x0-s2e-trace-c512.log) shows it learns 19 pages a lane (11 at the prompt) and admits 35 live lanes against 671 pages. So with seat_to_end the pool, not the gate, is the limit.
+
+Fix v1 (branch fix-wip, worktree /root/r2g/pie-fix):
+- `crates/runtime/src/bootstrap.rs`: the five-sequence cap applies only where the pools don't seat to the end. **This is shared runtime code: it also lifts the cap on the H100, H200, RTX PRO 6000, RTX 5090, RTX 4090 and A40, whose profiles have seat_to_end.** The other run (h100 gpt-oss-120b) may see it.
+- A100 profile: `seat_to_end = true`.
+- Runtime crate tests on the fix tree: 101 passed, 0 failed.
+
+Remaining gap after v1: pool size. pie's pool at c512 is 671 pages against vLLM's ~745 (10.09 GiB). pie's non-KV, non-weight memory is 4.3 GiB against vLLM's 2.25 (+0.46 of graphs outside its budget): arena 1.34, inputs 0.66 (sized for 512 lanes), bodies 0.54, scratch+programs 0.32, context 0.93, and 0.51 the pool fit leaves unused.
 
 The cap is what holds pie at ~21 lanes. seat_to_end gates cleanly without it (+23%). But it still holds ~28 lanes where 671 pages fit ~35-44 lanes of 19 pages. Tracing its gate (learned footprint against kv_total) now.
 
