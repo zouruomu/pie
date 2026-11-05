@@ -1,6 +1,6 @@
 # Status: 20261104-1903-l4-x1-gpt-oss-20b-batching
 
-**Updated:** 2026-11-04 23:39Z (pod created about 19:03Z, bootstrap 19:16Z; deadline taken as 03:03Z; target hand-over about 00:05Z)
+**Updated:** 2026-11-05 00:15Z (pod created about 19:03Z, bootstrap 19:16Z; deadline taken as 03:03Z; target hand-over about 00:05Z)
 
 **Phase:** tests (since 20:33Z). The A/B is done (19:31–20:33Z).
 
@@ -93,17 +93,28 @@ concurrent reruns of the joined test.
 * glm45-air-mini's "joined model picks the same token" failed once on fix and once on base (when
   memory was short), then passed on fix (`joined-fix2.log`). It is a flaky near-tie; a bf16 model.
 
+**Branch:** rebased and pushed. `r2g/20261104-1903-l4-x1-gpt-oss-20b-batching` is now `8e8b19b0`,
+on upstream `48399500`.
+
+**The joined test alone on base** (`joined-base2.log`): passes, all 11 rows, in 961 s.
+
+**Final pass, round 1 on the rebased engines** (`results/final/`, single runs; engine sha256s
+`83a5ba78` base and `12420eb2` fix): c8 243 → 281 (+16.0%), c16 299 → 491 (+64.3%),
+c24 681 → 654 (−4.0%), c32 852 → 798 (−6.3%).
+
+* c32's decode selects keep their kernel, and the 3 rounds before the rebase gave +0.4%. 798 is
+  below every earlier c32 run (814–853), at the same clock.
+* So I am not reading anything from single runs. Two more rounds are queued (`results/final2/`).
+
 **Running / queued (sequential, the GPU otherwise idle):**
 
-1. the joined test alone on base (`joined-base2.log`, to about 23:50Z);
-2. the final A/B on the rebased engines (`base-48399500`, `fix-8e8b19b0`): 1 round of c8, c16, c24
-   and c32 (`results/final/`, to about 00:10Z);
-3. the 4 failing tests rerun alone on the idle GPU, fix then base (`results/tests/idle-*.log`, to
-   about 01:00Z).
+1. the 4 failing engine-cuda tests rerun alone, fix then base (`results/tests/idle-*.log`), since
+   00:10Z;
+2. then rounds 2–3 of the final pass, c8–c32, base and fix alternating (about 40 min).
 
 **Blockers:** none.
 
-**ETA hand-over:** about 01:15Z, later than planned because the engine-cuda suite runs slowly and its memory-starved failures need reruns on an idle GPU. The deadline is 03:03Z.
+**ETA hand-over:** about 01:50Z (the deadline is 03:03Z).
 
 ## Infrastructure checks
 
