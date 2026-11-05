@@ -1,0 +1,65 @@
+/root/venv-sglang/lib/python3.12/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/venv-sglang/lib/python3.12/site-packages/torch/jit/_script.py:1643: FutureWarning: `torch.jit.interface` is deprecated. Please use `torch.compile` instead.
+  warnings.warn(
+/root/venv-sglang/lib/python3.12/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+Multi-thread loading shards:   0% Completed | 0/15 [00:00<?, ?it/s]Multi-thread loading shards:   7% Completed | 1/15 [00:00<00:09,  1.43it/s]Multi-thread loading shards:  13% Completed | 2/15 [00:01<00:07,  1.63it/s]Multi-thread loading shards:  20% Completed | 3/15 [00:01<00:07,  1.61it/s]Multi-thread loading shards:  27% Completed | 4/15 [00:02<00:06,  1.66it/s]Multi-thread loading shards:  33% Completed | 5/15 [00:03<00:06,  1.63it/s]Multi-thread loading shards:  40% Completed | 6/15 [00:03<00:05,  1.68it/s]Multi-thread loading shards:  47% Completed | 7/15 [00:04<00:04,  1.63it/s]Multi-thread loading shards:  53% Completed | 8/15 [00:04<00:04,  1.72it/s]Multi-thread loading shards:  60% Completed | 9/15 [00:05<00:03,  1.66it/s]Multi-thread loading shards:  67% Completed | 10/15 [00:06<00:02,  1.67it/s]Multi-thread loading shards:  73% Completed | 11/15 [00:06<00:02,  1.58it/s]Multi-thread loading shards:  80% Completed | 12/15 [00:07<00:01,  1.58it/s]Multi-thread loading shards:  87% Completed | 13/15 [00:07<00:01,  1.92it/s]Multi-thread loading shards:  93% Completed | 14/15 [00:08<00:00,  1.72it/s]Multi-thread loading shards: 100% Completed | 15/15 [00:09<00:00,  1.67it/s]Multi-thread loading shards: 100% Completed | 15/15 [00:09<00:00,  1.66it/s]
+[rank0]:[W1105 21:09:32.018646897 CUDACachingAllocator.cpp:3934] memory allocation failed with OOM on device 0 while trying to allocate 1109393408 bytes (free: 756416512, total: 85019590656).
+[rank0]:[W1105 21:09:32.175628354 CUDACachingAllocator.cpp:3934] memory allocation failed with OOM on device 0 while trying to allocate 1109393408 bytes (free: 179699712, total: 85019590656).
+[rank0]:[W1105 21:09:32.217537360 CUDACachingAllocator.cpp:3934] memory allocation failed with OOM on device 0 while trying to allocate 1109393408 bytes (free: 666238976, total: 85019590656).
+[rank0]:[W1105 21:09:32.217672587 CUDACachingAllocator.cpp:3934] memory allocation failed with OOM on device 0 while trying to allocate 1109393408 bytes (free: 666238976, total: 85019590656).
+[2026-11-05 21:09:32] Scheduler hit an exception: Traceback (most recent call last):
+  File "/root/venv-sglang/lib/python3.12/site-packages/sglang/srt/managers/scheduler.py", line 6128, in run_scheduler_process
+    scheduler = Scheduler(server_args, port_args)
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/venv-sglang/lib/python3.12/site-packages/sglang/srt/managers/scheduler.py", line 563, in __init__
+    self.init_model_worker()
+  File "/root/venv-sglang/lib/python3.12/site-packages/sglang/srt/managers/scheduler.py", line 1100, in init_model_worker
+    self.init_tp_model_worker()
+  File "/root/venv-sglang/lib/python3.12/site-packages/sglang/srt/managers/scheduler.py", line 1009, in init_tp_model_worker
+    self.tp_worker = TpModelWorker(**worker_kwargs)
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/venv-sglang/lib/python3.12/site-packages/sglang/srt/managers/tp_worker.py", line 318, in __init__
+    self._init_model_runner()
+  File "/root/venv-sglang/lib/python3.12/site-packages/sglang/srt/managers/tp_worker.py", line 480, in _init_model_runner
+    self._model_runner = ModelRunner(
+                         ^^^^^^^^^^^^
+  File "/root/venv-sglang/lib/python3.12/site-packages/sglang/srt/model_executor/model_runner.py", line 488, in __init__
+    self.initialize()
+  File "/root/venv-sglang/lib/python3.12/site-packages/sglang/srt/model_executor/model_runner.py", line 705, in initialize
+    self.load_model()
+  File "/root/venv-sglang/lib/python3.12/site-packages/sglang/srt/model_executor/model_runner.py", line 1293, in load_model
+    loaded = load_model_with_memory_saver(
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/venv-sglang/lib/python3.12/site-packages/sglang/srt/model_executor/model_runner_components/load_model_utils.py", line 346, in load_model_with_memory_saver
+    model = loader.load_model(
+            ^^^^^^^^^^^^^^^^^^
+  File "/root/venv-sglang/lib/python3.12/site-packages/sglang/srt/model_loader/loader.py", line 1018, in load_model
+    self.load_weights_and_postprocess(
+  File "/root/venv-sglang/lib/python3.12/site-packages/sglang/srt/model_loader/loader.py", line 1028, in load_weights_and_postprocess
+    DefaultModelLoader.postprocess_weights(model, target_device)
+  File "/root/venv-sglang/lib/python3.12/site-packages/sglang/srt/model_loader/loader.py", line 1098, in postprocess_weights
+    quant_method.process_weights_after_loading(module)
+  File "/root/venv-sglang/lib/python3.12/site-packages/sglang/srt/layers/quantization/mxfp4.py", line 1057, in process_weights_after_loading
+    w13_weight, w13_flex, w13_scale = _swizzle_mxfp4(
+                                      ^^^^^^^^^^^^^^^
+  File "/root/venv-sglang/lib/python3.12/site-packages/sglang/srt/layers/quantization/mxfp4.py", line 277, in _swizzle_mxfp4
+    quant_tensor = convert_layout(
+                   ^^^^^^^^^^^^^^^
+  File "/root/venv-sglang/lib/python3.12/site-packages/triton_kernels/tensor.py", line 251, in convert_layout
+    new_data = transformation.swizzle_data(canonical_data)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/venv-sglang/lib/python3.12/site-packages/triton_kernels/tensor_details/layout_details/hopper_value.py", line 165, in swizzle_data
+    data = _pack_bits(data, self.mx_axis)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/venv-sglang/lib/python3.12/site-packages/triton_kernels/tensor_details/layout_details/hopper_value.py", line 222, in _pack_bits
+    ret |= right_shift_unsigned(_compress_fp4(x[..., 1]) | (_compress_fp4(x[..., 1] >> 4) << 16), 3)
+                                                            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/venv-sglang/lib/python3.12/site-packages/triton_kernels/tensor_details/layout_details/hopper_value.py", line 209, in _compress_fp4
+    return ((x & 0x8) << 12) | ((x & 0x7) << 6)
+                                ~~~~~~~~~~^~~~
+torch.OutOfMemoryError: CUDA out of memory. Tried to allocate 1.03 GiB. GPU 0 has a total capacity of 79.18 GiB of which 635.38 MiB is free. Including non-PyTorch memory, this process has 78.55 GiB memory in use. Of the allocated memory 70.37 GiB is allocated by PyTorch, and 7.51 GiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://docs.pytorch.org/docs/stable/notes/cuda.html#optimizing-memory-usage-with-pytorch-cuda-alloc-conf)
+
+[2026-11-05 21:09:32] Received sigquit from a child process. It usually means the child failed.
+EXIT=137

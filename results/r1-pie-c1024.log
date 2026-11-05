@@ -1,22 +1,36 @@
-Traceback (most recent call last):
-  File "/root/r2g/pie/scripts/bench/pie_bench.py", line 1914, in <module>
-    main()
-  File "/root/r2g/pie/scripts/bench/pie_bench.py", line 1909, in main
-    summary, results = asyncio.run(run(args))
-                       ^^^^^^^^^^^^^^^^^^^^^^
-  File "/usr/lib/python3.12/asyncio/runners.py", line 194, in run
-    return runner.run(main)
-           ^^^^^^^^^^^^^^^^
-  File "/usr/lib/python3.12/asyncio/runners.py", line 118, in run
-    return self._loop.run_until_complete(task)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/usr/lib/python3.12/asyncio/base_events.py", line 687, in run_until_complete
-    return future.result()
-           ^^^^^^^^^^^^^^^
-  File "/root/r2g/pie/scripts/bench/pie_bench.py", line 760, in run
-    prompt_token_ids, _ = hf_chat_token_ids_and_counts(
-                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/root/r2g/pie/scripts/bench/common.py", line 957, in hf_chat_token_ids_and_counts
-    from transformers import AutoTokenizer
-ModuleNotFoundError: No module named 'transformers'
-EXIT=1
+[transformers] PyTorch was not found. Models won't be available and only tokenizers, configuration and file/data utilities can be used.
+engine-cuda: [engine] max_forward_tokens 8192 is served at 1024: at 8192 the activation arena, attention workspaces and one fire's windowed kv rows take 12076 MiB of the 9452 MiB this card has after the weight tier under [model] device_memory_share, and the cache rows, graph bodies and guest programs need the other half. State a smaller max_forward_tokens to choose it, or a larger device_memory_share.
+engine-cuda: [engine] max_forward_tokens 1024 and max_forward_requests 1024 are served at 1024 and 512: at the asked budgets a fire's working set (activation arena, attention workspaces, decoded-weight tiles, guest programs) takes 9992 MiB of the 9449 MiB this card has after the weight tier under [model] device_memory_share, past the half the cache rows are owed and what one sequence at the declared context and the bodies' floor need. State smaller budgets to choose them, or a larger device_memory_share.
+engine-cuda: [engine] bodies_mem 4096 MiB is held down to 2123 MiB on this card: with the weights, activations and inputs resident, one sequence at the declared context and the guests' programs seated, 8495 MiB is left for the graph bodies and the cache rows together, and the bodies take at most a quarter of it. State a smaller bodies_mem to choose it.
+engine-cuda: bodies armed 90 of 90 compositions at load (decode 17/17, prefill 25/25, mixed 24/24, tower 0/0, wide 24/24; 0 segmented; 114 MiB of 2123 MiB, 66 of 1024 seats) (pool declared 6480 MiB, high water 576 MiB, committed 576 MiB, spare under the ceiling 2105 MiB) [2 key(s) never fired — this deployment cannot synthesize them, or their present set was already refused admission; e.g. mixed c2+c0 at bucket 1 (2048 seat(s) x 2048 context, 512 lane(s))] [sealed: every key attempted]
+╭─ Pie Engine ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╮
+│ Host         127.0.0.1:42865                                                                                                        │
+│ Model        default (/root/.cache/huggingface/hub/models--openai--gpt-oss-120b/snapshots/b5c939de8f754692c1647ca79fbf85e8c1e70f8a) │
+│ Backend      cuda                                                                                                                   │
+│ Device       cuda:0                                                                                                                 │
+╰─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╯
+[pie-bench] measured-start
+[pie-bench] measured-end
+[2m2026-11-05T21:30:20.741426Z[0m [33m WARN[0m [2mtarpc::client[0m[2m:[0m Connection broken: could not ready the transport for writes: an error occurred readying to send into the channel: the channel is closed and cannot accept new items for sending
+[2m2026-11-05T21:30:20.741441Z[0m [33m WARN[0m [2mtarpc::server[0m[2m:[0m Requests stream errored out: could not ready the transport for writes: an error occurred readying to send into the channel: the channel is closed and cannot accept new items for sending
+
+----------------------------------------------------
+mode:              tput
+engine:            pie
+model:             /root/.cache/huggingface/hub/models--openai--gpt-oss-120b/snapshots/b5c939de8f754692c1647ca79fbf85e8c1e70f8a
+completed:         2048/2048  failed=0
+wall:              45.237 s
+requests/sec:      45.27
+output tokens:     262144
+prompt tokens:     262144
+output tok/sec:    5794.96
+lat mean/p50:      18461.7 / 19232.0 ms
+lat p95/p99:       27459.1 / 27509.8 ms
+total batches:     610
+avg batch latency us: 119965.85573770491
+last batch latency us: 13248
+total requests:    262857
+max forward requests: 580
+batch size hist:   [0, 3, 10, 12, 54, 76, 4, 451]
+----------------------------------------------------
+EXIT=0

@@ -12,7 +12,7 @@ case $model in
   *) M=$model;;
 esac
 case $mode in
-  tput) num=$(( n*2 > 256 ? n*2 : 256 )); args=(tput --concurrency $n --num-requests $num --max-tokens 128 --prompts-file /root/prompts/p128.json --warmup 2);;
+  tput) m=${MULT:-2}; num=$(( n*m > 256 ? n*m : 256 )); args=(tput --concurrency $n --num-requests $num --max-tokens 128 --prompts-file /root/prompts/p128.json --warmup 2);;
   pf) num=$(( n > 256 ? n : 256 )); args=(tput --concurrency $n --num-requests $num --max-tokens 1 --prompts-file /root/prompts/p512.json --warmup 2);;
   raw) args=(latency --requests 8 --warmup 2 --max-tokens 256 --prompts-file /root/prompts/p512.json --report-timing);;
 esac
