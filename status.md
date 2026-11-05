@@ -1,7 +1,7 @@
 # Status: 20261105-2035-a100-sxm-x1-gemma-4-31b-batching
 
-**Phase:** early verdict (1 full round), cap experiments running
-**UTC:** 2026-11-05 22:17
+**Phase:** attribution: cap experiments done, seat_to_end trace running
+**UTC:** 2026-11-05 22:55
 
 ## Preliminary verdict (1 round so far; rounds 2-3 running)
 
@@ -19,6 +19,19 @@ How many sequences each engine decodes (tok/s x ITL p50):
   - But #1368's admission cap (`crates/runtime/src/bootstrap.rs:318-340`) admits 5 x 671 x 16 / 2048 = **26 processes**. The cap binds before the pool does.
 
 pie's memory at c512, from the arm-trace log (results/diag): weights 57.5 GiB, context before load 0.93 GiB, activation arena 1.34 GiB (fires cut 8192 -> 3757 tokens by working_set_percent 50), inputs 0.66 GiB, graph bodies 0.54 GiB, kernel scratch 0.26 GiB. That leaves 9.58 GiB of room, of which the pool takes 9.06 GiB.
+
+## Cap experiments (c512, results/exp, exp engine = main + env-set cap multiplier)
+
+| run | admitted | tok/s | ITL p50 / p99 ms |
+|---|---|---|---|
+| base (x5) | 26 | 453.8 | 46.2 / 48.6 |
+| x5 + seat_to_end | 26 | 453.7 | 46.2 / 48.8 |
+| no cap | 512 | 433.2 | 0.09 / 1127 (lanes suspended and replayed) |
+| x7 | 36 | 548.3 | 49.2 / 317 |
+| x7 + seat_to_end | 36 | 559.5 | 49.3 / 52.3 |
+| no cap + seat_to_end | 512 | 559.4 | 49.3 / 51.8 |
+
+The cap is what holds pie at ~21 lanes. seat_to_end gates cleanly without it (+23%). But it still holds ~28 lanes where 671 pages fit ~35-44 lanes of 19 pages. Tracing its gate (learned footprint against kv_total) now.
 
 ## Running
 - Queue q1 (scripts/q1.sh): pie round 1 over c64-c1024, then vLLM and pie rounds 2-3, alternating.
