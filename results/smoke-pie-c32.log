@@ -1,0 +1,162 @@
+engine-cuda: [engine] bodies_mem 4096 MiB is held down to 2047 MiB on this card: with the weights, activations and inputs resident, one sequence at the declared context and the guests' programs seated, 8190 MiB is left for the graph bodies and the cache rows together, and the bodies take at most a quarter of it. State a smaller bodies_mem to choose it.
+[2m2026-11-05T20:49:36.809005Z[0m [33m WARN[0m [2mkernels_cuda::jit::cache[0m[2m:[0m a device instantiation compiled with something to say [3mroot[0m[2m=[0m"elemwise/pointwise" [3minstantiation[0m[2m=[0m"::pie::elemwise::residual_add_vec8" [3march[0m[2m=[0m"sm_90" [3mlog[0m[2m=[0melemwise/pointwise(126): warning #177-D: variable "pie::elemwise::kBinAdd" was declared but never referenced
+  constexpr int kBinAdd = 0;
+                ^
+
+Remark: The warnings can be suppressed with "-diag-suppress <warning-number>"
+
+elemwise/pointwise(127): warning #177-D: variable "pie::elemwise::kBinMul" was declared but never referenced
+  constexpr int kBinMul = 1;
+                ^
+
+elemwise/pointwise(128): warning #177-D: variable "pie::elemwise::kBinDiv" was declared but never referenced
+  constexpr int kBinDiv = 2;
+                ^
+
+elemwise/pointwise(129): warning #177-D: variable "pie::elemwise::kBinMod" was declared but never referenced
+  constexpr int kBinMod = 3;
+                ^
+
+elemwise/pointwise(158): warning #177-D: variable "pie::elemwise::kActSilu" was declared but never referenced
+  constexpr int kActSilu = 0;
+                ^
+
+elemwise/pointwise(159): warning #177-D: variable "pie::elemwise::kActTanh" was declared but never referenced
+  constexpr int kActTanh = 1;
+                ^
+
+elemwise/pointwise(160): warning #177-D: variable "pie::elemwise::kActSqrt" was declared but never referenced
+  constexpr int kActSqrt = 2;
+                ^
+
+elemwise/pointwise(161): warning #177-D: variable "pie::elemwise::kActGelu" was declared but never referenced
+  constexpr int kActGelu = 3;
+                ^
+
+
+[2m2026-11-05T20:49:37.761340Z[0m [33m WARN[0m [2mkernels_cuda::jit::cache[0m[2m:[0m a device instantiation compiled with something to say [3mroot[0m[2m=[0m"linear/moe/route" [3minstantiation[0m[2m=[0m"::pie::linear::moe_topk_softmax_lane<::pie::bf16, 4>" [3march[0m[2m=[0m"sm_90" [3mlog[0m[2m=[0mlinear/moe/route(446): warning #177-D: variable "pie::linear::kRouterMaxExperts" was declared but never referenced
+  constexpr int kRouterMaxExperts = 512;
+                ^
+
+Remark: The warnings can be suppressed with "-diag-suppress <warning-number>"
+
+
+[2m2026-11-05T20:49:38.413669Z[0m [33m WARN[0m [2mkernels_cuda::jit::cache[0m[2m:[0m a device instantiation compiled with something to say [3mroot[0m[2m=[0m"linear/moe/route" [3minstantiation[0m[2m=[0m"::pie::linear::moe_route_order_scan" [3march[0m[2m=[0m"sm_90" [3mlog[0m[2m=[0mlinear/moe/route(446): warning #177-D: variable "pie::linear::kRouterMaxExperts" was declared but never referenced
+  constexpr int kRouterMaxExperts = 512;
+                ^
+
+Remark: The warnings can be suppressed with "-diag-suppress <warning-number>"
+
+
+[2m2026-11-05T20:49:39.343649Z[0m [33m WARN[0m [2mkernels_cuda::jit::cache[0m[2m:[0m a device instantiation compiled with something to say [3mroot[0m[2m=[0m"linear/moe/select_sm90" [3minstantiation[0m[2m=[0m"::pie::linear::moe_select_fp4_wgmma<3, false, 3, 128, 2>" [3march[0m[2m=[0m"sm_90a" [3mlog[0m[2m=[0mlinear/moe_w4.cuh(220): warning #128-D: loop is not reachable
+      for (int t = 0; t < kTiles; ++t)
+      ^
+          detected during:
+            instantiation of "void pie::linear::w4mma::w4_land<kGlu,kTiles,kNb,kTileRows,Factor>(const float (&)[kTiles][kNb][4], Factor, const pie::bf16 *, const pie::i32 *, int, int, pie::bf16 *, int, int, int, int, int, float, float) [with kGlu=3, kTiles=2, kNb=16, kTileRows=64, Factor=lambda [](int)->float]" at line 560 of linear/moe/select_sm90
+            instantiation of "void pie::linear::moe_select_fp4_wgmma<kGlu,kNv,kStages,kSlice,kWg>(const pie::bf16 *, const pie::i32 *, const pie::i32 *, const pie::i32 *, const pie::u8 *, const pie::u8 *, const pie::bf16 *, pie::bf16 *, int, int, int, int, int, float, float, const float *) [with kGlu=3, kNv=false, kStages=3, kSlice=128, kWg=2]" 
+
+Remark: The warnings can be suppressed with "-diag-suppress <warning-number>"
+
+linear/moe/select_sm90(12): warning #177-D: variable "pie::linear::kWgStages" was declared but never referenced
+  constexpr int kWgStages = 3;
+                ^
+
+
+[2m2026-11-05T20:49:40.212569Z[0m [33m WARN[0m [2mkernels_cuda::jit::cache[0m[2m:[0m a device instantiation compiled with something to say [3mroot[0m[2m=[0m"linear/moe/select_sm90" [3minstantiation[0m[2m=[0m"::pie::linear::moe_select_fp4_wgmma<0, false, 3, 128, 2>" [3march[0m[2m=[0m"sm_90a" [3mlog[0m[2m=[0mlinear/moe/select_sm90(12): warning #177-D: variable "pie::linear::kWgStages" was declared but never referenced
+  constexpr int kWgStages = 3;
+                ^
+
+Remark: The warnings can be suppressed with "-diag-suppress <warning-number>"
+
+
+[2m2026-11-05T20:49:42.856428Z[0m [33m WARN[0m [2mkernels_cuda::jit::cache[0m[2m:[0m a device instantiation compiled with something to say [3mroot[0m[2m=[0m"linear/moe/select" [3minstantiation[0m[2m=[0m"::pie::linear::moe_matmul_select_mxfp4<::pie::bf16, ::pie::i32(4), true>" [3march[0m[2m=[0m"sm_90" [3mlog[0m[2m=[0mlinear/moe/select(19): warning #177-D: variable "pie::linear::kGemvWarps" was declared but never referenced
+  constexpr int kGemvWarps = 4;
+                ^
+
+Remark: The warnings can be suppressed with "-diag-suppress <warning-number>"
+
+linear/moe/select(427): warning #177-D: variable "pie::linear::kBlock" was declared but never referenced
+  constexpr int kBlock = 256;
+                ^
+
+
+[2m2026-11-05T20:49:42.948856Z[0m [33m WARN[0m [2mkernels_cuda::jit::cache[0m[2m:[0m a device instantiation compiled with something to say [3mroot[0m[2m=[0m"linear/glu" [3minstantiation[0m[2m=[0m"::pie::linear::swiglu_clamp_alpha<::pie::bf16, true>" [3march[0m[2m=[0m"sm_90" [3mlog[0m[2m=[0mlinear/glu(25): warning #177-D: variable "lane" was declared but never referenced
+      const int lane = static_cast<int>(threadIdx.x % 32);
+                ^
+
+Remark: The warnings can be suppressed with "-diag-suppress <warning-number>"
+
+
+[2m2026-11-05T20:49:44.992266Z[0m [33m WARN[0m [2mkernels_cuda::jit::cache[0m[2m:[0m a device instantiation compiled with something to say [3mroot[0m[2m=[0m"linear/moe/select_fp4_sm80" [3minstantiation[0m[2m=[0m"::pie::linear::moe_select_mxfp4_mma<1, 1, 3, false, 1>" [3march[0m[2m=[0m"sm_90" [3mlog[0m[2m=[0mlinear/moe_w4.cuh(220): warning #128-D: loop is not reachable
+      for (int t = 0; t < kTiles; ++t)
+      ^
+          detected during:
+            instantiation of "void pie::linear::w4mma::w4_land<kGlu,kTiles,kNb,kTileRows,Factor>(const float (&)[kTiles][kNb][4], Factor, const pie::bf16 *, const pie::i32 *, int, int, pie::bf16 *, int, int, int, int, int, float, float) [with kGlu=3, kTiles=2, kNb=1, kTileRows=16, Factor=lambda [](int)->float]" at line 150 of linear/moe/select_fp4_sm80
+            instantiation of "void pie::linear::moe_select_mxfp4_mma<kNb,kDepth,kGlu,kNv,kKSplit>(const pie::bf16 *, const pie::i32 *, const pie::i32 *, const pie::i32 *, const pie::u8 *, const pie::u8 *, const pie::bf16 *, pie::bf16 *, int, int, int, int, int, float, float, const float *) [with kNb=1, kDepth=1, kGlu=3, kNv=false, kKSplit=1]" 
+
+Remark: The warnings can be suppressed with "-diag-suppress <warning-number>"
+
+
+[2m2026-11-05T20:49:47.971309Z[0m [33m WARN[0m [2mkernels_cuda::jit::cache[0m[2m:[0m a device instantiation compiled with something to say [3mroot[0m[2m=[0m"linear/moe/select_fp4_sm80" [3minstantiation[0m[2m=[0m"::pie::linear::moe_select_mxfp4_mma<2, 1, 3, false, 1>" [3march[0m[2m=[0m"sm_90" [3mlog[0m[2m=[0mlinear/moe_w4.cuh(220): warning #128-D: loop is not reachable
+      for (int t = 0; t < kTiles; ++t)
+      ^
+          detected during:
+            instantiation of "void pie::linear::w4mma::w4_land<kGlu,kTiles,kNb,kTileRows,Factor>(const float (&)[kTiles][kNb][4], Factor, const pie::bf16 *, const pie::i32 *, int, int, pie::bf16 *, int, int, int, int, int, float, float) [with kGlu=3, kTiles=2, kNb=2, kTileRows=16, Factor=lambda [](int)->float]" at line 150 of linear/moe/select_fp4_sm80
+            instantiation of "void pie::linear::moe_select_mxfp4_mma<kNb,kDepth,kGlu,kNv,kKSplit>(const pie::bf16 *, const pie::i32 *, const pie::i32 *, const pie::i32 *, const pie::u8 *, const pie::u8 *, const pie::bf16 *, pie::bf16 *, int, int, int, int, int, float, float, const float *) [with kNb=2, kDepth=1, kGlu=3, kNv=false, kKSplit=1]" 
+
+Remark: The warnings can be suppressed with "-diag-suppress <warning-number>"
+
+
+[2m2026-11-05T20:49:49.788438Z[0m [33m WARN[0m [2mkernels_cuda::jit::cache[0m[2m:[0m a device instantiation compiled with something to say [3mroot[0m[2m=[0m"linear/moe/select_sm90" [3minstantiation[0m[2m=[0m"::pie::linear::moe_select_fp4_wgmma<3, false, 2, 64, 1>" [3march[0m[2m=[0m"sm_90a" [3mlog[0m[2m=[0mlinear/moe_w4.cuh(220): warning #128-D: loop is not reachable
+      for (int t = 0; t < kTiles; ++t)
+      ^
+          detected during:
+            instantiation of "void pie::linear::w4mma::w4_land<kGlu,kTiles,kNb,kTileRows,Factor>(const float (&)[kTiles][kNb][4], Factor, const pie::bf16 *, const pie::i32 *, int, int, pie::bf16 *, int, int, int, int, int, float, float) [with kGlu=3, kTiles=2, kNb=8, kTileRows=64, Factor=lambda [](int)->float]" at line 560 of linear/moe/select_sm90
+            instantiation of "void pie::linear::moe_select_fp4_wgmma<kGlu,kNv,kStages,kSlice,kWg>(const pie::bf16 *, const pie::i32 *, const pie::i32 *, const pie::i32 *, const pie::u8 *, const pie::u8 *, const pie::bf16 *, pie::bf16 *, int, int, int, int, int, float, float, const float *) [with kGlu=3, kNv=false, kStages=2, kSlice=64, kWg=1]" 
+
+Remark: The warnings can be suppressed with "-diag-suppress <warning-number>"
+
+linear/moe/select_sm90(12): warning #177-D: variable "pie::linear::kWgStages" was declared but never referenced
+  constexpr int kWgStages = 3;
+                ^
+
+
+[2m2026-11-05T20:49:50.277224Z[0m [33m WARN[0m [2mkernels_cuda::jit::cache[0m[2m:[0m a device instantiation compiled with something to say [3mroot[0m[2m=[0m"linear/moe/select_sm90" [3minstantiation[0m[2m=[0m"::pie::linear::moe_select_fp4_wgmma<0, false, 2, 64, 1>" [3march[0m[2m=[0m"sm_90a" [3mlog[0m[2m=[0mlinear/moe/select_sm90(12): warning #177-D: variable "pie::linear::kWgStages" was declared but never referenced
+  constexpr int kWgStages = 3;
+                ^
+
+Remark: The warnings can be suppressed with "-diag-suppress <warning-number>"
+
+
+engine-cuda: bodies armed 135 of 135 compositions at load (decode 6/6, prefill 49/49, mixed 48/48, tower 0/0, wide 32/32; 0 segmented; 139 MiB of 2047 MiB, 103 of 1024 seats) (pool declared 6192 MiB, high water 720 MiB, committed 720 MiB, spare under the ceiling 1781 MiB) [18 key(s) never fired — this deployment cannot synthesize them, or their present set was already refused admission; e.g. mixed c2+c0 at bucket 1 (64 seat(s) x 2048 context, 32 lane(s))] [sealed: every key attempted]
+╭─ Pie Engine ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╮
+│ Host         127.0.0.1:33995                                                                                                        │
+│ Model        default (/root/.cache/huggingface/hub/models--openai--gpt-oss-120b/snapshots/b5c939de8f754692c1647ca79fbf85e8c1e70f8a) │
+│ Backend      cuda                                                                                                                   │
+│ Device       cuda:0                                                                                                                 │
+╰─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╯
+[pie-bench] measured-start
+[pie-bench] measured-end
+[2m2026-11-05T20:50:34.222627Z[0m [33m WARN[0m [2mtarpc::client[0m[2m:[0m Connection broken: could not ready the transport for writes: an error occurred readying to send into the channel: the channel is closed and cannot accept new items for sending
+[2m2026-11-05T20:50:34.222643Z[0m [33m WARN[0m [2mtarpc::server[0m[2m:[0m Requests stream errored out: could not ready the transport for writes: an error occurred readying to send into the channel: the channel is closed and cannot accept new items for sending
+
+----------------------------------------------------
+mode:              tput
+engine:            pie
+model:             /root/.cache/huggingface/hub/models--openai--gpt-oss-120b/snapshots/b5c939de8f754692c1647ca79fbf85e8c1e70f8a
+completed:         256/256  failed=0
+wall:              15.372 s
+requests/sec:      16.65
+output tokens:     32768
+prompt tokens:     16384
+output tok/sec:    2131.63
+lat mean/p50:      1918.4 / 1906.6 ms
+lat p95/p99:       2179.8 / 2183.1 ms
+total batches:     536
+avg batch latency us: 55685.48880597015
+last batch latency us: 55732
+total requests:    32768
+max forward requests: 64
+batch size hist:   [2, 3, 2, 11, 6, 8, 504, 0]
+----------------------------------------------------
+EXIT=0
