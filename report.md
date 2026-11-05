@@ -6,10 +6,11 @@ and verified. That run's report (`r2g-evidence/20261103-2218-l4-x1-gpt-oss-20b-b
 holds the attribution (§5), the reasoning behind the line (§6), the whole-curve and cross-model
 checks (§3, §9) and the remaining gap against vLLM (§11). They are not repeated here.
 
-* **Fix branch:** `r2g/20261104-1903-l4-x1-gpt-oss-20b-batching`, one commit `f79b846c` on upstream
-  `1b851247`.
-  * Upstream main has since gained one commit, `48399500` (#1429, `models/glm_5_next.poem` only).
-  * Rebase onto it: pending, after the engine-cuda suite, which runs from this tree.
+* **Fix branch:** `r2g/20261104-1903-l4-x1-gpt-oss-20b-batching`, one commit `8e8b19b0` on upstream
+  `48399500`, which is the newest at hand-over.
+  * It is `f79b846c` (on `1b851247`, where the A/B of §3 and the tests ran) rebased over #1429. That
+    commit touches only `models/glm_5_next.poem`.
+  * After the rebase, a final pass (§3) ran on engines rebuilt from `48399500` and `8e8b19b0`.
 * **Engines:** the A/B's fix engine was built from `2f4f9cf0`. It differs from `f79b846c` only in
   the test case's line and its comment (§2). The engine sources and the profile are identical, so
   the engine is the same.
@@ -29,6 +30,8 @@ checks (§3, §9) and the remaining gap against vLLM (§11). They are not repeat
    the fix tree (§5).
 5. **note-1.** Ran the compute-sanitizer check on the known `moe_select` failure, and traced which
    case that failure is (§6). It is not the pipe kernel.
+6. **Final pass.** Rebased onto upstream `48399500` and reran the A/B on rebuilt engines, 3 rounds
+   (§3).
 
 ## 2. The commit
 
@@ -130,6 +133,30 @@ The profile hunk is `8fc6862cb`'s, unchanged. The test hunk:
 * **Since the previous A/B:** upstream bumped 20 cargo dependencies (#1315). On this tree the fix's
   c8, c16 and c24 deltas match the previous run's.
 
+**Final pass, after the rebase.** Engines rebuilt from upstream `48399500` (sha256 `83a5ba78…`)
+and `8e8b19b0` (sha256 `12420eb2…`). 3 alternating rounds, c8–c32, with the same harness
+(`scripts/final_ab.sh` for round 1 in `results/final/`, `scripts/final2_ab.sh` for rounds 2–3 in
+`results/final2/`, named r1–r2 there). The GPU was otherwise idle. Results in `results/curve-final.md`:
+
+| shape | base `48399500` | fix `8e8b19b0` | fix vs base |
+|---|---|---|---|
+| c8 | 238.6 (234–243) | 277.1 (274–281) | +16.1% |
+| c16 | 297.7 (297–299) | 491.3 (488–495) | +65.0% |
+| c24 | 663.5 (651–681) | 656.3 (654–660) | −1.1% |
+| c32 | 818.0 (798–852) | 807.3 (798–814) | −1.3% |
+
+* **Round 1 alone read c24 −4.0% and c32 −6.3%.** That is why rounds 2–3 were run.
+* **c32's spread is base's.** Base read 851.5, 804.8 and 797.7; fix read 798.0, 809.9 and 814.2. In
+  rounds 2–3 fix is above base. c32 keeps its kernel, as before.
+* **c24:** 680.9, 651.2 and 658.4 against 653.8, 660.3 and 654.8. Round 2 has fix above base.
+  Together with §3's −1.3%, in which fix was below base in every round, the line costs c24 about
+  1–2%.
+* **Clock over the measured windows** (`results/clocks-window-final.txt`): at c8 and c16 the fix
+  again runs at 1,380–1,515 MHz against base's 975–1,072. At c24 and c32 both run at 1,275–1,358.
+* **Tokens** (`results/tokens-final.txt`): base against fix within a round gives prefix 0.34–0.76
+  at every shape. That is inside the reruns' own range in this session (0.17–0.94; at c8 a single
+  engine's reruns go as low as 0.17).
+
 ## 4. Token equality
 
 Full greedy token-id lists, compared request by request as in the previous report's §8
@@ -177,19 +204,49 @@ On this L4, logs in `results/tests/`.
 |---|---|---|
 | kernels-cuda `linear::moe_select` filter: 7 tests, 1 of them timing-only and 1 from `moe_select_mlxu4`. `2f4f9cf0`, with the case's earlier no-GLU form (`kernels-moe-select-{fix,base}.log`) | 5 passed, 1 failed (`the_routed_selects_answer_the_routed_dot`), 1 ignored; 881.5 s | the same 5 passed and the same failure, the same message and values; 879.4 s |
 | the same, `f79b846c`, the case's final GLU form, fire trace on (`kernels-moe-select-fix2.log`) | the same 5 passed and the same failure, the same message and values; 874.1 s | – |
-| engine-cuda GPU suite `--test engine_cuda`, 60 tests (`engine-cuda-fix.log`) | pending | failures only: pending |
+| engine-cuda GPU suite `--test engine_cuda`, 60 tests, `f79b846c`, opt-level 2 (`engine-cuda-fix-opt.log`) | 55 passed, 4 failed, 1 ignored (4,412 s). All 4 failures came from device memory my concurrent reruns held; alone on the GPU, all 4 pass (below) | each failure alone: passes (below) |
 
-**engine-cuda's suite ran in two processes.**
+**How engine-cuda's suite was run.**
 
-* `engine-cuda-fix.log` (`tests_engine.sh`, `cargo test`) started at 20:33Z. Its 21st test,
-  `a_joined_projection_answers_what_its_legs_answer`, traces and fuses a list of catalog rows in a
-  debug build on one core. It was still running after 55 minutes, which is where the previous run's
-  suite also stood at its hand-over.
-* So at 21:53Z a second single-threaded process started on the same test binary with tests 22–60
-  (`engine-cuda-fix-b.log`, `scripts/tests_engine_b.sh`).
-* Both binaries were compiled at 19:32Z from `2f4f9cf0`, which differs from `f79b846c` only in a
-  kernels-cuda test file that is not part of this binary. The `-b` log's header names the tree at its
-  start, `f79b846c`.
+* **Debug, as planned** (`scripts/tests_engine.sh`, `engine-cuda-fix.log`): started at 20:33Z.
+  * Its 21st test, `a_joined_projection_answers_what_its_legs_answer`, traces and fuses a list of
+    catalog rows on one core.
+  * At 21:53Z, with test 21 still running, a second single-threaded process started on tests 22–60
+    (`scripts/tests_engine_b.sh`, `engine-cuda-fix-b.log`). By 22:23Z it had spent 30 minutes in its
+    first runnable test, test 23 (`a_lane_sampler_draws_what_the_interpreter_draws`).
+  * Both processes passed every test they finished (20 and 0, plus one ignored) and were stopped at
+    23:10Z, with the opt-level run covering them.
+* **Opt-level 2** (`scripts/tests_engine_opt.sh`, `engine-cuda-fix-opt.log`):
+  * the whole suite, single-threaded, from `cargo test` with `CARGO_PROFILE_DEV_OPT_LEVEL=2` into a
+    separate target dir: the dev profile with optimization, debug assertions and overflow checks
+    still on, and no repo change;
+  * started at 22:25Z and ran 4,412 s.
+* **The 4 failures**, from the end of `engine-cuda-fix-opt.log`:
+  * `a_joined_projection_answers_what_its_legs_answer`: hy4-mini "the model loads: OutOfMemory {
+    need: 13340644096, have: 7877754880 }";
+  * `a_synthesized_region_serves_the_logits_of_its_ops`: dots3-note-mini "this fire wants 81788928
+    bytes of elastic device memory and the shell reserved 0";
+  * `an_anchored_region_serves_the_logits_of_its_ops` and
+    `two_models_served_at_once_answer_what_each_answers_alone`: "one at a time lock poisoned", the
+    shared lock poisoned by the panic before.
+  * Other test processes of mine held the same card throughout: the two debug suite processes until
+    23:10Z, and from 22:49Z the standalone reruns of the joined test (below), at first fix and base
+    side by side.
+* **Each failure alone on the GPU**, the same opt-level builds, `--nocapture`:
+
+  | test | fix `f79b846c` | base `1b851247` |
+  |---|---|---|
+  | `a_synthesized_region_serves_the_logits_of_its_ops::` (4 tests) | 4 passed, 1,027.7 s (`idle-synth-fix.log`) | 4 passed, 1,027.7 s (`idle-synth-base.log`) |
+  | `a_joined_projection_answers_what_its_legs_answer` | passed, all 11 rows, 942.6 s (`idle-joined-fix.log`) | passed, all 11 rows, 961.2 s (`joined-base2.log`; the suite's last minutes ran beside it until 23:38Z) |
+
+* **A flaky row.** In the first standalone pair (`joined-fix.log`, `joined-base.log`, run side by
+  side while the suite ran, so some rows ran out of memory), glm45-air-mini-bf16-kv-bf16 failed on both trees: "the joined model picks
+  the same token". It passed in every later run (`joined-fix2.log`, `joined-base2.log`,
+  `idle-joined-fix.log`), and in the opt-level suite. A bf16 model, which the profile's MXFP4 line
+  does not reach. It looks like a near-tie, to be flagged to the test's owner rather than read as
+  this change's.
+* **The base side of the joined test:** `idle-joined-base.log` was stopped at its start, since
+  `joined-base2.log` already holds base's clean standalone pass.
 
 **The new case passes.**
 
@@ -299,11 +356,16 @@ compute-sanitizer --tool memcheck` on the `2f4f9cf0` build, the test alone, and 
 
 * `scripts/`:
   * `ab.sh`, with `sweep.sh`, `bench.sh` and `make_prompts.py` from the previous run;
-  * `tests_build.sh`, `tests_moe.sh`, `tests_moe2.sh`, `tests_engine.sh`, `after_ab.sh`;
+  * `final_ab.sh`, `final2_ab.sh`: the final pass;
+  * `tests_build.sh`, `tests_moe.sh`, `tests_moe2.sh`, `after_ab.sh`;
+  * `tests_engine.sh`, `tests_engine_b.sh`, `tests_engine_opt.sh`: engine-cuda;
+  * `joined_rerun.sh`, `joined_rerun2.sh`, `reruns_idle.sh`: the failures' reruns;
   * `sanitize.sh`, `firetrace.sh`;
   * analysis: `curve.py`, `summ.py`, `clocks.py`, `clocks_window.py`, `agree.py`, `tokeq.py`.
 * `results/`:
   * `ab/`: the 24 runs, with `.json`, `.log` and `.clk` for each;
+  * `final/`, `final2/`: the final pass, 8 and 16 runs;
+  * `curve-final.md`, `clocks-window-final.txt`, `tokens-final.txt`;
   * `curve-ab.md`, `summ-ab.txt`, `clocks-ab.txt` (whole runs, mostly load), `clocks-window-ab.txt`
     (measured windows), `tokens-ab.txt`, `engines.txt`;
   * `tests/`.

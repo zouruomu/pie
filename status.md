@@ -1,120 +1,38 @@
 # Status: 20261104-1903-l4-x1-gpt-oss-20b-batching
 
-**Updated:** 2026-11-05 00:15Z (pod created about 19:03Z, bootstrap 19:16Z; deadline taken as 03:03Z; target hand-over about 00:05Z)
+**READY FOR REVIEW** — 2026-11-05 01:39Z. Pod created about 19:03Z; deadline taken as 03:03Z.
 
-**Phase:** tests (since 20:33Z). The A/B is done (19:31–20:33Z).
+**Fix branch:** `r2g/20261104-1903-l4-x1-gpt-oss-20b-batching`, one commit `8e8b19b0` on upstream
+`48399500`, the newest. The subject is unchanged; the body is empty. It changes the L4 profile line
+(`moe.mxfp4_mma_per_from` 4 → 0) and adds one kernel-test case,
+`(K::MxBias, mma, [32, 16, 4, 320, 2880], t, alpha, 0)`: gpt-oss-20b's c16 gate/up select, on
+`moe_select_mxfp4_mma_run<4, 4, 3, 4>`, the instantiation gpt-oss itself fires. It passes.
 
-* **Engines** (`results/engines.txt`):
-  * base `1b851247`, sha256 `5c7d99c7…`;
-  * fix `2f4f9cf0`, sha256 `414293e1…`.
+**Results** (report.md has the details and log paths; pr.md is updated):
 
-**Last result:**
+* **A/B**, 3 rounds on `1b851247`: c8 242.9 → 277.4 (+14.2%), c16 301.0 → 485.9 (+61.4%), c24
+  −1.3%, c32 +0.4%.
+* **After the rebase**, 3 rounds: c8 +16.1%, c16 +65.0%, c24 −1.1%, c32 −1.3% (base's own c32 runs
+  span 798–852).
+* **Tokens:** base against fix sits at the low end of the reruns' range at c8/c16, and inside it at
+  c32 (the control). After the rebase it sits inside the reruns' range at every shape.
+* **kernels-cuda `moe_select`:** the same 5 pass on both builds. The sixth fails identically on
+  both, at a W4A8 case, not the pipe kernel's (below).
+* **engine-cuda GPU suite** (whole suite, single-threaded, dev build at opt-level 2 with debug
+  assertions): 55 passed, 4 failed, 1 ignored.
+  * The 4 failures ran short of device memory beside my other test processes.
+  * Each passes alone on the GPU, on fix and on base.
+  * The debug build was too slow: over an hour in single tests.
+* **note-1:** compute-sanitizer finds no launch or CUDA error, only pie's own `cuFuncGetParamInfo`
+  probe.
+  * A fire trace shows that the pipe kernel passes on sm_89.
+  * The failure is the first W4A8 case (#1274): its select declines off sm_120a, and the test
+    compares an output it never wrote. Its description matches the pipe case's.
+  * This is a test bug, for Anton, and it corrects the previous run's attribution.
+* **Self-review:** a fresh-context agent recomputed the numbers. Its findings are folded in,
+  including the change of the case to gpt-oss's GLU form.
 
-* **The commit is now `f79b846c`** (pushed; on upstream `1b851247`).
-* **The self-review** (a fresh-context agent) recomputed the numbers. It found errors in my drafts,
-  now fixed in report.md and pr.md:
-  * c24's ranges touch, so I cite the per-round pairs;
-  * clocks over the measured windows, which show both engines at the 72 W cap, and the fix's higher
-    clock at c8/c16;
-  * the fire ordinals;
-  * the sanitizer's 23 + 23;
-  * the GPU sharing between test binaries.
-* **It also found that the brief's example case (no GLU, by token) is a form gpt-oss never fires.**
-  gpt-oss's gate/up select on sm_89 is `run<4, 4, 3, 4>` (GLU, by token), and its down select is
-  `run<4, 4, 0, 4>` by route. So the case is now
-  `(K::MxBias, mma, [32, 16, 4, 320, 2880], t, alpha, 0)`: the brief's line with `alpha`, gpt-oss's
-  c16 gate/up select. The comment reads "partial row tile; gpt-oss-20b's c16 GLU, two routes an
-  expert."
-* **The engine is unchanged by this:** only the test file differs from `2f4f9cf0`, the A/B's fix
-  build.
-* **The previous form passed:** fires 42–43 in `results/tests/firetrace-fix.log`, `run<4, 4, 0, 4>`.
-  The new form passes too (`results/tests/kernels-moe-select-fix2.log`, fire trace on).
-  It is fires 42–43 of the routed test, `fused.moe_select_glu` → `moe_select_mxfp4_mma_run<4, 4, 3, 4>`,
-  and the panic is again the W4A8 case's, with the same values.
-
-**A/B checkpoint (done; `results/ab/`, `results/curve-ab.md`):** 3 alternating rounds, output tok/s, mean (min–max).
-
-| shape | base `1b851247` | fix `2f4f9cf0` | fix vs base | vLLM 0.32.0 (previous run) |
-|---|---|---|---|---|
-| c8 | 242.9 (239–245) | 277.4 (273–282) | +14.2% | 275.6 |
-| c16 | 301.0 (296–306) | 485.9 (482–488) | +61.4% | 441.9 |
-| c24 | 673.6 (668–681) | 664.5 (660–669) | −1.3% | – |
-| c32 | 835.7 (814–851) | 839.0 (828–853) | +0.4% | 737.0 |
-
-* Every JSON records its engine's sha256: 12 base and 12 fix.
-* At-cap SM clock medians are 1,200–1,230 MHz in every run (`results/clocks-ab.txt`).
-* **Tokens** (`results/tokens-ab.txt`, mean prefix share per pair):
-
-  | shape | base vs base | fix vs fix | base vs fix, same round |
-  |---|---|---|---|
-  | c8 | 0.49–0.97 | 0.63–0.90 | 0.41–0.55 |
-  | c16 | 0.45–0.56 | 0.72–0.82 | 0.36–0.57 |
-  | c24 | 0.76–0.83 | 0.60–0.68 | 0.52–0.67 |
-  | c32 | 0.61–0.81 | 0.66–0.82 | 0.67–0.78 |
-
-  c32 keeps its kernel and serves as the control: base against fix falls inside its reruns' range.
-
-**kernels-cuda `linear::moe_select`, fix tree: the new case passes.**
-
-* 5 passed, 1 failed, 1 ignored, in 881.5 s (`results/tests/kernels-moe-select-fix.log`).
-* The one failure, `the_routed_selects_answer_the_routed_dot`, panics only at the pipe-kernel case
-  `Mx 8x400x4 false 320x1024 None 0`, which comes after the new case. Its values are the previous
-  run's: 3.3895e38 against −928.16….
-* The cases run in order and the first failing one panics, so every earlier case passed, the new
-  `MxBias 32x16x4 true 320x2880` included.
-
-**kernels-cuda `linear::moe_select`, base tree:** the same 5 passed, and the same failure at the same
-pipe case with the same values, in 879.4 s (`results/tests/kernels-moe-select-base.log`).
-
-**note-1 (done; report §6):**
-
-* compute-sanitizer memcheck with `CUDA_LAUNCH_BLOCKING=1` took 401 s. It found no launch or CUDA
-  error, only pie's own `cuFuncGetParamInfo` parameter-count probe (`jit/cache.rs:136-158`).
-* A fire trace (`PIE_CUDA_TRACE_FIRES=1`, `results/tests/firetrace-fix.log`) shows the failing case
-  is not the pipe kernel's.
-  * The pipe case fires `moe_select_mxfp4_mma_pipe<0, 3>` and passes, as do the 4 cases after it.
-  * The failure is the first W4A8 case `(K::Mx, w4a8, [8, 400, 4, 320, 1024], f, None, 0)` (#1274),
-    which prints the same description. Off sm_120a its select declines (`Ok(false)`, which the test
-    accepts), and the test then compares the never-written output: the 0x7f7f fill.
-  * This is a test bug, for Anton. It corrects the previous run's attribution.
-* The trace also shows the new case firing `moe_select_mxfp4_mma_run<4, 4, 0, 4>`.
-
-**engine-cuda suite done** (opt-level-2 dev build, debug assertions on, `results/tests/engine-cuda-fix-opt.log`):
-55 passed, 4 failed, 1 ignored, in 4,412 s. All 4 failures trace to device memory taken by my own
-concurrent reruns of the joined test.
-
-* `a_joined_projection_answers_what_its_legs_answer`: hy4-mini `OutOfMemory { need: 13340644096,
-  have: 7877754880 }`.
-* `a_synthesized_region_serves_the_logits_of_its_ops`: dots3-note-mini "this fire wants 81788928
-  bytes of elastic device memory and the shell reserved 0". `bodies_mem` was held down to 2,380 MiB.
-* `an_anchored_region_serves_the_logits_of_its_ops` and
-  `two_models_served_at_once_answer_what_each_answers_alone`: "one at a time lock poisoned", from
-  the panic above.
-* glm45-air-mini's "joined model picks the same token" failed once on fix and once on base (when
-  memory was short), then passed on fix (`joined-fix2.log`). It is a flaky near-tie; a bf16 model.
-
-**Branch:** rebased and pushed. `r2g/20261104-1903-l4-x1-gpt-oss-20b-batching` is now `8e8b19b0`,
-on upstream `48399500`.
-
-**The joined test alone on base** (`joined-base2.log`): passes, all 11 rows, in 961 s.
-
-**Final pass, round 1 on the rebased engines** (`results/final/`, single runs; engine sha256s
-`83a5ba78` base and `12420eb2` fix): c8 243 → 281 (+16.0%), c16 299 → 491 (+64.3%),
-c24 681 → 654 (−4.0%), c32 852 → 798 (−6.3%).
-
-* c32's decode selects keep their kernel, and the 3 rounds before the rebase gave +0.4%. 798 is
-  below every earlier c32 run (814–853), at the same clock.
-* So I am not reading anything from single runs. Two more rounds are queued (`results/final2/`).
-
-**Running / queued (sequential, the GPU otherwise idle):**
-
-1. the 4 failing engine-cuda tests rerun alone, fix then base (`results/tests/idle-*.log`), since
-   00:10Z;
-2. then rounds 2–3 of the final pass, c8–c32, base and fix alternating (about 40 min).
-
-**Blockers:** none.
-
-**ETA hand-over:** about 01:50Z (the deadline is 03:03Z).
+**Running:** nothing.
 
 ## Infrastructure checks
 
