@@ -27,7 +27,7 @@
 - **Tests:**
   - Profile-resolution tests pass on both builds.
   - The engine-cuda GPU suite was 20/60 on each tree, all passing, when the run was closed. It runs at about 25 tests an hour, which can't finish before the deadline.
-  - The kernels-cuda moe_select tests were unfinished.
+  - kernels-cuda moe_select: 5 passed on both builds, and `the_routed_selects_answer_the_routed_dot` failed identically on both. (Corrected 2026-11-05: the pod's final report had this right. The follow-up run traced the failure to #1274's W4A8 case, a pre-existing test bug, not the pipe kernel.)
 
 ## Side findings
 
