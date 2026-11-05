@@ -1,7 +1,7 @@
 # Status: 20261105-2035-a100-sxm-x1-gemma-4-31b-batching
 
-**Phase:** fix v1 built and being measured; knob A/B for pool size running
-**UTC:** 2026-11-05 23:40
+**Phase:** fix v2 built; verification queue (q6) started
+**UTC:** 2026-11-05 23:58
 
 ## Preliminary verdict (1 round so far; rounds 2-3 running)
 
@@ -42,6 +42,19 @@ Remaining gap after v1: pool size. pie's pool at c512 is 671 pages against vLLM'
 
 The cap is what holds pie at ~21 lanes. seat_to_end gates cleanly without it (+23%). But it still holds ~28 lanes where 671 pages fit ~35-44 lanes of 19 pages. Tracing its gate (learned footprint against kv_total) now.
 
+## Note 1 (orchestrator, 23:10Z): acknowledged
+1. Done: the fix no longer changes shared admission. v2 makes the cap a profile decision, `engine.uncapped_admission`, default off: every card behaves exactly as before. Only the A100 profile turns it on, beside `seat_to_end = true`. The plumbing spans engine-cuda chip/serve/api, engine caps (`PoolFacts`), worker translate and runtime bootstrap, about 40 lines. Gemma-4-26B-A4B c512/c1024 is first in the verification queue.
+2. Shared runtime code is touched only by the new field and its filter, which is a no-op unless a profile asks. No change for the gpt-oss-120b x H100 run.
+3. Remaining gap after the cap, c512: the gate admits exactly the pool, 35 lanes = 671 pages / 19. Lanes are in lockstep, since all requests are the same length, so the gate's lockstep bound is real; oversubscribing it 10% or 20% changes nothing (559.4). vLLM's pool seats 40 (11,929 tokens / 297). Lanes decoding: pie 27.6 of 35 (79%), vLLM 32.8 of 40 (82%). ITL 49.3 against 52.2 ms. So the rest of the gap is pool size (-12.5% seats), a slightly larger turnover loss (-4%), and pie's faster step (+6%) against them. working_set_percent 40/30 runs (a smaller arena, a larger pool) are finishing now.
+
+## Fix v2 (results so far with the equivalent exp engine, 1 round)
+| | base | fix | vLLM |
+|---|---|---|---|
+| c64 | 456.1 | 540.6 | 601.5 |
+| c128 | 457.9 | 591.0 | 656.9 |
+| c512 | 453.8 | 559.4 | 628.6 |
+| c1024 | 470.6 | 573.7 | 596.8 |
+
 ## Running
 - Queue q1 (scripts/q1.sh): pie round 1 over c64-c1024, then vLLM and pie rounds 2-3, alternating.
 - An experiment engine is building in a separate worktree (/root/r2g/pie-exp, not the fix): it reads the admission cap's multiplier from an env var, so the cap can be swept (x5, x7/x8, off) with and without `seat_to_end`.
@@ -51,4 +64,4 @@ The cap is what holds pie at ~21 lanes. seat_to_end gates cleanly without it (+2
 - At 21:42Z I edited bench.sh in place while a pie c64 run was executing it. bash resumed at its old byte offset and ran vLLM under pie's c64-r1 label. That file is in results/bad/; no other run was affected (the engine field and sha256 were checked in every JSON).
 - `--pretokenized-prompts` needs transformers in pie's venv; it was installed after the first pie attempt failed.
 
-ETA: early verdict (3 rounds) ~22:45Z. Hand-over ~04:30Z.
+ETA: the verification queue takes ~5.5 h of GPU time (3 alternating rounds of base/fix/vLLM over c64-c1024, Gemma-4-26B, gpt-oss-120b, Qwen3-0.6B, c4-c32, pf4-pf1024, raw, a 1024-token-out load), then the engine-cuda GPU suite. Hand-over ~06:30Z, about 2 h after the 04:30Z target: the cap and pool attribution took the first 3 h. The deadline is 12:37Z.
