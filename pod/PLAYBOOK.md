@@ -95,7 +95,7 @@ The brief gives the deadline and a target hand-over time, by default about half 
   - Other loads: concurrency, throughput, and prefill-heavy (512 × 512-token prompts, 16 out). Also TTFT.
   - Memory fit: does any model stop or start fitting?
 - **Tests:** the relevant unit tests on both builds, and the engine GPU suite single-threaded (`--test-threads=1`; parallel runs flake on 24 GB cards).
-  - Start the GPU suite as soon as the diff is settled, and analyse and write up while it runs. Don't benchmark while it runs, unless it's on a GPU the benchmark doesn't use.
+  - Start the GPU suite as soon as the diff is settled, and analyse and write up while it runs. Don't benchmark or run other tests on its GPU while it runs: in the second run, 4 tests failed for memory beside the agent's own reruns, and rerunning them alone took 2 h.
   - Run the whole suite on the fix build. Rerun only its failures on the base build: any "pre-existing failure" claim needs the same failure there, with numbers.
 - **Final pass:** right before you hand over, rebase on the newest upstream main and rerun the target-cell A/B (always: it's quick). Rerun the long suites only if what landed touches code they cover.
 
@@ -140,6 +140,6 @@ Push the fix branch, set status.md to `READY FOR REVIEW`, run sync.sh, and end y
 - **Network volumes:** they can't host cargo builds (no file locks), so build on the container disk.
 - **TOML comments:** each entry in a profile carries a comment with the measured win and "greedy tokens unchanged".
 - **Power-capped cards:** the L4 is capped at 72 W and its clocks follow power. Record clocks with every run; its pf8 is bimodal.
-- **Slow suites:** in a debug build, the engine-cuda GPU suite ran about 25 tests an hour on an L4.
+- **Slow suites:** in a debug build, the engine-cuda GPU suite ran about 25 tests an hour on an L4. Build it with `CARGO_PROFILE_DEV_OPT_LEVEL=2` (debug assertions stay on): the whole suite then took 74 min there.
 - **Claude Code's own token:** your shell has `CLAUDE_CODE_MESSAGING_TOKEN`. Start builds, benchmarks, tests and profiles with `env -u CLAUDE_CODE_MESSAGING_TOKEN`.
 - **Nondeterminism:** under concurrency, pie's greedy outputs differ between reruns of one engine, because the lanes sharing a step change. Compare base against fix next to base against base.
