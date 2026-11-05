@@ -9,7 +9,7 @@ The gap is real on current main (e4bb499):
 - pie c512 453.8 tok/s (site's pie point: c512, 465.76). TTFT p50 132 s, ITL p50 46.2 ms: it reproduces the site row.
 - vLLM 0.32.0, round 1: c64 601, **c128 657**, c256 625, c512 629, c1024 597 tok/s (site: 569 at c1024).
 - Round 1, pie (main e4bb499, engine sha256 c795a06a): c128 458, c256 475, c512 454, c1024 471 tok/s. c64 is to be rerun (its file was overwritten, see Notes).
-- **Verdict: the gap is real and larger than the site's: pie's best 475 (c256) against vLLM's best 657 (c128), -28%.** At c64 pie reached 601 (ITL 52.9 ms, ~32 decoding) in the overwritten run's partial view, the same as vLLM's c64; from c128 up pie flattens at ~21 decoding.
+- **Verdict: the gap is real and larger than the site's: pie's best 475 (c256) against vLLM's best 657 (c128), -28%.** From c128 up pie flattens at ~21 decoding. (Correction: an earlier line here gave a pie c64 of 601. That number was the overwritten file's, i.e. vLLM's. pie's c64 is pending.)
 - Rounds 2-3 for spread are queued after the experiments (~23:05Z onward).
 
 How many sequences each engine decodes (tok/s x ITL p50):
