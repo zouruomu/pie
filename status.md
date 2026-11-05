@@ -1,14 +1,16 @@
 # Status: 20261105-2035-a100-sxm-x1-gemma-4-31b-batching
 
-**Phase:** reproduce (early verdict in progress)
-**UTC:** 2026-11-05 21:40
+**Phase:** early verdict (1 full round), cap experiments running
+**UTC:** 2026-11-05 22:17
 
 ## Preliminary verdict (1 round so far; rounds 2-3 running)
 
 The gap is real on current main (e4bb499):
 - pie c512 453.8 tok/s (site's pie point: c512, 465.76). TTFT p50 132 s, ITL p50 46.2 ms: it reproduces the site row.
 - vLLM 0.32.0, round 1: c64 601, **c128 657**, c256 625, c512 629, c1024 597 tok/s (site: 569 at c1024).
-- pie c512 against vLLM's best c128: -31%. The full pie curve is pending (round 1 running).
+- Round 1, pie (main e4bb499, engine sha256 c795a06a): c128 458, c256 475, c512 454, c1024 471 tok/s. c64 is to be rerun (its file was overwritten, see Notes).
+- **Verdict: the gap is real and larger than the site's: pie's best 475 (c256) against vLLM's best 657 (c128), -28%.** At c64 pie reached 601 (ITL 52.9 ms, ~32 decoding) in the overwritten run's partial view, the same as vLLM's c64; from c128 up pie flattens at ~21 decoding.
+- Rounds 2-3 for spread are queued after the experiments (~23:05Z onward).
 
 How many sequences each engine decodes (tok/s x ITL p50):
 - vLLM: 31-35 at 51-53 ms. Its KV pool is 13,307 tokens (11.3 GiB) at c128 and 10,889 at c1024: CUDA graphs grow with max_num_seqs.
@@ -24,6 +26,7 @@ pie's memory at c512, from the arm-trace log (results/diag): weights 57.5 GiB, c
 
 ## Notes
 - 20:49Z the 300 GB disk filled (gpt-oss-120b's metal/ and original/ copies). Freed it; lost ~15 min of runs.
+- At 21:42Z I edited bench.sh in place while a pie c64 run was executing it. bash resumed at its old byte offset and ran vLLM under pie's c64-r1 label. That file is in results/bad/; no other run was affected (the engine field and sha256 were checked in every JSON).
 - `--pretokenized-prompts` needs transformers in pie's venv; it was installed after the first pie attempt failed.
 
 ETA: early verdict (3 rounds) ~22:45Z. Hand-over ~04:30Z.

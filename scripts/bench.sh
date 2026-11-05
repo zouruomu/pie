@@ -9,6 +9,8 @@ RES=${RES:-/root/r2g/evidence/results/runs}
 MODEL=${MODEL:-google/gemma-4-31B-it}
 PC=${PC:-/root/prompts/p169.json}; PP=${PP:-/root/prompts/p553.json}
 mkdir -p $RES
+# A run whose label matches the regex in /root/r2g/hold waits until the file is gone.
+while [ -e /root/r2g/hold ] && [[ $label =~ $(cat /root/r2g/hold) ]]; do sleep 10; done
 P=/root/r2g/pie
 case $shape in
   c*)  n=${shape#c}; mode=(tput --num-requests $((2*n)) --concurrency $n --max-tokens 128 --prompts-file $PC) ;;
