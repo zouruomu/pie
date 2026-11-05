@@ -24,3 +24,67 @@
 Loading safetensors checkpoint shards: 100% Completed | 2/2 [00:30<00:00, 15.09s/it]
 
 (EngineCore pid=25486) INFO 11-05 20:43:19 [default_loader.py:501] Loading weights took 30.69 seconds
+(EngineCore pid=25486) INFO 11-05 20:43:21 [model_runner.py:424] Model loading took 58.99 GiB memory and 40.742897 seconds
+(EngineCore pid=25486) INFO 11-05 20:43:21 [topk_topp_sampler.py:124] Using FlashInfer for top-p & top-k sampling.
+(EngineCore pid=25486) INFO 11-05 20:43:21 [torch_utils.py:295] Reducing Torch threads from 128 to 1 for serving. Set OMP_NUM_THREADS in the external environment to override.
+(EngineCore pid=25486) INFO 11-05 20:43:21 [utils.py:347] Using LBNHC KV cache layout.
+(EngineCore pid=25486) INFO 11-05 20:43:49 [encoder_runner.py:131] Encoder cache will be initialized with a budget of 2496 tokens, and profiled with 1 video items of the maximum feature size.
+(MainProcess pid=23245) INFO 11-05 20:43:50 [base.py:280] Multi-modal warmup completed in 74.058s
+(EngineCore pid=25486) INFO 11-05 20:43:50 [monitor.py:40] [backbone] Starting torch.compile
+(EngineCore pid=25486) INFO 11-05 20:44:09 [backends.py:1104] [backbone] Using cache directory: /root/.cache/vllm/torch_compile_cache/a3632124f4/rank_0_0/backbone for vLLM's torch.compile
+(EngineCore pid=25486) INFO 11-05 20:44:09 [backends.py:1166] [backbone] Dynamo bytecode transform time: 18.71 s
+(EngineCore pid=25486) INFO 11-05 20:44:59 [backends.py:398] [backbone] Compiling a graph for compile range (1, 2496) takes 49.78 s
+(EngineCore pid=25486) INFO 11-05 20:45:11 [backends.py:927] collected artifacts: 61 entries, 6 artifacts, 19509995 bytes total
+(EngineCore pid=25486) INFO 11-05 20:45:11 [decorators.py:743] [backbone] saved AOT compiled function to /root/.cache/vllm/torch_compile_cache/torch_aot_compile/1f29473766369588ee1cd88e1d65755c6d09daaa32398dc54eb92ca77b8329a8/rank_0_0/model
+(EngineCore pid=25486) INFO 11-05 20:45:11 [monitor.py:62] [backbone] torch.compile took 80.76 s in total
+(EngineCore pid=25486) INFO 11-05 20:45:12 [monitor.py:91] [backbone] Initial profiling/warmup run took 0.78 s
+Capturing CUDA graphs (PIECEWISE):   0%|          | 0/19 [00:00<?, ?it/s]Capturing CUDA graphs (PIECEWISE):   5%|▌         | 1/19 [00:01<00:31,  1.76s/it]Capturing CUDA graphs (PIECEWISE):  11%|█         | 2/19 [00:01<00:13,  1.27it/s]Capturing CUDA graphs (PIECEWISE):  21%|██        | 4/19 [00:02<00:05,  2.79it/s]Capturing CUDA graphs (PIECEWISE):  26%|██▋       | 5/19 [00:02<00:03,  3.58it/s]Capturing CUDA graphs (PIECEWISE):  37%|███▋      | 7/19 [00:02<00:02,  5.13it/s]Capturing CUDA graphs (PIECEWISE):  42%|████▏     | 8/19 [00:02<00:01,  5.82it/s]Capturing CUDA graphs (PIECEWISE):  47%|████▋     | 9/19 [00:02<00:01,  6.44it/s]Capturing CUDA graphs (PIECEWISE):  53%|█████▎    | 10/19 [00:04<00:04,  1.93it/s]Capturing CUDA graphs (PIECEWISE):  58%|█████▊    | 11/19 [00:04<00:03,  2.48it/s]Capturing CUDA graphs (PIECEWISE):  68%|██████▊   | 13/19 [00:04<00:01,  3.77it/s]Capturing CUDA graphs (PIECEWISE):  79%|███████▉  | 15/19 [00:04<00:00,  4.96it/s]Capturing CUDA graphs (PIECEWISE):  84%|████████▍ | 16/19 [00:06<00:01,  1.89it/s]Capturing CUDA graphs (PIECEWISE):  95%|█████████▍| 18/19 [00:06<00:00,  2.75it/s]Capturing CUDA graphs (PIECEWISE): 100%|██████████| 19/19 [00:08<00:00,  1.54it/s]Capturing CUDA graphs (PIECEWISE): 100%|██████████| 19/19 [00:08<00:00,  2.33it/s]
+Capturing CUDA graphs (FULL):   0%|          | 0/2 [00:00<?, ?it/s]Capturing CUDA graphs (FULL): 100%|██████████| 2/2 [00:00<00:00, 10.91it/s]Capturing CUDA graphs (FULL): 100%|██████████| 2/2 [00:00<00:00, 10.90it/s]
+(EngineCore pid=25486) INFO 11-05 20:45:24 [model_runner.py:1127] Graph capturing finished in 10 secs, took 0.25 GiB
+(EngineCore pid=25486) INFO 11-05 20:45:25 [gpu_worker.py:759] Available KV cache memory: 11.1 GiB
+(EngineCore pid=25486) INFO 11-05 20:45:25 [gpu_worker.py:774] CUDA graph memory profiling is enabled (default since v0.21.0). The current --gpu-memory-utilization=0.9000 is equivalent to --gpu-memory-utilization=0.8965 without CUDA graph memory profiling. To maintain the same effective KV cache size as before, increase --gpu-memory-utilization to 0.9035. To disable, set VLLM_MEMORY_PROFILER_ESTIMATE_CUDAGRAPHS=0.
+(EngineCore pid=25486) INFO 11-05 20:45:25 [kv_cache_utils.py:2327] GPU KV cache size: 13,125 tokens, Maximum concurrency for 2,048 tokens per request: 6.41x
+(EngineCore pid=25486) INFO 11-05 20:45:25 [kv_cache_utils.py:853] kv cache group sizes (16, 16, 16, 16, 16, 32)
+(EngineCore pid=25486) INFO 11-05 20:45:25 [kv_cache_utils.py:854] kv lcm block sizes 32
+(EngineCore pid=25486) INFO 11-05 20:45:25 [kernel_warmup.py:176] JIT kernel warmup starting.
+(EngineCore pid=25486) INFO 11-05 20:45:25 [kernel_warmup.py:189] JIT kernel warmup finished in 0.00s.
+2026-11-05 20:45:27,775 - INFO - core.py:564 - flashinfer.jit: Building JIT module sampling; this can take several minutes on first use.
+Capturing CUDA graphs (PIECEWISE):   0%|          | 0/19 [00:00<?, ?it/s]Capturing CUDA graphs (PIECEWISE):   5%|▌         | 1/19 [00:00<00:02,  8.34it/s]Capturing CUDA graphs (PIECEWISE):  11%|█         | 2/19 [00:00<00:01,  8.57it/s]Capturing CUDA graphs (PIECEWISE):  16%|█▌        | 3/19 [00:00<00:01,  8.53it/s]Capturing CUDA graphs (PIECEWISE):  21%|██        | 4/19 [00:00<00:01,  8.65it/s]Capturing CUDA graphs (PIECEWISE):  26%|██▋       | 5/19 [00:00<00:01,  9.05it/s]Capturing CUDA graphs (PIECEWISE):  32%|███▏      | 6/19 [00:00<00:01,  8.98it/s]Capturing CUDA graphs (PIECEWISE):  37%|███▋      | 7/19 [00:00<00:01,  9.11it/s]Capturing CUDA graphs (PIECEWISE):  42%|████▏     | 8/19 [00:00<00:01,  9.32it/s]Capturing CUDA graphs (PIECEWISE):  53%|█████▎    | 10/19 [00:01<00:00,  9.49it/s]Capturing CUDA graphs (PIECEWISE):  58%|█████▊    | 11/19 [00:01<00:00,  9.50it/s]Capturing CUDA graphs (PIECEWISE):  68%|██████▊   | 13/19 [00:01<00:00,  9.86it/s]Capturing CUDA graphs (PIECEWISE):  79%|███████▉  | 15/19 [00:01<00:00, 10.09it/s]Capturing CUDA graphs (PIECEWISE):  89%|████████▉ | 17/19 [00:01<00:00, 10.28it/s]Capturing CUDA graphs (PIECEWISE): 100%|██████████| 19/19 [00:01<00:00, 10.38it/s]Capturing CUDA graphs (PIECEWISE): 100%|██████████| 19/19 [00:01<00:00,  9.70it/s]
+Capturing CUDA graphs (FULL):   0%|          | 0/11 [00:00<?, ?it/s]Capturing CUDA graphs (FULL):  18%|█▊        | 2/11 [00:00<00:00, 12.14it/s]Capturing CUDA graphs (FULL):  36%|███▋      | 4/11 [00:00<00:00, 12.12it/s]Capturing CUDA graphs (FULL):  55%|█████▍    | 6/11 [00:00<00:00, 12.56it/s]Capturing CUDA graphs (FULL):  73%|███████▎  | 8/11 [00:00<00:00, 12.44it/s]Capturing CUDA graphs (FULL):  91%|█████████ | 10/11 [00:00<00:00, 12.36it/s]Capturing CUDA graphs (FULL): 100%|██████████| 11/11 [00:00<00:00, 12.39it/s]
+(EngineCore pid=25486) INFO 11-05 20:47:01 [model_runner.py:1127] Graph capturing finished in 4 secs, took 0.12 GiB
+(EngineCore pid=25486) INFO 11-05 20:47:01 [gpu_worker.py:971] CUDA graph pool memory: 0.12 GiB (actual), 0.28 GiB (estimated), difference: 0.16 GiB (134.4%).
+(EngineCore pid=25486) INFO 11-05 20:47:01 [gpu_worker.py:1034] Free memory on device (78.84/79.25 GiB) on startup. Desired GPU memory utilization is (0.9, 71.33 GiB). Actual usage is 59.24 GiB for consumed memory (weights + non-torch), 0.99 GiB for peak activation, and 0.12 GiB for CUDAGraph memory. Replace gpu_memory_utilization config with `--kv-cache-memory=11628160922` (10.83 GiB) to fit into requested memory, or `--kv-cache-memory=19692195328` (18.34 GiB) to fully utilize gpu memory. Current kv cache memory in use is 11.1 GiB.
+(EngineCore pid=25486) INFO 11-05 20:47:02 [jit_monitor.py:84] Kernel JIT monitor activated; monitored JIT compilations during inference will use mode=warn.
+(EngineCore pid=25486) INFO 11-05 20:47:03 [core.py:395] init engine (profile, create kv cache, warmup model) took 222.25 s (compilation: 80.76 s)
+(EngineCore pid=25486) INFO 11-05 20:47:03 [kernel.py:467] Final IR op priority after setting platform defaults: IrOpPriorityConfig(rms_norm=['native'], fused_add_rms_norm=['native'], gelu_and_mul_sparse=['triton', 'native'])
+(MainProcess pid=23245) WARNING 11-05 20:47:03 [input_processor.py:408] Passing raw prompts to InputProcessor is deprecated and will be removed in the future. You should instead pass the outputs of Renderer.render_cmpl() or Renderer.render_chat().
+(EngineCore pid=25486) WARNING 11-05 20:47:04 [jit_monitor.py:140] Triton kernel JIT compilation during inference: kernel_unified_attention. This causes a latency spike; consider extending warmup to cover this shape/config.
+(MainProcess pid=23245) INFO 11-05 20:47:42 [core_client.py:770] [shutdown] MPClient: start timeout=default
+(MainProcess pid=23245) INFO 11-05 20:47:43 [core_client.py:772] [shutdown] MPClient: stopping engine manager
+(MainProcess pid=23245) INFO 11-05 20:47:43 [utils.py:628] [shutdown] Process manager: send sigterm to process EngineCore
+(EngineCore pid=25486) INFO 11-05 20:47:43 [core.py:1454] [shutdown] EngineCore: trigger received signal=SIGTERM
+(EngineCore pid=25486) INFO 11-05 20:47:43 [core.py:1635] [shutdown] EngineCore: start mode=abort timeout=0s
+(EngineCore pid=25486) INFO 11-05 20:47:43 [core.py:1666] [shutdown] EngineCore: request processing complete; starting resource teardown
+(EngineCore pid=25486) INFO 11-05 20:47:43 [core.py:1499] [shutdown] EngineCore: exiting busy loop
+(MainProcess pid=23245) INFO 11-05 20:47:45 [core_client.py:774] [shutdown] MPClient: engine manager stopped
+(MainProcess pid=23245) INFO 11-05 20:47:45 [core_client.py:775] [shutdown] MPClient: cleaning up background resources
+(MainProcess pid=23245) INFO 11-05 20:47:45 [core_client.py:777] [shutdown] MPClient: complete
+
+----------------------------------------------------
+mode:              tput
+engine:            vllm
+model:             google/gemma-4-31B-it
+completed:         128/128  failed=0
+wall:              27.254 s
+requests/sec:      4.70
+output tokens:     16384
+prompt tokens:     21632
+output tok/sec:    601.17
+lat mean/p50:      17111.3 / 19476.3 ms
+lat p95/p99:       27030.7 / 27045.6 ms
+ttft mean/p50:     8178.0 / 6900.8 ms
+ttft p95/p99:      21089.0 / 21196.0 ms
+intertoken p50/p99/max: 52.98 / 647.71 / 6773.45 ms
+----------------------------------------------------
+EXIT=0
+1410 MHz, 1410 MHz, 34, 91.96 W
