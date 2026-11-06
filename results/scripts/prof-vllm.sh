@@ -8,6 +8,6 @@ env -u CLAUDE_CODE_MESSAGING_TOKEN VLLM_ENABLE_V1_MULTIPROCESSING=0 \
 /usr/local/cuda/bin/nsys profile -t cuda,nvtx -s none --cpuctxsw=none --cuda-graph-trace=$gt \
   --capture-range=cudaProfilerApi --capture-range-end=stop -f true -o /root/prof/$label \
 ${VENV:-/root/venv-vllm}/bin/python vllm_bench.py latency --model $M --requests 2 --warmup 2 --max-tokens 256 \
-  --prompts-file /root/prompts-512.json --report-timing --json-out /root/prof/$label.json \
+  --prompts-file ${PROMPTS:-/root/prompts-512.json} --report-timing --json-out /root/prof/$label.json \
   --cuda-profiler-capture "$@" > /root/prof/$label.log 2>&1
 echo EXIT=$? >> /root/prof/$label.log

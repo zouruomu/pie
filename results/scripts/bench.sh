@@ -9,6 +9,8 @@ cd /root/r2g/pie/scripts/bench
 so=/root/r2g/pie/packages/python/server/python/pie/_engine.abi3.so
 { echo "date: $(date -u +%FT%TZ)"; echo "engine: $eng ${VENV:-/root/venv-$eng}"; [ $eng = pie ] && echo "engine_sha256: $(sha256sum $so | cut -d' ' -f1)";
   nvidia-smi --query-gpu=clocks.sm,clocks.max.sm,clocks.mem,power.draw,temperature.gpu --format=csv,noheader; } > $R/$label.meta
+nvidia-smi --query-gpu=clocks.sm,utilization.gpu,power.draw --format=csv,noheader,nounits -lms 1000 > $R/$label.clocks &
+smi=$!
 if [ $eng = pie ]; then
   env -u CLAUDE_CODE_MESSAGING_TOKEN RUST_LOG=warn,runtime::engine::load=info PYTHONPATH=/root/r2g/pie/packages/python/client/src:/root/r2g/pie/packages/python/server/python \
     PIE_BENCH_INFERLET_DIR=/root/r2g/pie/examples/text-completion-bench \
@@ -19,4 +21,6 @@ else
     --max-tokens 256 --prompts-file $P --report-timing --dump-all-token-ids --json-out $R/$label.json "$@" > $R/$label.log 2>&1
 fi
 echo EXIT=$? >> $R/$label.log
+kill $smi
 nvidia-smi --query-gpu=clocks.sm,power.draw,temperature.gpu --format=csv,noheader >> $R/$label.meta
+awk -F', ' '$2>50{print $1}' $R/$label.clocks | sort -n | awk '{a[NR]=$1}END{if(NR)print "busy SM clock median MHz: "a[int((NR+1)/2)]" over "NR" samples"}' >> $R/$label.meta

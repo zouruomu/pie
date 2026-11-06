@@ -1,0 +1,12 @@
+# pie: 47 decode steps, period 9640.2 us
+routed experts GEMMs	2413.2
+projections (qkv, index q/k, o, shared expert, dense MLP)	1704.0
+activation quantize (e4m3 1x32)	863.4
+routing: gate, top-k, layout, gather, weighted sum	1105.7
+SwiGLU	271.1
+norms, q/k norm + rope, kv append	1412.3
+index top-k	102.2
+attention (selected + 3 dense layers)	1092.2
+lm_head	349.5
+other (sampling, bookkeeping)	36.9
+gaps (no kernel running)	289.7

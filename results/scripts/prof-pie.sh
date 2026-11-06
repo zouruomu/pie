@@ -8,7 +8,7 @@ PIE_BENCH_INFERLET_DIR=/root/r2g/pie/examples/text-completion-bench \
 /usr/local/cuda/bin/nsys profile -t cuda,nvtx,osrt -s none --cpuctxsw=none --cuda-graph-trace=$gt \
   --capture-range=cudaProfilerApi --capture-range-end=stop -f true -o /root/prof/$label \
 /root/venv-pie/bin/python pie_bench.py latency --model $M \
-  --requests 2 --warmup 2 --max-tokens 256 --prompts-file /root/prompts-512.json \
+  --requests 2 --warmup 2 --max-tokens 256 --prompts-file ${PROMPTS:-/root/prompts-512.json} \
   --report-timing --json-out /root/prof/$label.json \
   --cuda-profiler-capture --cuda-profiler-delay-s 1.0 --cuda-profiler-duration-s 0.5 "$@" > /root/prof/$label.log 2>&1
 echo EXIT=$? >> /root/prof/$label.log

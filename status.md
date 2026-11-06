@@ -1,7 +1,7 @@
 # Status: 20261106-0130-b200-x1-minimax-m3-1-flash-decode
 
-UTC: 2026-11-06 02:57Z
-Phase: reproduce done (rounds 2-3 running), attribution next.
+UTC: 2026-11-06 03:25Z
+Phase: attribution done (first pass); building the first fix (selected attention split over a cluster).
 
 ## Early verdict (B200, main e2e9d1e, SM 1965 MHz)
 The gap is real, but not as the site states it.
@@ -10,10 +10,27 @@ The gap is real, but not as the site states it.
 | A: MiniMax-M3.1-Flash mini60-e16 (MXFP8 proj + NVFP4 experts; the site's base_model) | pie (MX8+NVFP4 deployment) | 9.01 / 8.98 / 8.97 | 111.2 | 3 |
 | A | vLLM 0.32.0, 0.33.0; SGLang 0.5.22 | cannot load (NVFP4 expert scales read as MXFP8) | - | - |
 | B: MiniMax-M3-MXFP8 mini60-e16 (same architecture, MXFP8 everywhere) | pie (MX8 deployment) | 9.62 | 104 | 1 (2 more running) |
-| B | vLLM 0.32.0 | 6.92 | 144.5 | 1 (2 more running) |
-| B | SGLang 0.5.22 | 7.59 | 131.8 | 1 (2 more running) |
-On cut B pie trails vLLM by ~28% and SGLang by ~21%. Site: pie 8.99, vLLM 5.73, SGLang 7.80.
+| B | vLLM 0.32.0 | 6.92 / 6.88 / 6.87 | 145.4 | 3 |
+| B | SGLang 0.5.22 | 7.59 / 7.52 / 7.52 | 133.0 | 3 |
+On cut B pie trails vLLM by 28.5% and SGLang by 21.8% (decode tok/s = 1000/ITL p50, medians). vLLM/SGLang ITL from the streaming c1 client (tput --concurrency 1 --report-timing); pie from its latency client. Site: pie 8.99, vLLM 5.73, SGLang 7.80.
 Whatever the site's vLLM ran (most likely a dev build or a different cut), cut B is the fair same-weights comparison I can reproduce, so I attribute and fix on it and check every change on cut A too.
+
+## Per-step attribution, cut B (nsys node traces; results/analysis/components-*.tsv, scripts/components.py)
+Exposed time per component (each kernel charged end minus the latest earlier end on any stream), us a step:
+| component | pie (9640) | vLLM (6845) | delta |
+|---|---|---|---|
+| GEMMs: projections + routed experts | 4117 | 2649 | +1468 |
+| norms, q/k norm + RoPE, KV append | 1412 | 602 | +810 |
+| attention (sparse + 3 dense layers) | 1092 | 409 | +683 |
+| routing: gate, top-k, layout, gather, sum | 1106 | 589 | +517 |
+| activation quantize (e4m3 1x32) | 863 | 461 | +402 |
+| SwiGLU | 271 | 190 | +81 |
+| index top-k | 102 | 243 | -141 |
+| lm_head | 350 | 404 | -55 |
+| other | 37 | 78 | -41 |
+| gaps (no kernel running) | 290 | 1220 | -930 |
+Per MoE layer on the critical path (pie 155 us vs vLLM ~108): q/k norm + RoPE + KV append +12 (two single-CTA fused row skeletons, 14.4 us, vs vLLM's one 10-CTA fused kernel, 2.3); sparse attention +11.6 (pie's selected MMA kernel runs 4 CTAs, one a kv head, 18.4 us; vLLM splits 16 ways a head, 5.0 + 2.2 merge); expert glue between the gate-up and down GEMMs +11 (gather, SwiGLU, layout, quantize); qkv projection +6; expert down GEMM +5.5; routing layout +4.
+The attention and q/k-norm causes are the same on cut A (the site's checkpoint): selected attention 18.4-18.6 us a layer there too.
 
 ## Findings so far (raw logs in results/raw, results/logs)
 1. Cut: MiniMaxAI/MiniMax-M3.1-Flash @ce7f4df8 (weights unchanged since 10-23), layers 0-59, 16 of 128 experts: 43.41 GiB, MXFP8 projections + NVFP4 experts. Site DB row (data/tags/b200-full.json) confirms mini_k 0.125, 60 layers, base_model MiniMaxAI/MiniMax-M3.1-Flash.

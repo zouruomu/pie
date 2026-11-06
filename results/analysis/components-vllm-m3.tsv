@@ -1,0 +1,12 @@
+# vllm: 503 decode steps, period 6845.1 us
+routed experts GEMMs	600.5
+projections (qkv, index q/k, o, shared expert, dense MLP)	2048.1
+activation quantize (e4m3 1x32)	461.2
+routing: gate, top-k, layout, gather, weighted sum	588.7
+SwiGLU	190.3
+norms, q/k norm + rope, kv append	601.6
+index top-k	242.7
+attention (selected + 3 dense layers)	409.4
+lm_head	404.1
+other (sampling, bookkeeping)	78.3
+gaps (no kernel running)	1220.2
