@@ -146,16 +146,31 @@ pending: pbatch, c4-c32, raw, final A/B.
 
 ## 6. Token equality
 
-pending. So far, at c512, full id lists over 1,024 requests (`scripts/tokeq.py`):
+Full greedy id lists, request by request (`scripts/tokeq.py`; outputs in `results/tokeq-target.txt`, `results/tokeq-curve.txt`).
 
-| pair | requests that differ | tokens before first divergence |
-|---|---|---|
-| base vs base (exp ×5 vs base r1) | 133 | 90.9% |
-| fix v1 vs fix v2 (same admission) | 41 | 97.3% |
-| fix v2 vs fix v3 | 51 | 96.8% |
-| base vs fix v1 | 697 | 55.1% |
+**Where the cap does not bind, base and fix produce the same tokens:**
 
-Base against fix differs more than either against itself. The fix decodes 35-38 lanes a step, not 26, so every GEMM runs other row counts and the bf16 sums round differently. The check that this is batch composition, not a fault, is c16 and raw, where the cap does not bind: pending.
+| shape | base vs fix |
+|---|---|
+| raw (8 × 256 out) | 0 of 8 differ, 2,048 tokens identical |
+| c8, c16 | 0 of 16, 0 of 32 differ |
+| c4 | 1 of 8 differs (at token 15) |
+| pf4, pf8, pf64, pf512 (first token) | 0 differ, although the working-set line changes the fire sizes |
+
+**Where the cap binds (c32 and up), the lanes a step differ, and so do the outputs.** Base vs fix diverges more than reruns of either engine:
+
+| point | base vs base (r3 vs r2) | fix vs fix (r1 vs r3) | base vs fix (r3) |
+|---|---|---|---|
+| c64 (128 req.) | 30 differ, 84.0% before divergence | 2, 99.2% | 81, 59.0% |
+| c128 (256) | 41, 89.1% | 0, 100% | 168, 62.1% |
+| c256 (512) | 66, 90.8% | 6, 99.1% | 361, 55.3% |
+| c512 (1024) | 140, 90.4% | 33, 97.7% | 700, 55.3% |
+| c1024 (2048) | 329, 88.8% | 488, 86.3% | 1488, 53.3% |
+| c32 (64), curve | – | – | 44, 52.3% |
+
+- **Why base and fix differ more than reruns:** the base decodes 21-22 lanes a step and the fix 27-30, so every GEMM and attention launch runs other row counts. bf16 sums round differently with the row count and tiling, so near-tied greedy picks flip, and the rest of the sequence follows. A rerun of one engine keeps the lane count and drifts only with arrival jitter.
+- **Fix vs fix is closer than base vs base.** The fix's waves are lockstep (seat_to_end holds lanes to the pool's 35-38), so its batches repeat run to run.
+- pending: vLLM's own ids at c512 (offline path) as an outside reference, base vs vLLM next to fix vs vLLM (`results/vllm-tokens`).
 
 ## 7. Cross-model checks (this A100, same harness)
 

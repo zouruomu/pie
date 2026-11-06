@@ -1,7 +1,7 @@
 # Status: 20261105-2035-a100-sxm-x1-gemma-4-31b-batching
 
 **Phase:** target A/B done (3 rounds); pbatch, cross-model and curve checks running, then the final A/B and the GPU suite
-**UTC:** 2026-11-06 07:02
+**UTC:** 2026-11-06 08:15
 
 ## Preliminary verdict (1 round so far; rounds 2-3 running)
 
@@ -63,6 +63,9 @@ The pool-size half of the remaining gap. At c512 (fix v1 + user layer, 1 round):
 - Tests on the fix tree so far: runtime 101 passed; pie-profile 41 passed; engine-cuda chip 13 passed.
 
 ## Latest
+- Rest of the curve (1 round, fix v3 / base): c4 0.0%, c8 +0.1%, c16 -0.1%, **c32 +37.0%** (546.3 vs 398.6: the cap binds there too), raw 25.3 = 25.3. pbatch pf4 3734/3735, pf8 3829/3649, pf16 3637/3733 (~2-s runs). Best pbatch: fix 3829 vs base 3735 vs vLLM 3702.
+- **Tokens:** raw, c8, c16 and pf4-pf512 identical base vs fix; c4 1 of 8 differs. From c32 up the lane count a step changes, and base vs fix differs more than reruns of either engine (report §6).
+- Running: the 1024-token-out c128 check (first wave). The base run has gone 22 min (pool seats ~10 such sequences; the cap admits 29). The final rebased A/B is trimmed to c128+c512 (q13b) to keep the suite inside the deadline. ETA hand-over ~10:45Z.
 - **Cross-model (1 round unless noted), fix v3 / base:**
   - Gemma-4-26B-A4B: c512 +10.7% (3 runs each: 5158 vs 4661; vLLM 4620), c1024 +2.1% (5044 vs 4941; vLLM 4682).
   - gpt-oss-120b: c256 +0.6%, c512 +1.8%, c1024 +9.1% (3014 vs 2763); vLLM 2431 / 2397 / 2237.
