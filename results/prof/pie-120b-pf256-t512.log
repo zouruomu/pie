@@ -1,0 +1,39 @@
+engine-cuda: bodies armed 128 of 128 compositions at load (decode 9/9, prefill 44/44, mixed 43/43, tower 0/0, wide 32/32; 0 segmented; 185 MiB of 4096 MiB, 96 of 1024 seats) (pool declared 19008 MiB, high water 864 MiB, committed 864 MiB, spare under the ceiling 3871 MiB) [13 key(s) never fired — this deployment cannot synthesize them, or their present set was already refused admission; e.g. mixed c2+c0 at bucket 1 (512 seat(s) x 2048 context, 256 lane(s))] [sealed: every key attempted]
+╭─ Pie Engine ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╮
+│ Host         127.0.0.1:40817                                                                                                        │
+│ Model        default (/root/.cache/huggingface/hub/models--openai--gpt-oss-120b/snapshots/b5c939de8f754692c1647ca79fbf85e8c1e70f8a) │
+│ Backend      cuda                                                                                                                   │
+│ Device       cuda:0                                                                                                                 │
+╰─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╯
+[pie-bench] measured-start
+Capture range started in the application.
+Capture range ended in the application.
+Generating '/tmp/nsys-root/nsys-report-0ad8.qdstrm'
+[1/1] [0%                          ] pie-120b-pf256-t512.nsys-repProcessing events...
+[1/1] [0%                          ] pie-120b-pf256-t512.nsys-rep[1/1] [1%                          ] pie-120b-pf256-t512.nsys-rep[1/1] [2%                          ] pie-120b-pf256-t512.nsys-rep[1/1] [5%                          ] pie-120b-pf256-t512.nsys-rep[1/1] [6%                          ] pie-120b-pf256-t512.nsys-rep[1/1] [7%                          ] pie-120b-pf256-t512.nsys-rep[1/1] [8%                          ] pie-120b-pf256-t512.nsys-rep[1/1] [9%                          ] pie-120b-pf256-t512.nsys-rep[1/1] [10%                         ] pie-120b-pf256-t512.nsys-rep[1/1] [11%                         ] pie-120b-pf256-t512.nsys-rep[1/1] [12%                         ] pie-120b-pf256-t512.nsys-rep[1/1] [13%                         ] pie-120b-pf256-t512.nsys-rep[1/1] [14%                         ] pie-120b-pf256-t512.nsys-rep[1/1] [=15%                        ] pie-120b-pf256-t512.nsys-rep[1/1] [=16%                        ] pie-120b-pf256-t512.nsys-rep[1/1] [==18%                       ] pie-120b-pf256-t512.nsys-rep[1/1] [==19%                       ] pie-120b-pf256-t512.nsys-rep[1/1] [==20%                       ] pie-120b-pf256-t512.nsys-rep[1/1] [=======================93%  ] pie-120b-pf256-t512.nsys-rep[1/1] [=======================96%  ] pie-120b-pf256-t512.nsys-rep[1/1] [========================98% ] pie-120b-pf256-t512.nsys-rep[1/1] [========================100%] pie-120b-pf256-t512.nsys-rep[1/1] [========================100%] pie-120b-pf256-t512.nsys-rep
+[pie-bench] measured-end
+[2m2026-11-06T11:17:25.300116Z[0m [33m WARN[0m [2mtarpc::client[0m[2m:[0m Connection broken: could not ready the transport for writes: an error occurred readying to send into the channel: the channel is closed and cannot accept new items for sending
+[2m2026-11-06T11:17:25.300122Z[0m [33m WARN[0m [2mtarpc::server[0m[2m:[0m Requests stream errored out: could not ready the transport for writes: an error occurred readying to send into the channel: the channel is closed and cannot accept new items for sending
+
+----------------------------------------------------
+mode:              tput
+engine:            pie
+model:             openai/gpt-oss-120b
+completed:         256/256  failed=0
+wall:              4.604 s
+requests/sec:      55.61
+output tokens:     256
+prompt tokens:     131072
+output tok/sec:    55.61
+lat mean/p50:      2391.6 / 2339.7 ms
+lat p95/p99:       4472.2 / 4585.8 ms
+total batches:     26
+avg batch latency us: 346790.0
+last batch latency us: 293662
+total requests:    256
+max forward requests: 10
+batch size hist:   [0, 0, 1, 25, 0, 0, 0, 0]
+----------------------------------------------------
+Generated:
+	/root/r2g/evidence/results/prof/pie-120b-pf256-t512.nsys-rep
+EXIT=0

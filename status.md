@@ -54,6 +54,25 @@ The whole gap is the expert GEMMs: pie's W4A16 register-dequant bf16 mma.sync se
 is cheaper because its GLU and bias fuse into the select). So at W4A16 nothing besides the MoE GEMM precision accounts for the gap.
 Equal-token traces (pie at 512 of its own tokens) are queued to confirm.
 
+### Equal-token attribution (11:20Z): pie at 512 prompt tokens of its own rendering (prompts-gptoss-576.json), pf256, 131,072 tokens each
+
+| component | 120b pie ms | 120b TRT-LLM ms | delta | 20b pie ms | 20b TRT-LLM ms | delta |
+|---|---|---|---|---|---|---|
+| MoE expert GEMMs (gate-up + down) | 3478 | 1818 | +1660 | 2091 | 991 | +1101 |
+| MoE routing / act quantize / SwiGLU / combine / bias | 129 | 297 | -168 | 84 | 186 | -102 |
+| dense GEMMs (qkv, o, router, head) | 727 | 677 | +50 | 482 | 450 | +32 |
+| norms, residuals, rope, KV write | 166 | 140 | +26 | 109 | 89 | +20 |
+| attention | 82 | 98 | -16 | 54 | 65 | -10 |
+| other | 1 | 12 | -11 | 1 | 10 | -9 |
+| total kernel time | 4582 | 3041 | +1542 | 2822 | 1790 | +1031 |
+| wall | 4604 | 3079 | +1525 | 2840 | 1868 | +972 |
+
+The MoE (GEMMs + glue) is +1492 of +1542 ms (97%) on 120b and +999 of +1031 (97%) on 20b. The rest, at equal precision, is +49 / +32 ms (~1%):
+nothing at W4A16 near the 4.5% bar. TRT-LLM's W4A8 grouped GEMMs run ~517 TFLOP/s of expert work; pie's W4A16 selects ~267.
+- ee9098f60 (the site's 120b commit) on this pod: 28.7k tok/s at pf256, same kernels and component times as main (results/prof/ee9098-*):
+  the site's 13.8k was that site run, not pie. #1430 changes nothing for gpt-oss (same W4A16 staged selects at both commits).
+- pie at 512 tokens a prompt: 120b 28.5k, 20b 46.1k at pf256 (vs 29.0k / 46.7k at 448): token count is not the gap.
+
 ## Fairness notes
 - TRT-LLM reproduced with KV block reuse OFF (cold); its default is ON (80 shared harmony tokens = 2 blocks of 32 a prompt would be reused).
 - pie renders 448 tokens a prompt where HF/TRT-LLM/vLLM render 512 (pie's harmony template has no "You are ChatGPT..." system preamble):
@@ -71,5 +90,7 @@ Equal-token traces (pie at 512 of its own tokens) are queued to confirm.
   (pie at 512 prompt tokens of its own rendering).
 
 ## Running
-- 10:21Z rounds 2-3 (pie/TRT-LLM alternating, pf128-1024, both models). ETA 11:05Z. Then: ee9098f60 120b pf256 + nsys; TRT-LLM nsys for the per-component table.
+- rounds 2-3 done (3 rounds at pf128-1024, spread <2%). Running: vLLM 0.32 sweep both models (~11:20-12:00Z), then ea800efeb vs main at 20b pf8-64
+  (site's 20b pie 49.8k is above main's best 47.0k: checking for a small-pf regression), pf16/pf32 fire-split A/B (20b dips at pf16),
+  120b batching c64/c256/c1024 vs TRT-LLM, and pie's own sm_120a W4A8 select timed at gpt-oss-120b's shape (K padded to 3072). ETA ~13:15Z.
 - ETA hand-over ~19:10Z (earlier if the decision is attribution-only).
