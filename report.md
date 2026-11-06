@@ -328,7 +328,12 @@ Every log names the tree it ran on in its first line, or comes from the times be
 - **engine-cuda suite on 54385f76**: a dev build at opt-level 2, its three test binaries built by `cargo test -p engine-cuda --features cuda` at 09:29Z.
   - The cargo run spent 32 min in one CPU-bound lib test (`every_site_a_retired_rule_fused_folds_into_a_region`, which compiles every catalog deployment under every retired rule) with the GPU idle. 60 lib tests had passed when I stopped it (`engine-cuda-gpu-fix-cargo-partial.log`).
   - I then ran the binaries directly (`scripts/suite.sh`): the lib unit tests on the CPU beside the GPU integration binaries, each `--test-threads=1`. Nothing else ran on the GPU.
-  - Results: pending (`suite-lib.log`, `suite-integration.log`, `suite-ep.log`).
+  - **lib unit tests: 69 passed, 0 failed** (`suite-lib.log`).
+  - **integration binary: 50 passed, 9 failed, 1 ignored** (`suite-integration.log`, 3,442 s).
+    - `a_joined_projection_answers_what_its_legs_answer` fails identically on base. The base binary was built from e4bb499 on 11-05 and rerun alone (`rerun-base-a_joined_projection_answers_what_its_legs_answer.log`): qwen35-d0.8b-bf16-kv-bf16 has worst gap 0.22070313 over a spread of 13.1875 on both builds, at the same assertion. Pre-existing.
+    - The other 8 failed while the pod's disk was full (~10:40Z; two print `No space left on device`, all within one window of thread ids). They are rerun alone on the fix binary, beside the ep binary (`rerun8-fix.log`): pending.
+  - **ep binary:** pending (`suite-ep.log`).
+  - The disk filled because these tests write test checkpoints to /tmp (9.8 GB for one) beside 216 GB of HF blobs. I freed 109 GB of HF blobs no kept model references.
 - **Earlier trees, superseded:**
   - runtime 101 passed on v1 (23:34);
   - pie-profile 41 passed and engine-cuda `chip` 13 passed on v2;

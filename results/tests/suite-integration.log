@@ -53,4 +53,135 @@ test an_adapter_is_not_a_lanes_scratch::an_adapter_is_not_a_lanes_scratch_every_
 test an_epilogue_agrees_with_the_host_interpreter::an_epilogue_agrees_with_the_host_interpreter_every_case ... ok
 test an_exported_kv_stays_mapped::an_exported_kv_stays_mapped ... ok
 test an_output_of_ids_reads_as_stored::an_output_of_ids_reads_as_stored ... ok
-test every_catalog_deployment_dispatches::every_catalog_deployment_dispatches_every_case ... 
+test every_catalog_deployment_dispatches::every_catalog_deployment_dispatches_every_case ... ok
+test every_diagnostic_is_a_word_the_boot_states::every_diagnostic_is_a_word_the_boot_states ... ok
+test every_op_agrees_with_the_host_interpreter::every_op_agrees_with_the_host_interpreter ... ok
+test every_suite_step_agrees_with_the_host_interpreter::every_suite_step_agrees_with_the_host_interpreter ... ok
+test masked_axis::the_masked_axis_is_declared_by_gemma_and_qwen_and_by_nobody_else ... ok
+test no_shell_reads_the_environment::no_shell_reads_the_environment ... ok
+test routed_experts_stream::routed_experts_stream_every_case ... ok
+test the_operators_fraction_sizes_the_pool::the_operators_fraction_sizes_the_pool_every_case ... ok
+
+failures:
+
+---- a_joined_projection_answers_what_its_legs_answer::a_joined_projection_answers_what_its_legs_answer stdout ----
+engine-cuda: engine.graphs is off, a diagnostic mode — every fire walks eagerly (~470 kernel launches of host time per decode step) with nothing captured; a profile serves `on` with bodies
+engine-cuda: engine.graphs is off, a diagnostic mode — every fire walks eagerly (~470 kernel launches of host time per decode step) with nothing captured; a profile serves `on` with bodies
+qwen3-0.6b-bf16-kv-bf16: 56 joins, worst gap 0.046875 over a spread of 7.03125
+engine-cuda: engine.graphs is off, a diagnostic mode — every fire walks eagerly (~470 kernel launches of host time per decode step) with nothing captured; a profile serves `on` with bodies
+engine-cuda: engine.graphs is off, a diagnostic mode — every fire walks eagerly (~470 kernel launches of host time per decode step) with nothing captured; a profile serves `on` with bodies
+llama33-70b-mini-l4-bf16-kv-bf16: 8 joins, worst gap 0.171875 over a spread of 18.3125
+engine-cuda: engine.graphs is off, a diagnostic mode — every fire walks eagerly (~470 kernel launches of host time per decode step) with nothing captured; a profile serves `on` with bodies
+engine-cuda: engine.graphs is off, a diagnostic mode — every fire walks eagerly (~470 kernel launches of host time per decode step) with nothing captured; a profile serves `on` with bodies
+glm45-air-mini-bf16-kv-bf16: 15 joins, worst gap 0.09375 over a spread of 12.28125
+engine-cuda: engine.graphs is off, a diagnostic mode — every fire walks eagerly (~470 kernel launches of host time per decode step) with nothing captured; a profile serves `on` with bodies
+engine-cuda: engine.graphs is off, a diagnostic mode — every fire walks eagerly (~470 kernel launches of host time per decode step) with nothing captured; a profile serves `on` with bodies
+gemma4-e4b-mini-l6-bf16-kv-bf16: 12 joins, worst gap 0.078125 over a spread of 9.3125
+engine-cuda: engine.graphs is off, a diagnostic mode — every fire walks eagerly (~470 kernel launches of host time per decode step) with nothing captured; a profile serves `on` with bodies
+engine-cuda: engine.graphs is off, a diagnostic mode — every fire walks eagerly (~470 kernel launches of host time per decode step) with nothing captured; a profile serves `on` with bodies
+hy4-mini-bf16-kv-bf16: 6 joins, worst gap 0.0625 over a spread of 15.625
+engine-cuda: engine.graphs is off, a diagnostic mode — every fire walks eagerly (~470 kernel launches of host time per decode step) with nothing captured; a profile serves `on` with bodies
+engine-cuda: engine.graphs is off, a diagnostic mode — every fire walks eagerly (~470 kernel launches of host time per decode step) with nothing captured; a profile serves `on` with bodies
+minimax-m3-mini-bf16-kv-bf16: 15 joins, worst gap 0.28125 over a spread of 32.75
+engine-cuda: engine.graphs is off, a diagnostic mode — every fire walks eagerly (~470 kernel launches of host time per decode step) with nothing captured; a profile serves `on` with bodies
+engine-cuda: engine.graphs is off, a diagnostic mode — every fire walks eagerly (~470 kernel launches of host time per decode step) with nothing captured; a profile serves `on` with bodies
+nemotron3-nano-mini-bf16-kv-bf16: 1 joins, worst gap 0.03125 over a spread of 10.53125
+engine-cuda: engine.graphs is off, a diagnostic mode — every fire walks eagerly (~470 kernel launches of host time per decode step) with nothing captured; a profile serves `on` with bodies
+engine-cuda: engine.graphs is off, a diagnostic mode — every fire walks eagerly (~470 kernel launches of host time per decode step) with nothing captured; a profile serves `on` with bodies
+qwen3-30b-a3b-mini-bf16-kv-bf16: 8 joins, worst gap 0.03125 over a spread of 9.375
+engine-cuda: engine.graphs is off, a diagnostic mode — every fire walks eagerly (~470 kernel launches of host time per decode step) with nothing captured; a profile serves `on` with bodies
+engine-cuda: engine.graphs is off, a diagnostic mode — every fire walks eagerly (~470 kernel launches of host time per decode step) with nothing captured; a profile serves `on` with bodies
+qwen35-d0.8b-bf16-kv-bf16: 66 joins, worst gap 0.22070313 over a spread of 13.1875
+
+thread 'a_joined_projection_answers_what_its_legs_answer::a_joined_projection_answers_what_its_legs_answer' (655154) panicked at crates/engine-cuda/tests/engine_cuda/a_joined_projection_answers_what_its_legs_answer.rs:309:5:
+qwen35-d0.8b-bf16-kv-bf16: worst gap 0.22070313 over a spread of 13.1875
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+engine-cuda: engine.graphs is off, a diagnostic mode — every fire walks eagerly (~470 kernel launches of host time per decode step) with nothing captured; a profile serves `on` with bodies
+engine-cuda: engine.graphs is off, a diagnostic mode — every fire walks eagerly (~470 kernel launches of host time per decode step) with nothing captured; a profile serves `on` with bodies
+dots3-note-mini-bf16-kv-bf16: 11 joins, worst gap 0.0703125 over a spread of 14.875
+engine-cuda: engine.graphs is off, a diagnostic mode — every fire walks eagerly (~470 kernel launches of host time per decode step) with nothing captured; a profile serves `on` with bodies
+engine-cuda: engine.graphs is off, a diagnostic mode — every fire walks eagerly (~470 kernel launches of host time per decode step) with nothing captured; a profile serves `on` with bodies
+inkling-mini-l7-e8-bf16-kv-bf16: 14 joins, worst gap 0.001953125 over a spread of 0.671875
+
+thread 'a_joined_projection_answers_what_its_legs_answer::a_joined_projection_answers_what_its_legs_answer' (655154) panicked at crates/engine-cuda/tests/engine_cuda/a_joined_projection_answers_what_its_legs_answer.rs:245:5:
+qwen35-d0.8b-bf16-kv-bf16: qwen35-d0.8b-bf16-kv-bf16: worst gap 0.22070313 over a spread of 13.1875
+
+---- a_synthesized_region_serves_the_logits_of_its_ops::a_synthesized_region_serves_the_logits_of_its_ops stdout ----
+engine-cuda: bodies armed 10 of 10 compositions at load (decode 1/1, prefill 9/9, mixed 0/0, tower 0/0, wide 0/0; 0 segmented; 0 MiB of 4096 MiB, 10 of 1024 seats) (10 unweighed) (pool declared 65088 MiB, high water 192 MiB, committed 192 MiB, spare under the ceiling 4255 MiB) [18 key(s) never fired — this deployment cannot synthesize them, or their present set was already refused admission; e.g. mixed c2+c0 at bucket 1 (1 seat(s) x 512 context, 1 lane(s))] [sealed: every key attempted]
+engine-cuda: bodies armed 10 of 10 compositions at load (decode 1/1, prefill 9/9, mixed 0/0, tower 0/0, wide 0/0; 0 segmented; 0 MiB of 4096 MiB, 10 of 1024 seats) (10 unweighed) (pool declared 65088 MiB, high water 192 MiB, committed 192 MiB, spare under the ceiling 4255 MiB) [18 key(s) never fired — this deployment cannot synthesize them, or their present set was already refused admission; e.g. mixed c2+c0 at bucket 1 (1 seat(s) x 512 context, 1 lane(s))] [sealed: every key attempted]
+engine-cuda: bodies armed 10 of 10 compositions at load (decode 1/1, prefill 9/9, mixed 0/0, tower 0/0, wide 0/0; 0 segmented; 0 MiB of 4096 MiB, 10 of 1024 seats) (10 unweighed) (pool declared 65088 MiB, high water 192 MiB, committed 192 MiB, spare under the ceiling 4255 MiB) [18 key(s) never fired — this deployment cannot synthesize them, or their present set was already refused admission; e.g. mixed c2+c0 at bucket 1 (1 seat(s) x 512 context, 1 lane(s))] [sealed: every key attempted]
+qwen3-micro-text's unfused ops, step 0: logits at most 0 apart over a spread of 3.1953125; the ops in another order 0 apart
+qwen3-micro-text's unfused ops, step 1: logits at most 0 apart over a spread of 2.875; the ops in another order 0 apart
+qwen3-micro-text's unfused ops, step 2: logits at most 0 apart over a spread of 3.4453125; the ops in another order 0 apart
+qwen3-micro-text's unfused ops, step 3: logits at most 0 apart over a spread of 3.328125; the ops in another order 0 apart
+qwen3-micro-text's unfused ops, step 4: logits at most 0 apart over a spread of 3.1328125; the ops in another order 0 apart
+engine-cuda: bodies armed 10 of 10 compositions at load (decode 1/1, prefill 9/9, mixed 0/0, tower 0/0, wide 0/0; 0 segmented; 0 MiB of 4096 MiB, 10 of 1024 seats) (10 unweighed) (pool declared 63680 MiB, high water 64 MiB, committed 64 MiB, spare under the ceiling 4093 MiB) [18 key(s) never fired — this deployment cannot synthesize them, or their present set was already refused admission; e.g. mixed c2+c0 at bucket 1 (1 seat(s) x 512 context, 1 lane(s))] [sealed: every key attempted]
+engine-cuda: bodies armed 10 of 10 compositions at load (decode 1/1, prefill 9/9, mixed 0/0, tower 0/0, wide 0/0; 0 segmented; 0 MiB of 4096 MiB, 10 of 1024 seats) (10 unweighed) (pool declared 63680 MiB, high water 64 MiB, committed 64 MiB, spare under the ceiling 4093 MiB) [18 key(s) never fired — this deployment cannot synthesize them, or their present set was already refused admission; e.g. mixed c2+c0 at bucket 1 (1 seat(s) x 512 context, 1 lane(s))] [sealed: every key attempted]
+engine-cuda: bodies armed 10 of 10 compositions at load (decode 1/1, prefill 9/9, mixed 0/0, tower 0/0, wide 0/0; 0 segmented; 0 MiB of 4096 MiB, 10 of 1024 seats) (10 unweighed) (pool declared 63680 MiB, high water 64 MiB, committed 64 MiB, spare under the ceiling 4091 MiB) [18 key(s) never fired — this deployment cannot synthesize them, or their present set was already refused admission; e.g. mixed c2+c0 at bucket 1 (1 seat(s) x 512 context, 1 lane(s))] [sealed: every key attempted]
+gemma4-e4b-mini-l1's unfused ops, step 0: logits at most 0 apart over a spread of 28.6875; the ops in another order 0 apart
+gemma4-e4b-mini-l1's unfused ops, step 1: logits at most 0 apart over a spread of 29.9375; the ops in another order 0 apart
+gemma4-e4b-mini-l1's unfused ops, step 2: logits at most 0 apart over a spread of 29.625; the ops in another order 0 apart
+gemma4-e4b-mini-l1's unfused ops, step 3: logits at most 0 apart over a spread of 28.90625; the ops in another order 0 apart
+gemma4-e4b-mini-l1's unfused ops, step 4: logits at most 0 apart over a spread of 29.28125; the ops in another order 0 apart
+engine-cuda: bodies armed 10 of 10 compositions at load (decode 1/1, prefill 9/9, mixed 0/0, tower 0/0, wide 0/0; 0 segmented; 0 MiB of 4096 MiB, 10 of 1024 seats) (10 unweighed) (pool declared 56694 MiB, high water 258 MiB, committed 258 MiB, spare under the ceiling 4111 MiB) [18 key(s) never fired — this deployment cannot synthesize them, or their present set was already refused admission; e.g. mixed c1+c0 at bucket 1 (1 seat(s) x 512 context, 1 lane(s))] [sealed: every key attempted]
+engine-cuda: bodies armed 10 of 10 compositions at load (decode 1/1, prefill 9/9, mixed 0/0, tower 0/0, wide 0/0; 0 segmented; 0 MiB of 4096 MiB, 10 of 1024 seats) (10 unweighed) (pool declared 48090 MiB, high water 258 MiB, committed 258 MiB, spare under the ceiling 4155 MiB) [18 key(s) never fired — this deployment cannot synthesize them, or their present set was already refused admission; e.g. mixed c1+c0 at bucket 1 (1 seat(s) x 512 context, 1 lane(s))] [sealed: every key attempted]
+engine-cuda: bodies armed 10 of 10 compositions at load (decode 1/1, prefill 9/9, mixed 0/0, tower 0/0, wide 0/0; 0 segmented; 0 MiB of 4096 MiB, 10 of 1024 seats) (10 unweighed) (pool declared 56694 MiB, high water 258 MiB, committed 258 MiB, spare under the ceiling 4105 MiB) [18 key(s) never fired — this deployment cannot synthesize them, or their present set was already refused admission; e.g. mixed c1+c0 at bucket 1 (1 seat(s) x 512 context, 1 lane(s))] [sealed: every key attempted]
+dots3-note-mini's unfused ops, step 0: logits at most 0.09375 apart over a spread of 14.6875; the ops in another order 0.095703125 apart
+dots3-note-mini's unfused ops, step 1: logits at most 0.0859375 apart over a spread of 14.34375; the ops in another order 0.09375 apart
+dots3-note-mini's unfused ops, step 2: logits at most 0.3227539 apart over a spread of 15.21875; the ops in another order 0.32763672 apart
+dots3-note-mini's unfused ops, step 3: logits at most 0.09375 apart over a spread of 14.46875; the ops in another order 0.103515625 apart
+dots3-note-mini's unfused ops, step 4: logits at most 0.09375 apart over a spread of 14.84375; the ops in another order 0.1015625 apart
+
+thread 'a_synthesized_region_serves_the_logits_of_its_ops::a_synthesized_region_serves_the_logits_of_its_ops' (670380) panicked at crates/engine-cuda/tests/engine_cuda/a_synthesized_region_serves_the_logits_of_its_ops.rs:96:35:
+`ple.per_layer.22.table`: io error: No space left on device (os error 28)
+
+---- a_synthesized_region_serves_the_logits_of_its_ops::an_anchored_region_serves_the_logits_of_its_ops stdout ----
+
+thread 'a_synthesized_region_serves_the_logits_of_its_ops::an_anchored_region_serves_the_logits_of_its_ops' (672519) panicked at crates/engine-cuda/tests/engine_cuda/a_synthesized_region_serves_the_logits_of_its_ops.rs:37:26:
+one at a time lock poisoned: PoisonError { .. }
+
+---- a_synthesized_region_serves_the_logits_of_its_ops::two_models_served_at_once_answer_what_each_answers_alone stdout ----
+
+thread 'a_synthesized_region_serves_the_logits_of_its_ops::two_models_served_at_once_answer_what_each_answers_alone' (672520) panicked at crates/engine-cuda/tests/engine_cuda/a_synthesized_region_serves_the_logits_of_its_ops.rs:37:26:
+one at a time lock poisoned: PoisonError { .. }
+
+---- a_tapped_fire_reads_each_layer_out_as_the_pool_holds_it::a_tapped_fire_reads_each_layer_out_as_the_pool_holds_it stdout ----
+
+thread 'a_tapped_fire_reads_each_layer_out_as_the_pool_holds_it::a_tapped_fire_reads_each_layer_out_as_the_pool_holds_it' (672521) panicked at crates/engine-cuda/tests/engine_cuda/a_tapped_fire_reads_each_layer_out_as_the_pool_holds_it.rs:60:35:
+`embed`: io error: No space left on device (os error 28)
+
+---- a_two_axis_plan_arms_its_token_bodies::the_token_regions_arm_while_the_voxel_regions_stay_eager stdout ----
+
+thread 'a_two_axis_plan_arms_its_token_bodies::the_token_regions_arm_while_the_voxel_regions_stay_eager' (672523) panicked at crates/engine-cuda/tests/engine_cuda/common_two_axis/mod.rs:209:10:
+the artifact writes: Checkpoint("/tmp/.tmpPUR5FB has 0.0 GiB free and the serving artifact /tmp/.tmpPUR5FB/cuda-two-axis-mini.zt wants 0.3 GiB (0 GiB of planes plus a 0 GiB margin); point the model store at a disk with more space")
+
+---- a_two_class_plan_reads_each_lane_back_from_its_own_seam::each_lane_reads_back_its_own_arms_seam stdout ----
+
+thread 'a_two_class_plan_reads_each_lane_back_from_its_own_seam::each_lane_reads_back_its_own_arms_seam' (672524) panicked at crates/engine-cuda/tests/engine_cuda/common_dit/mod.rs:213:10:
+the artifact writes: Checkpoint("/tmp/.tmp0dVeSK has 0.0 GiB free and the serving artifact /tmp/.tmp0dVeSK/cuda-dit-mini.zt wants 0.3 GiB (0 GiB of planes plus a 0 GiB margin); point the model store at a disk with more space")
+
+---- a_wide_class_attends_every_key_without_a_mask::a_wide_class_attends_every_key_without_a_mask_every_case stdout ----
+
+thread 'a_wide_class_attends_every_key_without_a_mask::a_wide_class_attends_every_key_without_a_mask_every_case' (672529) panicked at crates/engine-cuda/tests/engine_cuda/common_encoder/mod.rs:169:10:
+the artifact writes: Checkpoint("/tmp/.tmp5MxU1D has 0.0 GiB free and the serving artifact /tmp/.tmp5MxU1D/cuda-encoder-mini.zt wants 0.3 GiB (0 GiB of planes plus a 0 GiB margin); point the model store at a disk with more space")
+
+---- a_windowed_row_reads_what_the_full_row_reads::a_windowed_row_reads_what_the_full_row_reads stdout ----
+
+thread 'a_windowed_row_reads_what_the_full_row_reads::a_windowed_row_reads_what_the_full_row_reads' (672530) panicked at crates/engine-cuda/tests/engine_cuda/common_encoder/mod.rs:169:10:
+the artifact writes: Checkpoint("/tmp/.tmpWxHaFa has 0.0 GiB free and the serving artifact /tmp/.tmpWxHaFa/cuda-encoder-mini.zt wants 3.3 GiB (3 GiB of planes plus a 0 GiB margin); point the model store at a disk with more space")
+
+
+failures:
+    a_joined_projection_answers_what_its_legs_answer::a_joined_projection_answers_what_its_legs_answer
+    a_synthesized_region_serves_the_logits_of_its_ops::a_synthesized_region_serves_the_logits_of_its_ops
+    a_synthesized_region_serves_the_logits_of_its_ops::an_anchored_region_serves_the_logits_of_its_ops
+    a_synthesized_region_serves_the_logits_of_its_ops::two_models_served_at_once_answer_what_each_answers_alone
+    a_tapped_fire_reads_each_layer_out_as_the_pool_holds_it::a_tapped_fire_reads_each_layer_out_as_the_pool_holds_it
+    a_two_axis_plan_arms_its_token_bodies::the_token_regions_arm_while_the_voxel_regions_stay_eager
+    a_two_class_plan_reads_each_lane_back_from_its_own_seam::each_lane_reads_back_its_own_arms_seam
+    a_wide_class_attends_every_key_without_a_mask::a_wide_class_attends_every_key_without_a_mask_every_case
+    a_windowed_row_reads_what_the_full_row_reads::a_windowed_row_reads_what_the_full_row_reads
+
+test result: FAILED. 50 passed; 9 failed; 1 ignored; 0 measured; 0 filtered out; finished in 3441.74s
+
+EXIT=101
