@@ -40,5 +40,5 @@
 - Pod created 01:13Z (B200, US-CA-2, $7.99/h).
 - Early verdict 02:57Z (1 h 44 min in).
 - Hand-over 08:35Z (7 h 22 min). Review 1 answered 08:53Z.
-- Closed about 09:55Z, against a 21:13Z deadline.
-- About 8.7 h of pod time, roughly $70.
+- Closed 09:38Z, against a 21:13Z deadline.
+- About 8.5 h of pod time, roughly $68.
