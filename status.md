@@ -1,8 +1,8 @@
 # Status: 20261105-2035-a100-sxm-x1-gemma-4-31b-batching
 
-**READY FOR REVIEW**
+**IN PROGRESS: Review 1 item 1 (Gemma-4-26B ITL tails). READY by 12:05Z at the latest.**
 
-**Phase:** hand-over
+**Phase:** review 1
 **UTC:** 2026-11-06 11:16
 
 ## Verdict
