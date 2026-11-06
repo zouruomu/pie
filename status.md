@@ -1,6 +1,6 @@
 # Status: 20261106-0130-b200-x1-minimax-m3-1-flash-decode
 
-UTC: 2026-11-06 01:57Z
+UTC: 2026-11-06 02:11Z
 Phase: reproduce. The cell as the site states it does not reproduce as-is; sorting out which checkpoint each engine can load.
 
 ## Findings so far (raw logs in results/raw, results/logs)
@@ -9,8 +9,10 @@ Phase: reproduce. The cell as the site states it does not reproduce as-is; sorti
 3. **vLLM 0.32.0 and SGLang 0.5.22 cannot load this checkpoint** (both: "size of tensor a (192) must match b (384)": they read the NVFP4 experts' K/16 scales as MXFP8 K/32 scales). vLLM's own recipe says M3.1-Flash needs vLLM >= 0.33.0 (released 11-02, the day before the site's "0.32.0" vLLM run). So the site's vLLM/SGLang numbers were not measured on this checkpoint at those versions, or the versions are mislabelled.
 4. **pie auto-identifies this cut as bf16** (minimax-m3-mini-bf16-kv-bf16-l60-e16): identify (crates/runtime/src/engine/load.rs:267) takes the first deployment that compiles, and models/minimax_m3.poem lists the mini's BF deployment before [MX8, nvfp4a4]. It widens to 124.5 GB on the GPU and OOMs this pod's 264 GiB cgroup on the host. --precision can't override it (refused after identify). With the mini's [MX8, nvfp4a4] listed first (an edit in ~/.pie/models only, to be reverted), pie serves it at 44 GB: **ITL p50 9.01 ms, 110 tok/s** (1 round), matching the site's 8.99.
 
+5. vLLM 0.33.0 fails identically. vLLM's recipe and SGLang's cookbook both serve M3.1-Flash only from dev builds (vllm/vllm-openai:minimax-m31-flash; lmsysorg/sglang:dev-minimax-m31-flash, "support not in main yet"). **No released vLLM or SGLang loads this checkpoint**, so the site's 174.43 / 128.24 can't be this checkpoint at 0.32.0 / 0.5.22.
+6. pie on the M3.1-Flash cut, 3 rounds: ITL p50 9.01 / 8.98 / 8.97 ms (SM 1965 MHz, max). nsys: 9.02 ms/step, 1649 kernels, 43 us idle. MoE layer ~146 us: qkv proj 18, q/k norm+rope (two 1-CTA kernels) 10, selected attention 18.6, o_proj 14, NVFP4 route+quant 11, routed experts W4A4 43, rest small. Weight bytes alone ~45 us/layer at 6.5 TB/s. Tried MXFP8 one-row projections on the existing bf16 GEMV (fp8_block_gemv takes 32-wide blocks): 8.98 -> 8.87 ms only, tokens diverge (W8A16 vs W8A8); dropped.
+
 ## Running
-- vLLM 0.33.0 install (own venv) -> vLLM on the M3.1-Flash cut.
 - Cut of MiniMaxAI/MiniMax-M3-MXFP8 (same architecture, all-MXFP8 experts: "the MXFP8 release", the site's scheme wording and what 0.32.0/0.5.22 can load), 60 layers, 16 experts -> all three engines on it.
 
 Blocker: none, but the cell's baseline is ambiguous; I will report both cuts.
