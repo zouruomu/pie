@@ -5,7 +5,7 @@ Fix branch `r2g/20261106-0130-b200-x1-minimax-m3-1-flash-decode` at `d06613bc4`:
 ## Summary
 
 - **Verdict:** pie's decode on B200 trails, but the site's competitor numbers for this cell can't be this checkpoint: no released vLLM (0.32.0, 0.33.0) or SGLang (0.5.22) loads MiniMax-M3.1-Flash's NVFP4 experts. On the same 60-layer, 16-expert cut of MiniMax-M3-MXFP8 (same architecture, MXFP8 experts), which they do load, pie trails vLLM 0.32.0 by 28% and SGLang 0.5.22 by 22% at c1.
-- **Cause fixed:** a decode's selected attention ran a block a (row, kv head): MiniMax's lone row is 4 blocks on 148 SMs, 18.4 us a layer, where vLLM splits each kv head 16 ways (4.9 + 2.2 us). Now a cluster of up to 8 blocks a kv head, folded in distributed shared memory: c1 ITL 8.976 -> 8.620 ms on M3.1-Flash (+4.1% decode tok/s), 9.623 -> 9.286 ms on M3-MXFP8 (+3.6%), c2 +1.8% / +2.5%, c4 -0.1% / +1.7%, nothing else moves; Qwen3.8-Flash-Next mini +3.4%. Tokens identical on M3-MXFP8; on M3.1-Flash they diverge at bf16 near-ties, with teacher-forced KL below an existing accepted path's.
+- **Cause fixed:** a decode's selected attention ran a block a (row, kv head): MiniMax's lone row is 4 blocks on 148 SMs, 18.4 us a layer, where vLLM splits each kv head 16 ways (4.9 + 2.2 us). Now a cluster of up to 8 blocks a kv head, folded in distributed shared memory: c1 ITL 8.976 -> 8.620 ms on M3.1-Flash (+4.1% decode tok/s), 9.623 -> 9.286 ms on M3-MXFP8 (+3.6%), c2 +1.8% / +2.5%, c4 -0.1% / +1.7%, nothing else moves; Qwen3.8-Flash-Next mini +3.4%. Tokens identical on M3-MXFP8; on M3.1-Flash they differ on 7/8 requests, at bf16 near-ties where measured; teacher-forced decode KL is of the same order as a like-for-like decode-only scalar walk's (below it on 2/8 requests, up to 2.5x above on the rest).
 - **Remaining gap** (M3-MXFP8, 9.29 vs 6.93 ms): q/k norm + RoPE + KV append in two 1-CTA epilogue slices (~0.7 ms a step; a reverted prototype of the retired hand rule buys ~4%), the MXFP8 expert glue (~0.6 ms), the selected attention still (~0.3 ms), GEMMs at one row. Handed over as attribution.
 - **Side findings:** pie identifies these cuts as bf16 and OOMs widening them (`identify-bug.md`); pie reads M3.1-Flash's first three layers as dense attention though its config indexes them.
 
@@ -28,7 +28,7 @@ Fix branch `r2g/20261106-0130-b200-x1-minimax-m3-1-flash-decode` at `d06613bc4`:
 
 ## Reproduced baseline (B200, pie main e2e9d1e)
 
-Raw workload: concurrency 1, 512-token chat-rendered prompts (`results/scripts/make_prompts.py`, one file a cut since the chat templates differ; pie's inferlet renders them to 497 tokens), 256 output tokens, greedy, 8 requests after 2 warmups. Decode tok/s = 1000 / the median of the rounds' exact ITL p50 (`results/scripts/numbers.py`). These runs predate the in-run clock sampler: their `.meta` holds idle start/end clocks only; the A/B and cross-model runs below carry a busy-clock median (1965 MHz every time).
+Raw workload: concurrency 1, 512-token chat-rendered prompts (`results/scripts/make_prompts.py`, one file a cut since the chat templates differ; pie's inferlet renders them to 497 tokens), 256 output tokens, greedy, 8 requests after 2 warmups. Decode tok/s = 1000 / the median of the rounds' exact ITL p50 (`results/scripts/exact_numbers.py`). These runs predate the in-run clock sampler: their `.meta` holds idle start/end clocks only; the A/B and cross-model runs below carry a busy-clock median (1965 MHz every time).
 
 | cut | engine | ITL p50, three rounds (ms) | decode tok/s | logs |
 |---|---|---|---|---|
@@ -123,23 +123,24 @@ Engines (`results/engines.sha256`): base `b0ca94bb…` (main e2e9d1e), final `ff
 
 - Greedy token ids are deterministic run to run in both builds (r1 vs r3: 8/8 identical, both cuts).
 - Cut B: base vs fix **identical**, 8/8 requests x 256 tokens. At ~500-750 keys a row ranks 0-5 of the cluster hold keys there, so the real fold runs end to end.
-- Cut A: token 0 identical on every request (prefill untouched); first divergence at token 1 on 5/8, at 8 and 247 on two more, one identical.
-- Teacher-forced logits (note 3): a throwaway inferlet (`results/scripts/logit-probe/`, client `logit_probe.py`, comparison `logit_cmp.py`) feeds each request's prompt as text-completion-bench renders it, then 32 tokens of base's own greedy output one decode step at a time (the clustered path), and returns all 200 064 logits at each of the 33 positions; 4 requests a cut (requests 0-3). Base's teacher-forced argmax reproduces its own greedy tokens at 33/33 positions on every request. Taken on the first fix build, whose tokens the final build matches. Reference for a reduction-order change pie already accepts: base under `sdpa.selected_mma = false` (the scalar walk: the fallback wherever a profile doesn't set `selected_mma`, and the reference `attn::selected`'s test holds the MMA walk to), set in a user profile layer and removed after. The scalar walk also changes prefill (position 0), so the comparison below is over the decode positions 1-32, with position 0 apart.
+- Cut A: token 0 identical on every request (prefill untouched); greedy tokens differ on 7/8 requests (6 first at token 1-8: five at 1, one at 8; one at 247), one identical.
+- Teacher-forced logits (note 3, review 1): a throwaway inferlet (`results/scripts/logit-probe/`, client `logit_probe.py`, comparison `logit_cmp.py`) feeds each request's prompt as text-completion-bench renders it, then 32 tokens of base's own greedy output one decode step at a time (the clustered path), and returns all 200 064 logits at each of the 33 positions; 4 requests a cut (requests 0-3). Base's teacher-forced argmax reproduces its own greedy tokens at 33/33 positions on every request. Taken on the first fix build, whose tokens the final build matches.
+- Reference, like for like: a temporary base build (never committed; patch `results/scripts/decode-scalar-reference.diff`, engine `52c0061b…`) whose **decode** takes the scalar selected walk while prefill keeps the tensor-core walk, so its prefill logits are bit-identical to base's, as the fix's are (position-0 KL 0 for both). An earlier reference, `selected_mma = false` everywhere, also changed prefill (position-0 KL 0.05-0.98), so its decode positions read a different KV cache; it is kept in `logit-cmp.txt` ("base vs scalar") but not used for the claim.
 
-| cut, request | fix: pos 0 KL / decode max abs dlogit / KL mean / KL max / tf top-1 of 33 | scalar walk: same |
+| cut, request | fix: decode max abs dlogit / KL mean / KL max / tf top-1 of 33 | decode-only scalar walk: same |
 |---|---|---|
-| A 0 | 0 / 4.34 / 0.025 / 0.172 / 33 | 0.30 / 5.39 / 0.087 / 1.005 / 33 |
-| A 1 | 0 / 4.22 / 0.037 / 0.406 / 32 | 0.76 / 4.62 / 0.046 / 0.474 / 32 |
-| A 2 | 0 / 5.26 / 0.058 / 0.741 / 31 | 0.39 / 5.67 / 0.069 / 0.844 / 31 |
-| A 3 | 0 / 6.16 / 0.154 / 1.092 / 25 | 0.98 / 6.94 / 0.230 / 1.416 / 24 |
-| B 0 | 0 / 2.16 / 0.0038 / 0.044 / 33 | 0.07 / 2.84 / 0.0136 / 0.182 / 33 |
-| B 1 | 0 / 3.19 / 0.0144 / 0.297 / 33 | 0.05 / 3.88 / 0.0161 / 0.194 / 33 |
-| B 2 | 0 / 2.52 / 0.0141 / 0.138 / 33 | 0.14 / 3.21 / 0.0171 / 0.182 / 33 |
-| B 3 | 0 / 4.69 / 0.0064 / 0.061 / 33 | 0.10 / 3.42 / 0.0164 / 0.164 / 32 |
+| A 0 | 4.34 / 0.025 / 0.172 / 33 | 3.91 / 0.042 / 0.453 / 32 |
+| A 1 | 4.22 / 0.037 / 0.406 / 32 | 4.44 / 0.028 / 0.379 / 31 |
+| A 2 | 5.26 / 0.058 / 0.741 / 31 | 6.04 / 0.043 / 0.486 / 31 |
+| A 3 | 6.16 / 0.154 / 1.092 / 25 | 6.00 / 0.134 / 0.488 / 25 |
+| B 0 | 2.16 / 0.0038 / 0.044 / 33 | 1.97 / 0.0043 / 0.032 / 33 |
+| B 1 | 3.19 / 0.0144 / 0.297 / 33 | 2.03 / 0.0058 / 0.043 / 33 |
+| B 2 | 2.52 / 0.0141 / 0.138 / 33 | 2.75 / 0.0088 / 0.120 / 33 |
+| B 3 | 4.69 / 0.0064 / 0.061 / 33 | 2.19 / 0.0048 / 0.039 / 33 |
 
-- The fix leaves position 0 bit-identical; over the decode positions its mean KL to base is below the scalar walk's on all 8 probed request-cut pairs (closest: B 1, 0.0144 vs 0.0161). Its worst cases are not uniformly smaller (B 1's KL max 0.297 vs 0.194, B 3's max abs dlogit 4.69 vs 3.42).
-- At the three cut A greedy divergences the probe covers, base's top-2 logit margin is 0.0625 (request 2, position 1), 0.6875 (request 3, position 1) and 1.0 (request 1, position 8), against per-request medians of 0.875-6.4 (request 3's own median is 0.875, so its 0.6875 isn't far below it). Requests 4-6 also diverge at token 1 and weren't probed. The logits land in bf16 (margins come in steps of 1/16), and the scalar walk flips the same two position-1 tokens at the same margins.
-- Several logit units of movement under either order are this miniature's sensitivity (16 of 128 experts with top-4: a small change in a layer's input can swap one of its experts), not the kernel's error: at the kernel level the cluster walk is within the existing test's bf16 tolerance of the scalar walk, on a row whose slices all hold keys (the new test).
+- Plainly: the fix's decode KL to base is **not** below the like-for-like reference. Its mean KL is below on 2/8 (A 0, B 0) and above on 6/8, by up to 1.3x on cut A and 2.5x on cut B (B 1: 0.0144 vs 0.0058); its KL max is higher on 5/8. The two are the same order of magnitude; teacher-forced top-1 agreement is equal or better for the fix (A 33/32/31/25 vs 32/31/31/25; B 33 everywhere for both).
+- At the three cut A greedy divergences the probe covers, base's top-2 logit margin is 0.0625 (request 2, position 1), 0.6875 (request 3, position 1) and 1.0 (request 1, position 8), against per-request medians of 0.875-6.4 (request 3's own median is 0.875). Requests 4-6 and the 247 divergence weren't probed. The logits land in bf16 (margins come in steps of 1/16), and the decode-only scalar walk flips the same two position-1 tokens at the same margins.
+- Several logit units of movement under either order are this miniature's sensitivity (16 of 128 experts with top-4: a small change in a layer's input can swap one of its experts). At the kernel level the cluster walk is within the existing test's bf16 tolerance of the scalar walk, on a row whose slices all hold keys (the new test).
 
 ## Cross-model (B200, base vs final, 2 rounds each, raw workload, `results/raw/x-*`; busy SM 1965 MHz)
 

@@ -1,0 +1,14 @@
+diff --git a/crates/kernels-cuda/src/attn/selected.rs b/crates/kernels-cuda/src/attn/selected.rs
+index a3e0d079d..cdd61b65b 100644
+--- a/crates/kernels-cuda/src/attn/selected.rs
++++ b/crates/kernels-cuda/src/attn/selected.rs
+@@ -231,7 +231,8 @@ fn selected(
+             ],
+         );
+     }
+-    if let Some(dim) = mma_dim(ctx, head_dim, q_heads / kv_heads) {
++    // REFERENCE BUILD (never committed): the decode takes the scalar walk, the prefill as before.
++    if let Some(dim) = mma_dim(ctx, head_dim, q_heads / kv_heads).filter(|_| op != "attn.decode") {
+         #[allow(clippy::cast_sign_loss)]
+         let blocks = (total_tokens as u32).saturating_mul(kv_heads as u32);
+         let ranks = mma_ranks(ctx, blocks, dim);
