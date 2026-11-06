@@ -10,7 +10,7 @@ mkdir -p $OUT
 cd /root
 nvidia-smi --query-gpu=timestamp,clocks.sm,power.draw,temperature.gpu,memory.used --format=csv,noheader -lms 1000 > $OUT/$label.clk 2>/dev/null &
 CLK=$!
-env -u CLAUDE_CODE_MESSAGING_TOKEN timeout 5400 /root/venv-trtllm/bin/python -I /root/r2g/evidence/results/scripts/trtllm_tput.py \
+env -u CLAUDE_CODE_MESSAGING_TOKEN TLLM_LOG_LEVEL=INFO timeout 5400 /root/venv-trtllm/bin/python -I /root/r2g/evidence/results/scripts/trtllm_tput.py \
   --model $M --prompts-file $PF --json-out $OUT/$label.json "$@" > $OUT/$label.log 2>&1
 echo EXIT=$? >> $OUT/$label.log
 kill $CLK
