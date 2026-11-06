@@ -1,7 +1,7 @@
 # Status: 20261105-2035-a100-sxm-x1-gemma-4-31b-batching
 
 **Phase:** target A/B done (3 rounds); pbatch, cross-model and curve checks running, then the final A/B and the GPU suite
-**UTC:** 2026-11-06 04:42
+**UTC:** 2026-11-06 05:12
 
 ## Preliminary verdict (1 round so far; rounds 2-3 running)
 
@@ -63,6 +63,8 @@ The pool-size half of the remaining gap. At c512 (fix v1 + user layer, 1 round):
 - Tests on the fix tree so far: runtime 101 passed; pie-profile 41 passed; engine-cuda chip 13 passed.
 
 ## Latest
+- Schedule: q11 (fix round-2 rerun at c128-c1024) is dropped to keep review time. fix has 2 rounds there (spread < 0.5%), and q13's final A/B on the rebased build adds a third. Chain now: q8 (pbatch, gpt-oss-120b, Qwen3-0.6B, c4-c32/pf4-16/raw, 1024-out) -> q12b (vLLM token reference) -> q13 (final A/B, GPU suite). Hand-over ETA ~10:15Z.
+- pbatch so far (prefill tok/s): base pf32 3682, pf64 3705, pf128 3611, pf256 3492, pf512 3485, pf1024 3494; fix v3 pf32 3635 (-1.2%). Running.
 - **Target cell, 3 alternating rounds, medians (results/base, scripts/table.py):**
 
 | tok/s | c64 | c128 | c256 | c512 | c1024 |
