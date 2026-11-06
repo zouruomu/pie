@@ -1,7 +1,7 @@
 # Status: 20261105-2035-a100-sxm-x1-gemma-4-31b-batching
 
-**Phase:** target A/B done (3 rounds); pbatch, cross-model and curve checks running, then the final A/B and the GPU suite
-**UTC:** 2026-11-06 08:50
+**Phase:** final A/B (rebased d678268d vs main a6547509) running, then the GPU suite; independent self-review running; report.md nearly complete
+**UTC:** 2026-11-06 09:00
 
 ## Preliminary verdict (1 round so far; rounds 2-3 running)
 
@@ -63,6 +63,9 @@ The pool-size half of the remaining gap. At c512 (fix v1 + user layer, 1 round):
 - Tests on the fix tree so far: runtime 101 passed; pie-profile 41 passed; engine-cuda chip 13 passed.
 
 ## Latest
+- pbatch done (results/pf-table.md): best point base 3735, fix 3829, vLLM 3702. The pbatch cell stays green.
+- vLLM token reference: share of tokens before divergence from vLLM's own ids at c512: base 25.9-26.2%, fix 25.2-25.5%.
+- report.md is complete except §5.3 (final A/B) and the GPU suite. fix.patch is the final commit. A fresh-context reviewer subagent is recomputing every number now.
 - Rest of the curve (1 round, fix v3 / base): c4 0.0%, c8 +0.1%, c16 -0.1%, **c32 +37.0%** (546.3 vs 398.6: the cap binds there too), raw 25.3 = 25.3. pbatch pf4 3734/3735, pf8 3829/3649, pf16 3637/3733 (~2-s runs). Best pbatch: fix 3829 vs base 3735 vs vLLM 3702.
 - **Tokens:** raw, c8, c16 and pf4-pf512 identical base vs fix; c4 1 of 8 differs. From c32 up the lane count a step changes, and base vs fix differs more than reruns of either engine (report §6).
 - **1024 tokens out at c128 (first-wave check):** base 148.1 tok/s, ITL p99 1162 ms, max 84 s (the cap admits 29 lanes, the pool seats ~10 such sequences, lanes are suspended and replayed); fix 216.7 (+46%), ITL p99 47 ms, ~10 lanes decoding. No thrash in the fix's ungated first wave.
