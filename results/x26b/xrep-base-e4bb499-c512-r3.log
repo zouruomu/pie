@@ -1,0 +1,38 @@
+[transformers] PyTorch was not found. Models won't be available and only tokenizers, configuration and file/data utilities can be used.
+engine-cuda: bodies armed 166 of 166 compositions at load (decode 16/16, prefill 56/56, mixed 55/55, tower 0/0, wide 39/39; 0 segmented; 807 MiB of 4096 MiB, 127 of 1024 seats) (pool declared 17280 MiB, high water 1880 MiB, committed 1880 MiB, spare under the ceiling 3055 MiB) [18 key(s) never fired — this deployment cannot synthesize them, or their present set was already refused admission; e.g. mixed c2+c0 at bucket 1 (256 seat(s) x 2048 context, 512 lane(s))] [sealed: every key attempted]
+[2m2026-11-06T01:04:02.017801Z[0m [32m INFO[0m [2mruntime::bootstrap[0m[2m:[0m admission: capped at five sequences a sequence at the declared context holds in the kv pool [3mrequested[0m[2m=[0m512 [3mseated[0m[2m=[0m229
+[2m2026-11-06T01:04:02.963583Z[0m [32m INFO[0m [2mruntime::bootstrap[0m[2m:[0m kv tiers: suspended kv goes to the host, then the disk [3mdevice_pages[0m[2m=[0m5887 [3mhost_pages[0m[2m=[0m306 [3mdisk_pages[0m[2m=[0m1224
+╭─ Pie Engine ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╮
+│ Host         127.0.0.1:38807                                                                                                              │
+│ Model        default (/root/.cache/huggingface/hub/models--google--gemma-4-26B-A4B-it/snapshots/4d7ae4984b7db7de8f8457170b3f1a419ee76d52) │
+│ Backend      cuda                                                                                                                         │
+│ Device       cuda:0                                                                                                                       │
+╰───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╯
+[pie-bench] measured-start
+[pie-bench] measured-end
+[2m2026-11-06T01:04:31.219954Z[0m [33m WARN[0m [2mtarpc::client[0m[2m:[0m Connection broken: could not ready the transport for writes: an error occurred readying to send into the channel: the channel is closed and cannot accept new items for sending
+[2m2026-11-06T01:04:31.219960Z[0m [33m WARN[0m [2mtarpc::server[0m[2m:[0m Requests stream errored out: could not ready the transport for writes: an error occurred readying to send into the channel: the channel is closed and cannot accept new items for sending
+
+----------------------------------------------------
+mode:              tput
+engine:            pie
+model:             google/gemma-4-26B-A4B-it
+completed:         1024/1024  failed=0
+wall:              26.864 s
+requests/sec:      38.12
+output tokens:     131072
+prompt tokens:     173056
+output tok/sec:    4879.12
+lat mean/p50:      10694.4 / 11158.4 ms
+lat p95/p99:       16736.4 / 16755.8 ms
+ttft mean/p50:     6238.9 / 6658.7 ms
+ttft p95/p99:      11897.5 / 11906.0 ms
+intertoken p50/p99/max: 29.96 / 49.31 / 1874.81 ms
+total batches:     351
+avg batch latency us: 144040.05698005698
+last batch latency us: 92684
+total requests:    131072
+max forward requests: 458
+batch size hist:   [8, 0, 0, 1, 0, 22, 1, 319]
+----------------------------------------------------
+EXIT=0

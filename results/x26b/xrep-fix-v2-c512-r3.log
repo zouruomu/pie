@@ -1,0 +1,41 @@
+[transformers] PyTorch was not found. Models won't be available and only tokenizers, configuration and file/data utilities can be used.
+engine-cuda: bodies armed 166 of 166 compositions at load (decode 16/16, prefill 56/56, mixed 55/55, tower 0/0, wide 39/39; 0 segmented; 807 MiB of 4096 MiB, 127 of 1024 seats) (pool declared 17280 MiB, high water 1880 MiB, committed 1880 MiB, spare under the ceiling 3055 MiB) [18 key(s) never fired — this deployment cannot synthesize them, or their present set was already refused admission; e.g. mixed c2+c0 at bucket 1 (256 seat(s) x 2048 context, 512 lane(s))] [sealed: every key attempted]
+[2m2026-11-06T01:06:27.680015Z[0m [32m INFO[0m [2mruntime::bootstrap[0m[2m:[0m kv tiers: suspended kv goes to the host, then the disk [3mdevice_pages[0m[2m=[0m5887 [3mhost_pages[0m[2m=[0m306 [3mdisk_pages[0m[2m=[0m1224
+╭─ Pie Engine ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╮
+│ Host         127.0.0.1:46631                                                                                                              │
+│ Model        default (/root/.cache/huggingface/hub/models--google--gemma-4-26B-A4B-it/snapshots/4d7ae4984b7db7de8f8457170b3f1a419ee76d52) │
+│ Backend      cuda                                                                                                                         │
+│ Device       cuda:0                                                                                                                       │
+╰───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╯
+[pie-bench] measured-start
+engine-cuda: the sealed map holds no body for b8192[c0:8192 c2:256] (its grids grew past the resident body) — this shape walks eagerly for the life of the load (BodyTally::sealed_declines counts each such fire; 1 so far) [body-stats] hits=221 misses=254 reshapes=0 captures=127 declines=0 refusals=0 evictions=0 armed_at_load=166 sealed_declines=1 sealed_short=1 eager_rotating=0 eager_buffered=0 eager_copy_world=0 | last-capture: nodes=579 edges=726 islands=0 | resident: bodies=127 segmented=0 bytes=846734681
+engine-cuda: the sealed map holds no body for b8192[c0:8192 c2:256] (its grids grew past the resident body) — this shape walks eagerly for the life of the load (BodyTally::sealed_declines counts each such fire; 2 so far) [body-stats] hits=222 misses=254 reshapes=0 captures=127 declines=0 refusals=0 evictions=0 armed_at_load=166 sealed_declines=2 sealed_short=2 eager_rotating=0 eager_buffered=0 eager_copy_world=0 | last-capture: nodes=579 edges=726 islands=0 | resident: bodies=127 segmented=0 bytes=846734681
+engine-cuda: the sealed map holds no body for b5793[c0:5793 c2:256] (its grids grew past the resident body) — this shape walks eagerly for the life of the load (BodyTally::sealed_declines counts each such fire; 3 so far) [body-stats] hits=223 misses=254 reshapes=0 captures=127 declines=0 refusals=0 evictions=0 armed_at_load=166 sealed_declines=3 sealed_short=3 eager_rotating=0 eager_buffered=0 eager_copy_world=0 | last-capture: nodes=579 edges=726 islands=0 | resident: bodies=127 segmented=0 bytes=846734681
+engine-cuda: the sealed map holds no body for b1580[c0:1580 c2:256] (its grids grew past the resident body) — this shape walks eagerly for the life of the load (BodyTally::sealed_declines counts each such fire; 4 so far) [body-stats] hits=259 misses=254 reshapes=0 captures=127 declines=0 refusals=0 evictions=0 armed_at_load=166 sealed_declines=4 sealed_short=4 eager_rotating=0 eager_buffered=0 eager_copy_world=0 | last-capture: nodes=579 edges=726 islands=0 | resident: bodies=127 segmented=0 bytes=846734681
+[pie-bench] measured-end
+[2m2026-11-06T01:06:55.227118Z[0m [33m WARN[0m [2mtarpc::server[0m[2m:[0m Requests stream errored out: could not ready the transport for writes: an error occurred readying to send into the channel: the channel is closed and cannot accept new items for sending
+[2m2026-11-06T01:06:55.227136Z[0m [33m WARN[0m [2mtarpc::client[0m[2m:[0m Connection broken: could not ready the transport for writes: an error occurred readying to send into the channel: the channel is closed and cannot accept new items for sending
+
+----------------------------------------------------
+mode:              tput
+engine:            pie
+model:             google/gemma-4-26B-A4B-it
+completed:         1024/1024  failed=0
+wall:              26.166 s
+requests/sec:      39.14
+output tokens:     131072
+prompt tokens:     173056
+output tok/sec:    5009.30
+lat mean/p50:      11128.4 / 9260.3 ms
+lat p95/p99:       17327.1 / 17720.1 ms
+ttft mean/p50:     4389.5 / 3199.3 ms
+ttft p95/p99:      8881.4 / 9615.8 ms
+intertoken p50/p99/max: 21.94 / 683.67 / 1812.30 ms
+total batches:     278
+avg batch latency us: 180608.1726618705
+last batch latency us: 67841
+total requests:    131072
+max forward requests: 728
+batch size hist:   [2, 2, 2, 1, 1, 5, 49, 216]
+----------------------------------------------------
+EXIT=0

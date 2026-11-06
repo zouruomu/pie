@@ -1,0 +1,40 @@
+[transformers] PyTorch was not found. Models won't be available and only tokenizers, configuration and file/data utilities can be used.
+engine-cuda: bodies armed 166 of 166 compositions at load (decode 16/16, prefill 56/56, mixed 55/55, tower 0/0, wide 39/39; 0 segmented; 807 MiB of 4096 MiB, 127 of 1024 seats) (pool declared 16000 MiB, high water 2180 MiB, committed 2180 MiB, spare under the ceiling 3051 MiB) [18 key(s) never fired — this deployment cannot synthesize them, or their present set was already refused admission; e.g. mixed c2+c0 at bucket 1 (256 seat(s) x 2048 context, 1024 lane(s))] [sealed: every key attempted]
+╭─ Pie Engine ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╮
+│ Host         127.0.0.1:45413                                                                                                              │
+│ Model        default (/root/.cache/huggingface/hub/models--google--gemma-4-26B-A4B-it/snapshots/4d7ae4984b7db7de8f8457170b3f1a419ee76d52) │
+│ Backend      cuda                                                                                                                         │
+│ Device       cuda:0                                                                                                                       │
+╰───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╯
+[pie-bench] measured-start
+engine-cuda: the sealed map holds no body for b8192[c0:8192 c2:256] (its grids grew past the resident body) — this shape walks eagerly for the life of the load (BodyTally::sealed_declines counts each such fire; 1 so far) [body-stats] hits=282 misses=254 reshapes=0 captures=127 declines=0 refusals=0 evictions=0 armed_at_load=166 sealed_declines=1 sealed_short=1 eager_rotating=0 eager_buffered=0 eager_copy_world=0 | last-capture: nodes=579 edges=726 islands=0 | resident: bodies=127 segmented=0 bytes=846734681
+engine-cuda: the sealed map holds no body for b2436[c0:2436 c2:256] (its grids grew past the resident body) — this shape walks eagerly for the life of the load (BodyTally::sealed_declines counts each such fire; 2 so far) [body-stats] hits=327 misses=254 reshapes=0 captures=127 declines=0 refusals=0 evictions=0 armed_at_load=166 sealed_declines=2 sealed_short=2 eager_rotating=0 eager_buffered=0 eager_copy_world=0 | last-capture: nodes=579 edges=726 islands=0 | resident: bodies=127 segmented=0 bytes=846734681
+engine-cuda: the sealed map holds no body for b512[c0:512 c2:256] (its grids grew past the resident body) — this shape walks eagerly for the life of the load (BodyTally::sealed_declines counts each such fire; 3 so far) [body-stats] hits=327 misses=254 reshapes=0 captures=127 declines=0 refusals=0 evictions=0 armed_at_load=166 sealed_declines=3 sealed_short=3 eager_rotating=0 eager_buffered=0 eager_copy_world=0 | last-capture: nodes=579 edges=726 islands=0 | resident: bodies=127 segmented=0 bytes=846734681
+[pie-bench] measured-end
+[2m2026-11-06T00:46:30.201166Z[0m [33m WARN[0m [2mtarpc::server[0m[2m:[0m Requests stream errored out: could not ready the transport for writes: an error occurred readying to send into the channel: the channel is closed and cannot accept new items for sending
+[2m2026-11-06T00:46:30.201181Z[0m [33m WARN[0m [2mtarpc::client[0m[2m:[0m Connection broken: could not ready the transport for writes: an error occurred readying to send into the channel: the channel is closed and cannot accept new items for sending
+
+----------------------------------------------------
+mode:              tput
+engine:            pie
+model:             google/gemma-4-26B-A4B-it
+completed:         2048/2048  failed=0
+wall:              52.080 s
+requests/sec:      39.32
+output tokens:     262144
+prompt tokens:     346112
+output tok/sec:    5033.49
+lat mean/p50:      21669.8 / 23378.4 ms
+lat p95/p99:       31120.5 / 32343.4 ms
+ttft mean/p50:     14821.8 / 16945.2 ms
+ttft p95/p99:      22957.9 / 23466.4 ms
+intertoken p50/p99/max: 27.96 / 1039.70 / 2990.96 ms
+total batches:     546
+avg batch latency us: 180761.97619047618
+last batch latency us: 98227
+total requests:    262144
+max forward requests: 740
+batch size hist:   [4, 3, 4, 10, 14, 34, 8, 469]
+----------------------------------------------------
+EXIT=0
+1410 MHz, 1410 MHz, 36, 93.48 W
