@@ -157,9 +157,42 @@ pending. So far, at c512, full id lists over 1,024 requests (`scripts/tokeq.py`)
 
 Base against fix differs more than either against itself. The fix decodes 35-38 lanes a step, not 26, so every GEMM runs other row counts and the bf16 sums round differently. The check that this is batch composition, not a fault, is c16 and raw, where the cap does not bind: pending.
 
-## 7. Cross-model checks (this A100)
+## 7. Cross-model checks (this A100, same harness)
 
-pending: Gemma-4-26B-A4B c512/c1024 (base, v3, v2, vLLM), gpt-oss-120b c256-c1024, Qwen3-0.6B c512/c1024, and a 1,024-token-out load at c128 (the first wave, which the gate seats before it has learned a footprint).
+Prompts are 128 + the 16-token header + each model's chat frame: Gemma 169, gpt-oss 225, Qwen3 165 tokens.
+
+**Gemma-4-26B-A4B bf16, the case #1368 was written for** (`results/x26b`):
+- c512 has 3 runs per pie engine: `pie-*-c512-r1` plus `xrep-*-c512-r2/r3`. The repeats were run because v3's first run was low.
+
+| tok/s | c512 runs | c512 median | c1024 (1 run) |
+|---|---|---|---|
+| base | 4654, 4661, 4879 | 4661 | 4941 |
+| v2 (no working-set line) | 5066, 5101, 5009 | 5066 | 5034 |
+| v3 (fix) | 4736, 5163, 5158 | 5158 | 5044 |
+| vLLM 0.32.0 | 4620 | 4620 | 4682 |
+
+- fix/base: c512 +10.7%, c1024 +2.1%.
+- By #1368's own figure, 26B's pool is 5,791 pages: 304 sequences of 19 pages, against the cap's 5 × 5,791 × 16 / 2048 = 226. So the cap bound there too, more mildly. (Its pool on this build was not logged in the sweep runs.)
+
+**gpt-oss-120b mxfp4** (`results/xoss120`, 1 round):
+
+| tok/s | c256 | c512 | c1024 |
+|---|---|---|---|
+| base | 3679.9 | 2822.6 | 2763.0 |
+| fix v3 | 3700.4 | 2872.1 | 3013.5 |
+| vLLM 0.32.0 | 2430.8 | 2396.9 | 2237.3 |
+| fix / base | +0.6% | +1.8% | +9.1% |
+
+**Qwen3-0.6B bf16** (`results/xq06`, 1 round; a non-Gemma, dense model whose pool never binds):
+
+| tok/s | c512 | c1024 |
+|---|---|---|
+| base | 27778.6 | 28941.4 |
+| fix v3 | 27783.7 | 28802.5 |
+| vLLM 0.32.0 | 21237.4 | 19035.3 |
+| fix / base | +0.0% | -0.5% |
+
+**First wave, 1,024 tokens out at c128:** pending (`results/long`).
 
 ## 8. Memory fit
 

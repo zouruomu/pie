@@ -2622,3 +2622,32 @@
 (EngineCore pid=513814) INFO 11-06 06:40:36 [kernel.py:467] Final IR op priority after setting platform defaults: IrOpPriorityConfig(rms_norm=['native'], fused_add_rms_norm=['native'], gelu_and_mul_sparse=['triton', 'native'])
 (MainProcess pid=513414) WARNING 11-06 06:40:36 [input_processor.py:408] Passing raw prompts to InputProcessor is deprecated and will be removed in the future. You should instead pass the outputs of Renderer.render_cmpl() or Renderer.render_chat().
 (EngineCore pid=513814) WARNING 11-06 06:40:36 [jit_monitor.py:140] Triton kernel JIT compilation during inference: kernel_unified_attention. This causes a latency spike; consider extending warmup to cover this shape/config.
+(MainProcess pid=513414) INFO 11-06 06:42:35 [core_client.py:770] [shutdown] MPClient: start timeout=default
+(MainProcess pid=513414) INFO 11-06 06:42:35 [core_client.py:772] [shutdown] MPClient: stopping engine manager
+(MainProcess pid=513414) INFO 11-06 06:42:35 [utils.py:628] [shutdown] Process manager: send sigterm to process EngineCore
+(EngineCore pid=513814) INFO 11-06 06:42:35 [core.py:1454] [shutdown] EngineCore: trigger received signal=SIGTERM
+(EngineCore pid=513814) INFO 11-06 06:42:35 [core.py:1635] [shutdown] EngineCore: start mode=abort timeout=0s
+(EngineCore pid=513814) INFO 11-06 06:42:35 [core.py:1666] [shutdown] EngineCore: request processing complete; starting resource teardown
+(EngineCore pid=513814) INFO 11-06 06:42:35 [core.py:1499] [shutdown] EngineCore: exiting busy loop
+(MainProcess pid=513414) INFO 11-06 06:42:37 [core_client.py:774] [shutdown] MPClient: engine manager stopped
+(MainProcess pid=513414) INFO 11-06 06:42:37 [core_client.py:775] [shutdown] MPClient: cleaning up background resources
+(MainProcess pid=513414) INFO 11-06 06:42:37 [core_client.py:777] [shutdown] MPClient: complete
+
+----------------------------------------------------
+mode:              tput
+engine:            vllm
+model:             openai/gpt-oss-120b
+completed:         2048/2048  failed=0
+wall:              117.172 s
+requests/sec:      17.48
+output tokens:     262144
+prompt tokens:     460800
+output tok/sec:    2237.26
+lat mean/p50:      62842.2 / 64829.1 ms
+lat p95/p99:       114909.5 / 117065.3 ms
+ttft mean/p50:     55131.0 / 52439.3 ms
+ttft p95/p99:      107584.6 / 114517.9 ms
+intertoken p50/p99/max: 39.29 / 184.47 / 5193.05 ms
+----------------------------------------------------
+EXIT=0
+1410 MHz, 1410 MHz, 35, 92.29 W
