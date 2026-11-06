@@ -1,0 +1,42 @@
+[transformers] PyTorch was not found. Models won't be available and only tokenizers, configuration and file/data utilities can be used.
+engine-cuda: [engine] bodies_mem 4096 MiB is held down to 852 MiB on this card: with the weights, activations and inputs resident, one sequence at the declared context and the guests' programs seated, 3410 MiB is left for the graph bodies and the cache rows together, and the bodies take at most a quarter of it. State a smaller bodies_mem to choose it.
+engine-cuda: [engine] max_state_slots 1024 is served at 128 on this card: the recurrent slab is declared for every slot, and at 1024 the kv pages beside it seated fewer sequences than there were slots, so the slots were cut to where the two seat alike, or to half of the room past one sequence where that is more; the pool seats 19 sequences at the declared context. State a smaller max_state_slots to choose it.
+engine-cuda: bodies armed 137 of 137 compositions at load (decode 8/8, prefill 49/49, mixed 48/48, tower 0/0, wide 32/32; 105 segmented; 331 MiB of 852 MiB, 105 of 1024 seats) (pool declared 14300 MiB, high water 10308 MiB, committed 10308 MiB, spare under the ceiling 0 MiB) [18 key(s) never fired — this deployment cannot synthesize them, or their present set was already refused admission; e.g. mixed c2+c0 at bucket 1 (128 seat(s) x 2048 context, 512 lane(s))] [sealed: every key attempted]
+[2m2026-11-06T20:12:52.063903Z[0m [33m WARN[0m [2mruntime::bootstrap[0m[2m:[0m admission: more lanes than the state pool seats; capping, because each running sequence holds one recurrent-state slot. Raise `[engine] max_state_slots` to seat more [3mrequested[0m[2m=[0m512 [3mseated[0m[2m=[0m128
+╭─ Pie Engine ─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╮
+│ Host         127.0.0.1:35809                                                                                                     │
+│ Model        default (/root/.cache/huggingface/hub/models--Qwen--Qwen3.6-27B/snapshots/6a9e13bd6fc8f0983b9b99948120bc37f49c13e9) │
+│ Backend      cuda                                                                                                                │
+│ Device       cuda:0                                                                                                              │
+╰──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╯
+[pie-bench] measured-start
+[2m2026-11-06T20:13:22.368516Z[0m [33m WARN[0m [2mruntime::planner::exec[0m[2m:[0m planner: eviction blocked on swap room [3mpid[0m[2m=[0md4a54a04-0bf9-4b3a-8883-980d3fb4a519 [3merror[0m[2m=[0mhost and disk KV swap exhausted: requested 16, available 14
+[2m2026-11-06T20:13:28.678934Z[0m [33m WARN[0m [2mruntime::planner::exec[0m[2m:[0m planner: eviction blocked on swap room [3mpid[0m[2m=[0m838dcb79-ef96-4cb1-a5dc-0140bde593ea [3merror[0m[2m=[0mhost and disk KV swap exhausted: requested 15, available 3
+[2m2026-11-06T20:13:40.866921Z[0m [33m WARN[0m [2mruntime::planner::exec[0m[2m:[0m planner: eviction blocked on swap room [3mpid[0m[2m=[0m4d695283-e1c6-499e-8a19-845b3c21cf43 [3merror[0m[2m=[0mhost and disk KV swap exhausted: requested 16, available 2
+[pie-bench] measured-end
+[2m2026-11-06T20:13:50.299634Z[0m [33m WARN[0m [2mtarpc::client[0m[2m:[0m Connection broken: could not ready the transport for writes: an error occurred readying to send into the channel: the channel is closed and cannot accept new items for sending
+[2m2026-11-06T20:13:50.299750Z[0m [33m WARN[0m [2mtarpc::server[0m[2m:[0m Requests stream errored out: could not ready the transport for writes: an error occurred readying to send into the channel: the channel is closed and cannot accept new items for sending
+
+----------------------------------------------------
+mode:              tput
+engine:            pie
+model:             Qwen/Qwen3.6-27B
+completed:         1024/1024  failed=0
+wall:              55.155 s
+requests/sec:      18.57
+output tokens:     131072
+prompt tokens:     161712
+output tok/sec:    2376.44
+lat mean/p50:      21495.6 / 24453.9 ms
+lat p95/p99:       29547.9 / 29653.5 ms
+ttft mean/p50:     16291.6 / 18900.1 ms
+ttft p95/p99:      23962.2 / 24167.4 ms
+intertoken p50/p99/max: 30.19 / 482.60 / 1739.38 ms
+total batches:     695
+avg batch latency us: 141119.64460431653
+last batch latency us: 62029
+total requests:    131072
+max forward requests: 256
+batch size hist:   [7, 4, 2, 6, 54, 19, 31, 572]
+----------------------------------------------------
+EXIT=0

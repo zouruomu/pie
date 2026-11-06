@@ -1,0 +1,44 @@
+[transformers] PyTorch was not found. Models won't be available and only tokenizers, configuration and file/data utilities can be used.
+engine-cuda: [engine] bodies_mem 4096 MiB is held down to 642 MiB on this card: with the weights, activations and inputs resident, one sequence at the declared context and the guests' programs seated, 2568 MiB is left for the graph bodies and the cache rows together, and the bodies take at most a quarter of it. State a smaller bodies_mem to choose it.
+engine-cuda: [engine] max_state_slots 256 is served at 156 on this card: the recurrent slab is declared for every slot, and at 256 the kv pages beside it seated fewer sequences than there were slots, so the slots were cut to where the two seat alike, or to half of the room past one sequence where that is more; the pool seats 15 sequences at the declared context. State a smaller max_state_slots to choose it.
+engine-cuda: bodies armed 42 of 42 compositions at load (decode 8/8, prefill 1/1, mixed 33/33, tower 0/0, wide 0/0; 42 segmented; 131 MiB of 642 MiB, 42 of 1024 seats) (pool declared 16312 MiB, high water 10308 MiB, committed 10308 MiB, spare under the ceiling 0 MiB) [18 key(s) never fired — this deployment cannot synthesize them, or their present set was already refused admission; e.g. mixed c2+c0 at bucket 1 (156 seat(s) x 2048 context, 128 lane(s))] [sealed partial: 95 key(s) never attempted, the ceiling's spare ran out (510 MiB left beyond the elastic pool's growth) at bucket 2234, and they walk eagerly for the life of this load]
+╭─ Pie Engine ─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╮
+│ Host         127.0.0.1:37561                                                                                                     │
+│ Model        default (/root/.cache/huggingface/hub/models--Qwen--Qwen3.6-27B/snapshots/6a9e13bd6fc8f0983b9b99948120bc37f49c13e9) │
+│ Backend      cuda                                                                                                                │
+│ Device       cuda:0                                                                                                              │
+╰──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╯
+engine-cuda: the sealed map holds no body for b332[c0:332]+p0[] (no body is resident for it) — this shape walks eagerly for the life of the load (BodyTally::sealed_declines counts each such fire; 1 so far) [body-stats] hits=0 misses=84 reshapes=0 captures=42 declines=0 refusals=0 evictions=0 armed_at_load=42 sealed_declines=1 sealed_short=0 eager_rotating=0 eager_buffered=0 eager_copy_world=0 | last-capture: nodes=1509 edges=1508 islands=1 | resident: bodies=42 segmented=42 bytes=137786015
+[pie-bench] measured-start
+engine-cuda: the sealed map holds no body for b3445[c0:3445]+p0[] (no body is resident for it) — this shape walks eagerly for the life of the load (BodyTally::sealed_declines counts each such fire; 2 so far) [body-stats] hits=127 misses=84 reshapes=0 captures=42 declines=0 refusals=0 evictions=0 armed_at_load=42 sealed_declines=2 sealed_short=0 eager_rotating=0 eager_buffered=0 eager_copy_world=0 | last-capture: nodes=1509 edges=1508 islands=1 | resident: bodies=42 segmented=42 bytes=137786015
+engine-cuda: the sealed map holds no body for b256[c0:256]+p0[] (no body is resident for it) — this shape walks eagerly for the life of the load (BodyTally::sealed_declines counts each such fire; 3 so far) [body-stats] hits=128 misses=84 reshapes=0 captures=42 declines=0 refusals=0 evictions=0 armed_at_load=42 sealed_declines=3 sealed_short=0 eager_rotating=0 eager_buffered=0 eager_copy_world=0 | last-capture: nodes=1509 edges=1508 islands=1 | resident: bodies=42 segmented=42 bytes=137786015
+engine-cuda: the sealed map holds no body for b332[c0:332]+p0[] (no body is resident for it) — this shape walks eagerly for the life of the load (BodyTally::sealed_declines counts each such fire; 4 so far) [body-stats] hits=256 misses=84 reshapes=0 captures=42 declines=0 refusals=0 evictions=0 armed_at_load=42 sealed_declines=4 sealed_short=0 eager_rotating=0 eager_buffered=0 eager_copy_world=0 | last-capture: nodes=1509 edges=1508 islands=1 | resident: bodies=42 segmented=42 bytes=137786015
+engine-cuda: the sealed map holds no body for b512[c0:512]+p0[] (no body is resident for it) — this shape walks eagerly for the life of the load (BodyTally::sealed_declines counts each such fire; 6 so far) [body-stats] hits=384 misses=84 reshapes=0 captures=42 declines=0 refusals=0 evictions=0 armed_at_load=42 sealed_declines=6 sealed_short=0 eager_rotating=0 eager_buffered=0 eager_copy_world=0 | last-capture: nodes=1509 edges=1508 islands=1 | resident: bodies=42 segmented=42 bytes=137786015
+engine-cuda: the sealed map holds no body for b5793[c0:5793]+p0[] (no body is resident for it) — this shape walks eagerly for the life of the load (BodyTally::sealed_declines counts each such fire; 8 so far) [body-stats] hits=511 misses=84 reshapes=0 captures=42 declines=0 refusals=0 evictions=0 armed_at_load=42 sealed_declines=8 sealed_short=0 eager_rotating=0 eager_buffered=0 eager_copy_world=0 | last-capture: nodes=1509 edges=1508 islands=1 | resident: bodies=42 segmented=42 bytes=137786015
+[pie-bench] measured-end
+[2m2026-11-06T20:01:22.542088Z[0m [33m WARN[0m [2mtarpc::client[0m[2m:[0m Connection broken: could not ready the transport for writes: an error occurred readying to send into the channel: the channel is closed and cannot accept new items for sending
+[2m2026-11-06T20:01:22.542096Z[0m [33m WARN[0m [2mtarpc::server[0m[2m:[0m Requests stream errored out: could not ready the transport for writes: an error occurred readying to send into the channel: the channel is closed and cannot accept new items for sending
+
+----------------------------------------------------
+mode:              tput
+engine:            pie
+model:             Qwen/Qwen3.6-27B
+completed:         256/256  failed=0
+wall:              17.149 s
+requests/sec:      14.93
+output tokens:     32768
+prompt tokens:     40342
+output tok/sec:    1910.77
+lat mean/p50:      6946.8 / 7992.6 ms
+lat p95/p99:       9135.9 / 9143.9 ms
+ttft mean/p50:     3296.5 / 5051.6 ms
+ttft p95/p99:      5280.6 / 5365.1 ms
+intertoken p50/p99/max: 27.51 / 31.42 / 366.15 ms
+total batches:     266
+avg batch latency us: 122708.91353383458
+last batch latency us: 69274
+total requests:    32768
+max forward requests: 148
+batch size hist:   [1, 2, 0, 0, 3, 5, 66, 189]
+----------------------------------------------------
+EXIT=0

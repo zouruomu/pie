@@ -1,0 +1,39 @@
+[transformers] PyTorch was not found. Models won't be available and only tokenizers, configuration and file/data utilities can be used.
+engine-cuda: [engine] bodies_mem 4096 MiB is held down to 1386 MiB on this card: with the weights, activations and inputs resident, one sequence at the declared context and the guests' programs seated, 5544 MiB is left for the graph bodies and the cache rows together, and the bodies take at most a quarter of it. State a smaller bodies_mem to choose it.
+engine-cuda: [engine] max_state_slots 256 is served at 124 on this card: the recurrent slab is declared for every slot, and at 256 the kv pages beside it seated fewer sequences than there were slots, so the slots were cut to where the two seat alike, or to half of the room past one sequence where that is more; the pool seats 31 sequences at the declared context. State a smaller max_state_slots to choose it.
+engine-cuda: bodies armed 137 of 137 compositions at load (decode 8/8, prefill 49/49, mixed 48/48, tower 0/0, wide 32/32; 105 segmented; 331 MiB of 1386 MiB, 105 of 1024 seats) (pool declared 15580 MiB, high water 10088 MiB, committed 10088 MiB, spare under the ceiling 23 MiB) [18 key(s) never fired — this deployment cannot synthesize them, or their present set was already refused admission; e.g. mixed c2+c0 at bucket 1 (124 seat(s) x 2048 context, 128 lane(s))] [sealed: every key attempted]
+[2m2026-11-06T19:57:10.390222Z[0m [33m WARN[0m [2mruntime::bootstrap[0m[2m:[0m admission: more lanes than the state pool seats; capping, because each running sequence holds one recurrent-state slot. Raise `[engine] max_state_slots` to seat more [3mrequested[0m[2m=[0m128 [3mseated[0m[2m=[0m124
+╭─ Pie Engine ─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╮
+│ Host         127.0.0.1:44203                                                                                                     │
+│ Model        default (/root/.cache/huggingface/hub/models--Qwen--Qwen3.6-27B/snapshots/6a9e13bd6fc8f0983b9b99948120bc37f49c13e9) │
+│ Backend      cuda                                                                                                                │
+│ Device       cuda:0                                                                                                              │
+╰──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╯
+[pie-bench] measured-start
+[pie-bench] measured-end
+[2m2026-11-06T19:57:27.955331Z[0m [33m WARN[0m [2mtarpc::client[0m[2m:[0m Connection broken: could not ready the transport for writes: an error occurred readying to send into the channel: the channel is closed and cannot accept new items for sending
+[2m2026-11-06T19:57:27.955352Z[0m [33m WARN[0m [2mtarpc::server[0m[2m:[0m Requests stream errored out: could not ready the transport for writes: an error occurred readying to send into the channel: the channel is closed and cannot accept new items for sending
+
+----------------------------------------------------
+mode:              tput
+engine:            pie
+model:             Qwen/Qwen3.6-27B
+completed:         256/256  failed=0
+wall:              14.496 s
+requests/sec:      17.66
+output tokens:     32768
+prompt tokens:     40342
+output tok/sec:    2260.41
+lat mean/p50:      6024.2 / 5868.9 ms
+lat p95/p99:       6132.7 / 11659.7 ms
+ttft mean/p50:     1372.1 / 1042.4 ms
+ttft p95/p99:      1834.8 / 6107.5 ms
+intertoken p50/p99/max: 31.55 / 116.74 / 1077.94 ms
+total batches:     198
+avg batch latency us: 134593.14141414143
+last batch latency us: 60576
+total requests:    32768
+max forward requests: 248
+batch size hist:   [0, 0, 0, 1, 63, 2, 4, 128]
+----------------------------------------------------
+EXIT=0
