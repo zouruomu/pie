@@ -1,4 +1,4 @@
-From d678268d74af22d69128716dd1dc76c9575ee33a Mon Sep 17 00:00:00 2001
+From 54385f765f642ba2ffa52272cb1a535d681d7d4e Mon Sep 17 00:00:00 2001
 From: zouruomu <zouruomu@gmail.com>
 Date: Fri, 6 Nov 2026 03:13:03 +0000
 Subject: [PATCH] Batching part of the pie vs vLLM gap on A100 (Gemma-4-31B
@@ -10,43 +10,42 @@ Subject: [PATCH] Batching part of the pie vs vLLM gap on A100 (Gemma-4-31B
 
 * A100 profile: a fire's working set held to 40%
 ---
- .../engine-cuda/profiles/sm80/nvidia-a100.toml   | 16 ++++++++++++++++
- crates/engine-cuda/src/api.rs                    |  1 +
- crates/engine-cuda/src/chip.rs                   | 12 ++++++++++++
- crates/engine-cuda/src/serve.rs                  |  9 +++++++++
- crates/engine-cuda/src/serve/load.rs             |  1 +
- crates/engine-metal/src/api.rs                   |  1 +
- crates/engine-vulkan/src/api.rs                  |  1 +
- crates/engine/src/caps.rs                        |  5 +++++
- crates/runtime/src/bootstrap.rs                  |  5 ++++-
- crates/worker/src/translate.rs                   |  1 +
- 10 files changed, 51 insertions(+), 1 deletion(-)
+ crates/engine-cuda/profiles/sm80/nvidia-a100.toml | 15 +++++++++++++++
+ crates/engine-cuda/src/api.rs                     |  1 +
+ crates/engine-cuda/src/chip.rs                    | 12 ++++++++++++
+ crates/engine-cuda/src/serve.rs                   |  9 +++++++++
+ crates/engine-cuda/src/serve/load.rs              |  1 +
+ crates/engine-metal/src/api.rs                    |  1 +
+ crates/engine-vulkan/src/api.rs                   |  1 +
+ crates/engine/src/caps.rs                         |  5 +++++
+ crates/runtime/src/bootstrap.rs                   | 13 +++++++++++--
+ crates/worker/src/translate.rs                    |  1 +
+ 10 files changed, 57 insertions(+), 2 deletions(-)
 
 diff --git a/crates/engine-cuda/profiles/sm80/nvidia-a100.toml b/crates/engine-cuda/profiles/sm80/nvidia-a100.toml
-index 7534b1c1..ac3c215a 100644
+index 7534b1c1..fdb03175 100644
 --- a/crates/engine-cuda/profiles/sm80/nvidia-a100.toml
 +++ b/crates/engine-cuda/profiles/sm80/nvidia-a100.toml
-@@ -69,6 +69,19 @@ lattice_steps = 2
+@@ -69,6 +69,18 @@ lattice_steps = 2
  # 19.5 GiB pool) c512 2.6k -> 4.5k tok/s, c1024 2.5k -> 4.5k; Gemma-4-31B c128
  # 309 -> 465.
  seated_first = true
 +# A process starts only while the pools hold the started ones to the end, as
-+# the A40, H100, H200 and RTX PRO 6000 profiles, and that gate, not five
-+# declared-context sequences, bounds admission: Gemma-4-31B's 671 pages seat 35
-+# of its 297-token sequences, the cap 26; c512 454 -> 559 tok/s (the gate alone
-+# under the cap 454, no cap without it 433). Greedy tokens differ as the lanes a
-+# step do.
++# the A40, H100, H200, RTX 4090, RTX 5090 and RTX PRO 6000 profiles do, and
++# that gate, not five declared-context sequences, bounds admission:
++# Gemma-4-31B's 671 pages seat 35 of its 297-token sequences, the cap 26; c512
++# 454 -> 559 tok/s (the gate alone under the cap 454, no cap without it 433).
++# Greedy tokens differ as the lanes a step do.
 +seat_to_end = true
 +uncapped_admission = true
 +# A fire's working set held to 40% of the card past the weights: Gemma-4-31B's
 +# fires 3757 -> 2436 tokens, and its pool's planes re-reserved in finer map
-+# units, 671 -> 735 pages; c512 559 -> 597 tok/s, Gemma-4-26B c512 5.07k ->
-+# 5.16k.
++# units, 671 -> 735 pages; c512 559 -> 597 tok/s.
 +working_set_percent = 40
  
  # Independent chains on side streams: decode latency +5-11% (Gemma 4, Qwen3.6-A3B,
  # DeepSeek-V4, GLM-5.3, Hy4), outputs unchanged; a join's branches on them too.
-@@ -114,6 +127,9 @@ measured = [
+@@ -114,6 +126,9 @@ measured = [
    "engine.prefill_lattice_from",
    "engine.lattice_steps",
    "engine.seated_first",
@@ -206,7 +205,7 @@ index 35380e52..59608454 100644
  
  impl PoolFacts {
 diff --git a/crates/runtime/src/bootstrap.rs b/crates/runtime/src/bootstrap.rs
-index 8e732145..7779b887 100644
+index 8e732145..252ea6c6 100644
 --- a/crates/runtime/src/bootstrap.rs
 +++ b/crates/runtime/src/bootstrap.rs
 @@ -144,6 +144,9 @@ pub struct EngineConfig {
@@ -219,15 +218,39 @@ index 8e732145..7779b887 100644
      pub rs_cache_slot_bytes: u64,
      pub rs_host_slots: usize,
      pub rs_buffer_pages: u32,
-@@ -323,7 +326,7 @@ async fn bootstrap_inner(config: Config) -> Result<BootstrapHandle> {
+@@ -293,6 +296,7 @@ async fn bootstrap_inner(config: Config) -> Result<BootstrapHandle> {
+         );
+         crate::scheduler::set_dispatch_depth(1);
+     }
++    let seat_to_end = !engine_configs.is_empty() && engine_configs.iter().all(|d| d.seat_to_end);
+     let admission_cap = config
+         .max_concurrent_processes
+         .or_else(|| {
+@@ -321,9 +325,15 @@ async fn bootstrap_inner(config: Config) -> Result<BootstrapHandle> {
+             // admitted prompts seat lanes the pool then suspends for each
+             // other's growth (Gemma-4-26B on an A100, c512: 2.9k tok/s
              // admitting all 512, 4.7k at 224; its 5791 pages seat 45 at 2048).
++            // Where the pools seat to the end, an engine may ask that gate
++            // alone to hold admission.
              let seats = engine_configs
                  .iter()
 -                .filter(|d| d.seated_first && d.limits.max_context > 0)
-+                .filter(|d| d.seated_first && !d.uncapped_admission && d.limits.max_context > 0)
++                .filter(|d| {
++                    d.seated_first
++                        && !(d.uncapped_admission && seat_to_end)
++                        && d.limits.max_context > 0
++                })
                  .map(|d| 5 * d.total_pages * kv_page_size / d.limits.max_context)
                  .min();
              match seats {
+@@ -441,7 +451,6 @@ async fn bootstrap_inner(config: Config) -> Result<BootstrapHandle> {
+         .first()
+         .is_some_and(|d| d.cpu_pages > 0 || d.disk_pages > 0);
+     let seated_first = !engine_configs.is_empty() && engine_configs.iter().all(|d| d.seated_first);
+-    let seat_to_end = !engine_configs.is_empty() && engine_configs.iter().all(|d| d.seat_to_end);
+     if let Some(d) = engine_configs.first() {
+         if kv_swap_capable {
+             tracing::info!(
 diff --git a/crates/worker/src/translate.rs b/crates/worker/src/translate.rs
 index 8f352926..4cbf3f1f 100644
 --- a/crates/worker/src/translate.rs

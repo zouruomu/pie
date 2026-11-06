@@ -1,0 +1,40 @@
+# fix v1 (engine sha256 dc849f56…), superseded. Never committed: rebuilt here from the `git diff` the
+# session printed at 23:1xZ on 2026-11-05, against main e4bb499. The A100 profile also had `seat_to_end = true`
+# (same comment block as the final commit's first line, with "past five declared-context sequences: Gemma-4-31B
+# c512 454 -> 559 tok/s").
+diff --git a/crates/runtime/src/bootstrap.rs b/crates/runtime/src/bootstrap.rs
+--- a/crates/runtime/src/bootstrap.rs
++++ b/crates/runtime/src/bootstrap.rs
+@@ -293,6 +293,7 @@ async fn bootstrap_inner(config: Config) -> Result<BootstrapHandle> {
+         );
+         crate::scheduler::set_dispatch_depth(1);
+     }
++    let seat_to_end = !engine_configs.is_empty() && engine_configs.iter().all(|d| d.seat_to_end);
+     let admission_cap = config
+         .max_concurrent_processes
+         .or_else(|| {
+@@ -321,13 +322,15 @@ async fn bootstrap_inner(config: Config) -> Result<BootstrapHandle> {
+             // admitted prompts seat lanes the pool then suspends for each
+             // other's growth (Gemma-4-26B on an A100, c512: 2.9k tok/s
+             // admitting all 512, 4.7k at 224; its 5791 pages seat 45 at 2048).
++            // Pools that seat to the end hold each process to the pages it
++            // reaches instead.
+             let seats = engine_configs
+                 .iter()
+                 .filter(|d| d.seated_first && d.limits.max_context > 0)
+                 .map(|d| 5 * d.total_pages * kv_page_size / d.limits.max_context)
+                 .min();
+             match seats {
+-                Some(seats) if rs_seat_cap.is_none() && cap > seats.max(1) => {
++                Some(seats) if rs_seat_cap.is_none() && !seat_to_end && cap > seats.max(1) => {
+                     tracing::info!(
+                         requested = cap,
+                         seated = seats,
+@@ -441,7 +444,6 @@ async fn bootstrap_inner(config: Config) -> Result<BootstrapHandle> {
+         .first()
+         .is_some_and(|d| d.cpu_pages > 0 || d.disk_pages > 0);
+     let seated_first = !engine_configs.is_empty() && engine_configs.iter().all(|d| d.seated_first);
+-    let seat_to_end = !engine_configs.is_empty() && engine_configs.iter().all(|d| d.seat_to_end);
+     if let Some(d) = engine_configs.first() {
+         if kv_swap_capable {
+             tracing::info!(
