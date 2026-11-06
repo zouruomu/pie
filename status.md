@@ -1,7 +1,7 @@
 # Status: 20261105-2035-a100-sxm-x1-gemma-4-31b-batching
 
-**Phase:** fix v3 built; verification queue q7 running (~6 h GPU)
-**UTC:** 2026-11-06 03:28
+**Phase:** target A/B done (3 rounds); pbatch, cross-model and curve checks running, then the final A/B and the GPU suite
+**UTC:** 2026-11-06 04:42
 
 ## Preliminary verdict (1 round so far; rounds 2-3 running)
 
@@ -63,6 +63,17 @@ The pool-size half of the remaining gap. At c512 (fix v1 + user layer, 1 round):
 - Tests on the fix tree so far: runtime 101 passed; pie-profile 41 passed; engine-cuda chip 13 passed.
 
 ## Latest
+- **Target cell, 3 alternating rounds, medians (results/base, scripts/table.py):**
+
+| tok/s | c64 | c128 | c256 | c512 | c1024 |
+|---|---|---|---|---|---|
+| base e4bb499 | 456.7 | 457.9 | 474.8 | 453.8 | 470.6 |
+| fix v3 | 541.3 | 592.3 | 588.1 | 596.6 | 598.6 |
+| vLLM 0.32.0 | 601.8 | 656.5 | 625.0 | 628.3 | 595.4 |
+| fix / base | +18.5% | +29.3% | +23.9% | +31.4% | +27.2% |
+| fix / vLLM | -10.1% | -9.8% | -5.9% | -5.1% | +0.5% |
+
+  Best against best: base -27.7% (474.8 vs 656.5), **fix -8.8%** (598.6 vs 656.5). Spread is under 1% everywhere. fix has n=2 at c128-c1024 until q11 reruns round 2.
 - Final commit prepared: `d678268d` on upstream main `a6547509`, one commit, 10 files, +51/-1, in worktree /root/r2g/pie-fix (branch fix-wip). The r2g branch will be moved to it and pushed after the last benchmark, since editing the main tree's sources mid-sweep trips the bench's staleness guard. Final engines: fix a3d5d503, base (a6547509) 8f115859. q13 runs their A/B at c128/c512/c1024, then the GPU suite.
 - More tests on the fix tree: worker + engine 37 passed; cargo check passes for worker, engine, engine-vulkan and engine-metal.
 - **A slip, caught by the sha256 check:** my fit-trace runs (q10), slotted between q8's points, left the exp-fit engine in the tree. fix v3's round 2 at c128/c256/c512/c1024 then ran on it (sha a20a45ac, not 8cd1ffd7). Those files are in results/bad/ and are queued again after q8 (q11). Every other JSON's sha matches its label.
