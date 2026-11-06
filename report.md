@@ -207,7 +207,15 @@ Prompts are 128 + the 16-token header + each model's chat frame: Gemma 169, gpt-
 | vLLM 0.32.0 | 21237.4 | 19035.3 |
 | fix / base | +0.0% | -0.5% |
 
-**First wave, 1,024 tokens out at c128:** pending (`results/long`).
+**First wave, 1,024 tokens out at c128** (`results/long`, Gemma-4-31B; 256 requests, each holding ~75 pages at its end, so the pool seats ~10):
+
+| | tok/s | ITL p50 / p99 / max | TTFT p50 |
+|---|---|---|---|
+| base | 148.1 | 42.1 / 1,162 / 83,922 ms | – |
+| fix v3 | 216.7 (+46%) | 45.2 / 47.3 / 447 ms | 513 s (queued in the gate) |
+
+- The base's cap (29) admits nearly three times what its pool carries to the end, and lanes are suspended and replayed.
+- The fix's gate admits everything until the first process finishes and it has learned a footprint. seated_first then holds the waiting prompts back from suspending lanes, and no thrash shows: ITL p99 is 47 ms. After the first finish the gate holds ~10 lanes (216.7 × 45.2 ms = 9.8).
 
 ## 8. Memory fit
 
@@ -222,7 +230,29 @@ pending.
 
 ## 10. Remaining gap
 
-pending.
+After the fix, medians of the 3-round table. Lanes decoding = output tok/s × ITL p50:
+
+| point | fix tok/s / lanes / ITL | vLLM tok/s / lanes / ITL | fix / vLLM |
+|---|---|---|---|
+| c64 | 541.3 / 27.2 / 50.2 ms | 601.8 / 31.8 / 52.9 ms | -10.1% |
+| c128 | 592.3 / 29.7 / 50.2 ms | 656.5 / 34.7 / 52.8 ms | -9.8% |
+| c256 | 588.1 / 29.4 / 50.1 ms | 625.0 / 32.8 / 52.5 ms | -5.9% |
+| c512 | 596.6 / 29.8 / 50.0 ms | 628.3 / 32.8 / 52.2 ms | -5.1% |
+| c1024 | 598.6 / 29.9 / 50.0 ms | 595.4 / 30.7 / 51.6 ms | +0.5% |
+
+**All of it is lanes:** pie's step is still 3-5% shorter than vLLM's at every point.
+
+- **At c512, seats:**
+  - pie's pool is 735 pages, 38 sequences of 19 pages, and its gate admits to that lockstep bound.
+  - vLLM's is 11,929 tokens, 40 sequences.
+  - Both decode ~78-82% of their seats on average; the rest are prompts being prefilled and turnover. The token 1→2 gap is p50 488 ms in pie and 646 ms in vLLM (`scripts/gaps.py`).
+- **At c128, vLLM's best point:** vLLM's pool grows to 13,307 tokens (45 sequences), because it captures fewer graphs at max_num_seqs 128. pie's grows less.
+  - Fires are 4,871 tokens there (working set at 40% of a larger room), and the room for bodies and rows is 10,075 MiB (`results/base/pie-fix-v3-c128-r3.log`).
+  - pie's lanes stay at ~30 while vLLM's reach 35. The exact c128 pool is not logged in the sweep runs (no arm-trace there).
+- **What would close it, not done here:**
+  1. The fit's stranded room (§12), which the working-set line only side-steps at some budgets.
+  2. Inputs and the arena are sized for `max_forward_requests` = the concurrency (512-1024 lanes), while the pool seats under 40.
+  3. Overall footprint at c512: pie's non-weight, non-kv memory is 3.6 GiB with the fix (context 0.93, arena 1.22, inputs 0.62, bodies 0.57, scratch 0.20, programs 0.06, unfitted 0.04), against vLLM's 2.3 GiB inside its budget (non-torch 0.73 + activations 1.52) plus 0.46 of graphs outside it.
 
 ## 11. What carries over to other cards
 

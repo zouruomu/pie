@@ -9,3 +9,30 @@ engine-cuda: bodies armed 158 of 158 compositions at load (decode 14/14, prefill
 │ Device       cuda:0                                                                                                                   │
 ╰───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╯
 [pie-bench] measured-start
+[pie-bench] measured-end
+[2m2026-11-06T08:23:38.665887Z[0m [33m WARN[0m [2mtarpc::server[0m[2m:[0m Requests stream errored out: could not ready the transport for writes: an error occurred readying to send into the channel: the channel is closed and cannot accept new items for sending
+[2m2026-11-06T08:23:38.665903Z[0m [33m WARN[0m [2mtarpc::client[0m[2m:[0m Connection broken: could not ready the transport for writes: an error occurred readying to send into the channel: the channel is closed and cannot accept new items for sending
+
+----------------------------------------------------
+mode:              tput
+engine:            pie
+model:             google/gemma-4-31B-it
+completed:         256/256  failed=0
+wall:              1769.562 s
+requests/sec:      0.14
+output tokens:     262144
+prompt tokens:     43264
+output tok/sec:    148.14
+lat mean/p50:      715853.0 / 823133.2 ms
+lat p95/p99:       1066934.0 / 1202780.7 ms
+ttft mean/p50:     356830.0 / 291450.1 ms
+ttft p95/p99:      849690.6 / 1030148.4 ms
+intertoken p50/p99/max: 42.11 / 1162.40 / 83921.80 ms
+total batches:     20440
+avg batch latency us: 164729.0137475538
+last batch latency us: 117724
+total requests:    352392
+max forward requests: 56
+batch size hist:   [1400, 4734, 2480, 2468, 5228, 4130, 0, 0]
+----------------------------------------------------
+EXIT=0
