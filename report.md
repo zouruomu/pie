@@ -12,7 +12,7 @@ Numbers marked `pending` were still running when this was written.
   - #1368's admission cap holds pie to 26 processes at c512 (5 × 671 pages × 16 / 2048). The kv pool seats 35 of these 297-token sequences, so the cap binds first.
   - The pool is also smaller than vLLM's: 671 pages, 10,736 tokens, against 11,929 tokens at c512. At the default working set the pool fit leaves 525-561 MiB of its room unused (two boots, §3.2).
 - **The fix: three A100 profile lines, and one new profile decision behind one of them.**
-  1. `seat_to_end = true`, as the A40, H100, H200 and RTX PRO 6000 have.
+  1. `seat_to_end = true`, as the A40, H100, H200, RTX 4090, RTX 5090 and RTX PRO 6000 profiles have.
   2. `uncapped_admission = true`. The new decision `engine.uncapped_admission` (default off) lets a profile lift #1368's cap so that seat_to_end's gate, which learns the footprint, bounds admission. Every other card keeps the cap exactly as it is.
   3. `working_set_percent = 40`: fires of 2,436 tokens, not 3,757 (about vLLM's 2,496-token chunks). The pool grows 671 -> 735 pages.
 - **Result:**
@@ -35,8 +35,9 @@ Numbers marked `pending` were still running when this was written.
   - Short pbatch runs spend most of their time there (pf32 fix: 93%). Runs ended at 1230-1410 MHz.
 - **Commits and engines:**
   - base: pie main `e4bb499c`, engine sha256 `c795a06a…`;
-  - fix v3: the measured fix, built from `fix-wip` 47cfd8b1 on e4bb499, sha256 `8cd1ffd7…`. Its diff equals the final commit's except for profile comment text;
-  - final commit: `d678268d` on main `a6547509`, rebased for hand-over (§5.3), sha256 `a3d5d503…`;
+  - fix v3: the measured fix, built from `fix-wip` 47cfd8b1 on e4bb499, sha256 `8cd1ffd7…`;
+  - `d678268d`: v3 squashed and rebased on main `a6547509`, sha256 `a3d5d503…`;
+  - **final commit `54385f76`** on main `dc6282d7`, sha256 `1b4c64bf…`. It is v3 plus the review's bootstrap fix (the cap is lifted only while the pools seat to the end, which they do on the A100) and comment text (§4, §5.3);
   - main `a6547509` rebuilt as the final base: `8f115859…`;
   - v2 (v3 without the working-set line): `2194798c…`;
   - v1 (a runtime-wide cap change, superseded after note 1): `dc849f56…`;
@@ -92,11 +93,11 @@ Numbers marked `pending` were still running when this was written.
 
 ### 3.1 The five-sequence cap binds before the pool
 
-- **Where:** `crates/runtime/src/bootstrap.rs:318-340` (#1368). For a seated-first kv pool it admits `5 × total_pages × page_size / max_context` processes: 26 at c512, 29 at c64.
+- **Where:** `crates/runtime/src/bootstrap.rs:318-340` on main e4bb499 (#1368). For a seated-first kv pool it admits `5 × total_pages × page_size / max_context` processes: 26 at c512, 29 at c64.
 - **What it assumes:** each sequence holds 2048/5 = 410 tokens. These hold 297 (19 pages), so the pool seats 35 but only 26 are admitted.
 - **Why it exists:** without seat_to_end, more admitted prompts than the pool can carry to the end get seated and then suspended for each other's growth.
   - `x0-c512`: cap off, seat_to_end off → 433.2 tok/s with ITL p50 0.09 ms (replays).
-- **seat_to_end does the cap's job exactly** (`crates/runtime/src/planner/to_end.rs:66-110`). A trace of its gate (`results/exp/x0-s2e-trace-c512.log`) shows:
+- **seat_to_end gates what the cap approximates** (`crates/runtime/src/planner/to_end.rs:66-110`): it holds a process back until the pools carry the started ones to the end, from what finished processes held. A trace of its gate (`results/exp/x0-s2e-trace-c512.log`) shows:
   - it learns 19 pages a finished lane held (11 at the prompt);
   - it admits while `most_at_once` ≤ 671, i.e. up to 35 live lanes, the pool's lockstep bound;
   - oversubscribing it by 10% or 20% (`PIE_TO_END_OVER`, already in main) gives 559.5 and 559.4, against 559.4. The lanes are in lockstep (every request is 128 tokens), so the bound is real.
@@ -155,11 +156,11 @@ Commit `54385f76` on main `dc6282d7`: 10 files, +57/-2 (`fix.patch`). It is the 
 3. **Same file: `working_set_percent = 40`.**
    - A/B v2 → v3: Gemma-4-31B c512 559.2 → 596.6.
    - On Gemma-4-26B the line changes nothing: its pool is 5,887 pages with and without it (`xrep-*` logs). v2 → v3 there (5066 → 5158 medians) is within the run spread.
-   - Prefill batches: v2 → v3 at pf32 is 3,766 → 3,635 (-3.5%), and base → v3 at pf16 is 3,733 → 3,637 (-2.6%), both single runs of about 2 s. Level or better at pf8 and pf64-pf1024 (§5.2).
+   - Prefill batches: v2 → v3 at pf32 is 3,766 → 3,635 (-3.5%), and base → v3 at pf16 is 3,733 → 3,637 (-2.6%), both single runs of 2-5 s. Level or better at pf8 and pf64-pf1024 (§5.2).
    - 30% did not gain more (601.5 at c512) and cuts fires to 1,449 tokens.
 4. **Provenance:** `engine.seat_to_end`, `engine.uncapped_admission` and `engine.working_set_percent` are added to the A100's `measured` list.
 
-The bootstrap comment that explains the cap is unchanged.
+The bootstrap comment that explains the cap gains two lines: where the pools seat to the end, an engine may ask that gate alone to hold admission.
 
 ## 5. Before / after
 
@@ -177,6 +178,8 @@ Medians with min-max over rounds. Rounds 2-3 alternate fix, base and vLLM within
 | fix / vLLM | -10.1% | -9.8% | -5.9% | -5.1% | +0.5% |
 
 - **Best point against best point:** base 474.8 (c256) vs vLLM 656.5 (c128) is -27.7%; fix 598.6 (c1024) vs 656.5 is **-8.8%**.
+- **Missing fix round 2 at c128-c1024:** those runs ran on the wrong engine (`results/bad/`, sha a20a45ac, §12), and their rerun was dropped for time. The final A/B (§5.3) is a further fix measurement at c128 and c512.
+
 ### 5.2 The rest of Gemma-4-31B's curve (1 round, `results/curve`)
 
 | tok/s | c4 | c8 | c16 | c32 | raw (1 × 553 in, 256 out) |
@@ -213,8 +216,6 @@ At c32 the cap already binds. It is 5 × pages × 16 / 2048: 29 at c64's 767 pag
 - The two commits main moved by since a6547509 (#1482 server-web, #1483 swift) touch neither the engine nor this diff.
 - 54385f76 differs from d678268d by the bootstrap filter's `seat_to_end` term (true on the A100) and profile comment text.
 
-- **Missing fix round 2 at c128-c1024:** those runs ran on the wrong engine (`results/bad/`, sha a20a45ac, §12), and their rerun was dropped for time. The final A/B on the rebased build (§5.3) is a further fix measurement at c128 and c512.
-
 
 ## 6. Token equality
 
@@ -240,7 +241,7 @@ Full greedy id lists, request by request (`scripts/tokeq.py`; outputs in `result
 | c1024 (2048) | 329, 88.8% | 488, 86.3% | 1488, 53.3% |
 | c32 (64), curve | – | – | 44, 52.3% |
 
-- **Why base and fix differ more than reruns:** the base decodes 21-22 lanes a step and the fix 27-30, so every GEMM and attention launch runs other row counts. bf16 sums round differently with the row count and tiling, so near-tied greedy picks flip, and the rest of the sequence follows. A rerun of one engine keeps the lane count and drifts only with arrival jitter.
+- **Why base and fix differ more than reruns:** the base decodes 21-22 lanes a step and the fix 27-30, so every GEMM and attention launch runs other row counts. bf16 sums can round differently with the row count and tiling, so near-tied greedy picks flip, and the rest of the sequence follows (the likely mechanism; not traced kernel by kernel). A rerun of one engine keeps the lane count and drifts only with arrival jitter.
 - **Fix vs fix is closer than base vs base at c64-c512**, not at c1024 (488 vs 329 differ). The fix's waves are lockstep there (the gate holds lanes to the pool's bound), so its batches repeat run to run.
 - **The working-set line barely moves tokens:** at c512, no cap + seat_to_end (`exp/x0-s2e-c512`) vs v3 r1: 51 of 1,024 differ, 96.6% of tokens before divergence.
 - **Outside reference:** vLLM 0.32.0's own greedy ids on the same 1,024 c512 prompts, from its offline path, since its streaming client stores none (`results/vllm-tokens`, `results/tokeq-vllm.txt`).
@@ -283,7 +284,7 @@ Prompts are 128 + the 16-token header + each model's chat frame: Gemma 169, gpt-
 
 One run each. The sweeps don't log the admission line (no `RUST_LOG`), so whether the cap binds for gpt-oss is not shown; the c1024 gain has no traced mechanism.
 
-**Qwen3-0.6B bf16** (`results/xq06`, 1 round; a non-Gemma, dense model whose pool never binds):
+**Qwen3-0.6B bf16** (`results/xq06`, 1 round; a non-Gemma dense model with a pool far larger than these batches, so the cap is not expected to bind; its admission line was not logged):
 
 | tok/s | c512 | c1024 |
 |---|---|---|
@@ -353,7 +354,7 @@ After the fix, medians of the 3-round table. Lanes decoding = output tok/s × IT
   - pie's lanes stay at ~30 while vLLM's reach 35. The exact c128 pool is not logged in the sweep runs (no arm-trace there).
 - **What would close it, not done here:**
   1. The fit's stranded room (§12), which the working-set line only side-steps at some budgets.
-  2. Inputs and the arena are sized for `max_forward_requests` = the concurrency (512-1024 lanes), while the pool seats under 40.
+  2. Possibly: inputs and parts of the arena scale with `max_forward_requests` = the concurrency (512-1024 lanes), while the pool seats under 40. Inputs are 636-678 MiB at c512; how much of that a smaller lane budget would free was not measured.
   3. Overall footprint at c512: pie's non-weight, non-kv memory is 3.6 GiB with the fix (context 0.93, arena 1.22, inputs 0.62, bodies 0.57, scratch 0.20, programs 0.06, unfitted 0.04), against vLLM's 2.3 GiB inside its budget (non-torch 0.73 + activations 1.52) plus 0.46 of graphs outside it.
 
 ## 11. What carries over to other cards
@@ -372,7 +373,7 @@ Nothing changes on another card unless its profile sets `uncapped_admission = tr
 - **The pool fit can strand ~0.5 GiB** (`crates/engine-cuda/src/store.rs`, `Pools::fit_the_card`).
   - The first pass re-reserves the kv planes in the finer unit only when that gains pages at its own limit, with the bodies' allowance held. The second pass, after arming, has more room, but the planes keep the coarse unit.
   - Gemma-4-31B on this A100 at the default working set: 600 MiB a page step, 561 MiB of 9,841 stranded.
-  - Deciding the reshape at the reach (`live - programs`, which the code already computes for it) would recover it on every card. I did not change it: it is engine-wide, and finer units mean more mapping handles while the pool grows on demand. Worth a look by whoever owns the elastic pool.
+  - Deciding the reshape at the reach (`live - programs`, which the code already computes for it) should recover it wherever the steps are coarse (not tested). I did not change it: it is engine-wide, and finer units mean more mapping handles while the pool grows on demand. Worth a look by whoever owns the elastic pool.
 - **A run slotted into another queue left its engine behind.** The fit-trace runs (q10) ran between q8's points and left `exp-fit.so` (a20a45ac) in the shared engine path. sweep.sh copies its engine only when a round starts, so fix v3's round 2 at c128-c1024 ran on it. The sha256 in each JSON caught it; those files are in `results/bad/`.
 - **Eager prefill walks:** "the sealed map holds no body for b… — this shape walks eagerly" appears in 1-4 fires of some runs. It shows on Gemma-4-26B uncapped runs (v2, v3) and on Qwen3-0.6B base and fix, so it predates this change.
 - **Gemma-4-26B ITL tails with uncapped admission** (§7): p99 670-1,040 ms on 4 of 6 v2/v3 runs, against 45-190 ms on base. Not traced.
@@ -383,7 +384,7 @@ Nothing changes on another card unless its profile sets `uncapped_admission = tr
 ## 13. Playbook notes
 
 - Never edit a shell script in place while a running bash executes it. Rewrite to a new file and `mv`. A mid-run `open('w')` on `bench.sh` made bash resume at its old byte offset and run vLLM under pie's label (`results/bad/`).
-- Model downloads: `hf download openai/gpt-oss-120b` brings `original/` and `metal/` too, about 195 GB, and filled the 300 GB disk. Use `--include "*.safetensors" --include "*.json"` or the exclude flags.
+- Model downloads: `hf download openai/gpt-oss-120b` brings `original/` and `metal/` too, about 170 GB, and filled the 300 GB disk. Use `--include "*.safetensors" --include "*.json"` or the exclude flags.
 - `pgrep -f <name>` inside `kill $(...)` matched my own shell, as in the pilot. Use `ps -eo pid,args | grep "[x]"` and kill PIDs.
 - pie's runtime tracing is at warn by default; `RUST_LOG=warn,runtime::bootstrap=info` shows the admission cap's line and the pool's `device_pages`. Set it in every sweep, not only in experiments.
 - When a queue is paused to slot other runs in, restore its engine afterwards. Better still, have sweep.sh copy the engine before every point.
