@@ -1,0 +1,37 @@
+{
+ "engine": "tensorrt_llm",
+ "version": "1.4.0rc2.post1",
+ "model": "/root/.cache/huggingface/hub/models--openai--gpt-oss-120b/snapshots/b5c939de8f754692c1647ca79fbf85e8c1e70f8a",
+ "config": {
+  "model": "/root/.cache/huggingface/hub/models--openai--gpt-oss-120b/snapshots/b5c939de8f754692c1647ca79fbf85e8c1e70f8a",
+  "prompts_file": "/root/prompts-gptoss-512.json",
+  "points": "256",
+  "warmup": 16,
+  "max_tokens": 1,
+  "reuse": false,
+  "max_num_tokens": null,
+  "max_batch_size": null,
+  "moe_backend": null,
+  "mem_frac": null,
+  "cuda_graphs": true,
+  "rounds": 1,
+  "json_out": "/root/r2g/evidence/results/prof/trt-120b-pf256.json",
+  "dump_ids": null
+ },
+ "rows": [
+  {
+   "point": "pf256",
+   "round": 0,
+   "requests": 256,
+   "prompt_tokens": 131072,
+   "wall_s": 3.078810669016093,
+   "prefill_tok_s": 42572.283290770574,
+   "output_tokens": 256,
+   "ttft_p50_ms": 1587.052934919484,
+   "ttft_max_ms": 3078.373576980084,
+   "clocks_before": "2370 MHz, 12481 MHz, 272.35 W, 43",
+   "clocks_after": "2265 MHz, 12481 MHz, 565.50 W, 48"
+  }
+ ],
+ "prompt_ids_sha256": "ffdec922cea87298f49a7e9db060de5907cb297bbede991402803d63be0cd9ff"
+}

@@ -1,0 +1,35 @@
+Skipping import of cpp extensions due to incompatible torch version 2.14.0+cu130 for torchao version 0.15.0             Please see https://github.com/pytorch/ao/issues/2919 for more info
+[TensorRT-LLM] TensorRT LLM version: 1.4.0rc2.post1
+[11/06/2026-11:00:36] [TRT-LLM] [I] [llmapi] Using LLM with PyTorch backend
+[11/06/2026-11:00:36] [TRT-LLM] [W] [llmapi] Using default gpus_per_node: 1
+[11/06/2026-11:00:36] [TRT-LLM] [I] [llmapi] neither checkpoint_format nor checkpoint_loader were provided, checkpoint_format will be set to HF.
+`torch_dtype` is deprecated! Use `dtype` instead!
+[33;20mrank 0 using MpiPoolSession to spawn MPI processes
+[0mSkipping import of cpp extensions due to incompatible torch version 2.14.0+cu130 for torchao version 0.15.0             Please see https://github.com/pytorch/ao/issues/2919 for more info
+[TensorRT-LLM] TensorRT LLM version: 1.4.0rc2.post1
+[TRT-LLM] [I] [runtime][RANK 0] Refreshed the MPI local session
+`torch_dtype` is deprecated! Use `dtype` instead!
+Mapping safetensors weights in parallel:   0%|          | 0/3 [00:00<?, ?it/s]Mapping safetensors weights in parallel: 100%|██████████| 3/3 [00:00<00:00, 89.50it/s]
+Loading weights:   0%|          | 0/464 [00:00<?, ?it/s]Loading weights:   1%|          | 3/464 [00:00<00:36, 12.50it/s]Loading weights:   5%|▍         | 23/464 [00:00<00:11, 38.83it/s]Loading weights:   9%|▉         | 42/464 [00:00<00:09, 46.80it/s]Loading weights:  13%|█▎        | 61/464 [00:01<00:07, 55.23it/s]Loading weights:  17%|█▋        | 80/464 [00:01<00:06, 60.53it/s]Loading weights:  21%|██▏       | 99/464 [00:01<00:05, 64.34it/s]Loading weights:  25%|██▌       | 118/464 [00:02<00:05, 67.14it/s]Loading weights:  30%|██▉       | 137/464 [00:02<00:05, 62.66it/s]Loading weights:  34%|███▎      | 156/464 [00:02<00:04, 62.40it/s]Loading weights:  38%|███▊      | 175/464 [00:02<00:04, 62.11it/s]Loading weights:  42%|████▏     | 194/464 [00:03<00:04, 61.79it/s]Loading weights:  46%|████▌     | 213/464 [00:03<00:04, 58.38it/s]Loading weights:  50%|█████     | 232/464 [00:04<00:04, 57.36it/s]Loading weights:  54%|█████▍    | 251/464 [00:04<00:03, 57.90it/s]Loading weights:  58%|█████▊    | 270/464 [00:04<00:03, 58.50it/s]Loading weights:  62%|██████▏   | 289/464 [00:04<00:02, 59.51it/s]Loading weights:  66%|██████▋   | 308/464 [00:05<00:02, 59.12it/s]Loading weights:  70%|███████   | 327/464 [00:05<00:02, 60.08it/s]Loading weights:  75%|███████▍  | 346/464 [00:05<00:01, 60.35it/s]Loading weights:  79%|███████▊  | 365/464 [00:06<00:01, 63.46it/s]Loading weights:  83%|████████▎ | 384/464 [00:06<00:01, 65.12it/s]Loading weights:  87%|████████▋ | 403/464 [00:06<00:00, 66.78it/s]Loading weights:  91%|█████████ | 422/464 [00:06<00:00, 68.21it/s]Loading weights:  95%|█████████▌| 441/464 [00:07<00:00, 69.06it/s]Loading weights:  99%|█████████▉| 460/464 [00:07<00:00, 70.06it/s]Loading weights: 100%|██████████| 464/464 [00:07<00:00, 60.33it/s]
+[TRT-LLM] [I] [runtime][RANK 0] GPU 0 is on NUMA node 3
+[TRT-LLM] [W] [batchmgr][RANK 0] KVCM2 host tier: mbind to NUMA node 3 failed with errno 1; falling back to first-touch placement by the fill worker, which is bound to that node (in a container this usually means CAP_SYS_NICE is absent). Placement is preserved; no behaviour is lost here.
+[TRT-LLM] [W] [thop][RANK 0] Attention workspace size is not enough, increase the size from 0 bytes to 26193920 bytes
+[TRT-LLM] [W] [thop][RANK 0] Attention workspace size is not enough, increase the size from 26193920 bytes to 33555968 bytes
+[TRT-LLM] [W] [thop][RANK 0] Attention workspace size is not enough, increase the size from 33555968 bytes to 33621248 bytes
+[TRT-LLM] [W] [thop][RANK 0] Attention workspace size is not enough, increase the size from 33621248 bytes to 34836480 bytes
+[TRT-LLM] [W] [thop][RANK 0] Attention workspace size is not enough, increase the size from 0 bytes to 30494720 bytes
+[TRT-LLM] [W] [batchmgr][RANK 0] KVCM2 host tier: mbind to NUMA node 3 failed with errno 1; falling back to first-touch placement by the fill worker, which is bound to that node (in a container this usually means CAP_SYS_NICE is absent). Placement is preserved; no behaviour is lost here.
+[TRT-LLM] [W] [thop][RANK 0] Attention workspace size is not enough, increase the size from 0 bytes to 26193920 bytes
+[TRT-LLM] [W] [thop][RANK 0] Attention workspace size is not enough, increase the size from 26193920 bytes to 33555968 bytes
+[TRT-LLM] [W] [thop][RANK 0] Attention workspace size is not enough, increase the size from 33555968 bytes to 33621248 bytes
+[TRT-LLM] [W] [thop][RANK 0] Attention workspace size is not enough, increase the size from 33621248 bytes to 34836480 bytes
+[TRT-LLM] [W] [thop][RANK 0] Attention workspace size is not enough, increase the size from 0 bytes to 30494720 bytes
+{"point": "pf256", "round": 0, "requests": 256, "prompt_tokens": 131072, "wall_s": 1.8678031209856272, "prefill_tok_s": 70174.41963092673, "output_tokens": 256, "ttft_p50_ms": 981.932304915972, "ttft_max_ms": 1867.534611839801, "clocks_before": "2347 MHz, 12481 MHz, 281.73 W, 45", "clocks_after": "2325 MHz, 12481 MHz, 551.48 W, 46"}
+The target application terminated. One or more process it created re-parented.
+Waiting for termination of re-parented processes.
+Use the `--wait` option to modify this behavior.
+Collecting data...
+Generating '/tmp/nsys-root/nsys-report-c19e.qdstrm'
+[1/1] [0%                          ] trt-20b-pf256.nsys-rep[1/1] [0%                          ] trt-20b-pf256.nsys-rep[1/1] [1%                          ] trt-20b-pf256.nsys-rep[1/1] [2%                          ] trt-20b-pf256.nsys-rep[1/1] [5%                          ] trt-20b-pf256.nsys-rep[1/1] [6%                          ] trt-20b-pf256.nsys-rep[1/1] [7%                          ] trt-20b-pf256.nsys-rep[1/1] [8%                          ] trt-20b-pf256.nsys-rep[1/1] [9%                          ] trt-20b-pf256.nsys-rep[1/1] [10%                         ] trt-20b-pf256.nsys-rep[1/1] [11%                         ] trt-20b-pf256.nsys-rep[1/1] [12%                         ] trt-20b-pf256.nsys-rep[1/1] [13%                         ] trt-20b-pf256.nsys-rep[1/1] [14%                         ] trt-20b-pf256.nsys-rep[1/1] [=15%                        ] trt-20b-pf256.nsys-rep[1/1] [=16%                        ] trt-20b-pf256.nsys-rep[1/1] [=17%                        ] trt-20b-pf256.nsys-rep[1/1] [==18%                       ] trt-20b-pf256.nsys-rep[1/1] [==19%                       ] trt-20b-pf256.nsys-rep[1/1] [==20%                       ] trt-20b-pf256.nsys-rep[1/1] [=======================93%  ] trt-20b-pf256.nsys-rep[1/1] [=======================96%  ] trt-20b-pf256.nsys-rep[1/1] [========================98% ] trt-20b-pf256.nsys-rep[1/1] [========================100%] trt-20b-pf256.nsys-rep[1/1] [========================100%] trt-20b-pf256.nsys-rep
+Generated:
+	/root/r2g/evidence/results/prof/trt-20b-pf256.nsys-rep

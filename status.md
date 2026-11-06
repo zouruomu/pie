@@ -35,6 +35,25 @@ checkpoint ("import the checkpoint at that precision"). That is new kernel work 
 stores; TRT-LLM quantizes activations by default on Blackwell). Per the brief, I plan to hand over the attribution with the measured size of the
 win (TRT-LLM's MoE kernel time vs pie's, from nsys next) rather than a half-built kernel, unless you want a W4A8 gpt-oss path attempted.
 
+
+## Attribution (11:05Z), gpt-oss-120b pf256, nsys over the measured window (pie: whole capture; TRT-LLM: its NVTX-marked point)
+pie wall 3.95 s for 114,688 prompt tokens (448 a prompt), TRT-LLM 3.08 s for 131,072 (512 a prompt). Kernel time by component:
+
+| component | pie ms | TRT-LLM ms | pie ms / 1k tok | TRT-LLM ms / 1k tok |
+|---|---|---|---|---|
+| MoE expert GEMMs (gate-up + down) | 3083 | 1818 | 26.9 | 13.9 |
+| MoE routing / act quantize / SwiGLU / combine / bias | 110 | 297 | 0.96 | 2.27 |
+| dense GEMMs (qkv, o, router, head) | 640 | 677 | 5.58 | 5.16 |
+| norms, residuals, rope, KV write | 141 | 140 | 1.23 | 1.07 |
+| attention | 69 | 98 | 0.60 | 0.74 |
+| other | 1 | 12 | | |
+| total kernel time | 4044 | 3041 | 35.3 | 23.2 |
+
+The whole gap is the expert GEMMs: pie's W4A16 register-dequant bf16 mma.sync selects vs TRT-LLM's W4A8 CUTLASS SM120 grouped GEMMs
+(MXFP8 x MXFP4 block-scaled MMA), 1.94x per token. Everything else is within ~0.6 ms / 1k tokens (dense +0.4, norms +0.16; pie's MoE glue
+is cheaper because its GLU and bias fuse into the select). So at W4A16 nothing besides the MoE GEMM precision accounts for the gap.
+Equal-token traces (pie at 512 of its own tokens) are queued to confirm.
+
 ## Fairness notes
 - TRT-LLM reproduced with KV block reuse OFF (cold); its default is ON (80 shared harmony tokens = 2 blocks of 32 a prompt would be reused).
 - pie renders 448 tokens a prompt where HF/TRT-LLM/vLLM render 512 (pie's harmony template has no "You are ChatGPT..." system preamble):
