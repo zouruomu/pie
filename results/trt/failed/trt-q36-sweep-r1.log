@@ -1,0 +1,124 @@
+Skipping import of cpp extensions due to incompatible torch version 2.14.0+cu130 for torchao version 0.15.0             Please see https://github.com/pytorch/ao/issues/2919 for more info
+/root/venv-trtllm/lib/python3.12/site-packages/torchao/quantization/quant_api.py:2511: SyntaxWarning: invalid escape sequence '\.'
+  """Configuration class for applying different quantization configs to modules or parameters based on their fully qualified names (FQNs).
+[TensorRT-LLM] TensorRT LLM version: 1.4.0rc2.post1
+[11/06/2026-17:28:05] [TRT-LLM] [I] [llmapi] Using LLM with PyTorch backend
+[11/06/2026-17:28:05] [TRT-LLM] [W] [llmapi] Using default gpus_per_node: 1
+[11/06/2026-17:28:05] [TRT-LLM] [I] [llmapi] neither checkpoint_format nor checkpoint_loader were provided, checkpoint_format will be set to HF.
+`torch_dtype` is deprecated! Use `dtype` instead!
+The `use_fast` parameter is deprecated and will be removed in a future version. Use `backend="torchvision"` instead of `use_fast=True`, or `backend="pil"` instead of `use_fast=False`.
+[33;20mrank 0 using MpiPoolSession to spawn MPI processes
+[0mSkipping import of cpp extensions due to incompatible torch version 2.14.0+cu130 for torchao version 0.15.0             Please see https://github.com/pytorch/ao/issues/2919 for more info
+[TensorRT-LLM] TensorRT LLM version: 1.4.0rc2.post1
+[TRT-LLM] [I] [runtime][RANK 0] Refreshed the MPI local session
+`torch_dtype` is deprecated! Use `dtype` instead!
+The `use_fast` parameter is deprecated and will be removed in a future version. Use `backend="torchvision"` instead of `use_fast=True`, or `backend="pil"` instead of `use_fast=False`.
+Mapping safetensors weights in parallel:   0%|          | 0/15 [00:00<?, ?it/s]Mapping safetensors weights in parallel:   7%|▋         | 1/15 [00:00<00:05,  2.34it/s]Mapping safetensors weights in parallel:  40%|████      | 6/15 [00:00<00:00, 10.54it/s]Mapping safetensors weights in parallel:  60%|██████    | 9/15 [00:00<00:00, 12.75it/s]Mapping safetensors weights in parallel:  80%|████████  | 12/15 [00:01<00:00, 13.77it/s]Mapping safetensors weights in parallel:  93%|█████████▎| 14/15 [00:01<00:00, 12.04it/s]Mapping safetensors weights in parallel: 100%|██████████| 15/15 [00:01<00:00, 10.08it/s]
+Loading weights concurrently:   0%|          | 0/581 [00:00<?, ?it/s]Loading weights concurrently:  22%|██▏       | 130/581 [00:00<00:00, 1295.93it/s]Loading weights concurrently:  45%|████▍     | 260/581 [00:00<00:00, 1057.19it/s]Loading weights concurrently:  64%|██████▎   | 369/581 [00:00<00:00, 982.20it/s] Loading weights concurrently:  81%|████████  | 469/581 [00:00<00:00, 920.22it/s]Loading weights concurrently:  97%|█████████▋| 562/581 [00:00<00:00, 823.89it/s]Loading weights concurrently: 100%|██████████| 581/581 [00:00<00:00, 875.78it/s]
+Loading weights serially: 0it [00:00, ?it/s]Loading weights serially: 0it [00:00, ?it/s]
+Loading weights concurrently:   0%|          | 0/1368 [00:00<?, ?it/s]Loading weights concurrently:   0%|          | 1/1368 [00:00<09:55,  2.30it/s]Loading weights concurrently:   6%|▌         | 83/1368 [00:00<00:06, 200.69it/s]Loading weights concurrently:   9%|▉         | 129/1368 [00:00<00:06, 185.16it/s]Loading weights concurrently:  12%|█▏        | 162/1368 [00:01<00:12, 94.99it/s] Loading weights concurrently:  15%|█▌        | 210/1368 [00:01<00:08, 138.55it/s]Loading weights concurrently:  18%|█▊        | 241/1368 [00:02<00:11, 95.06it/s] Loading weights concurrently:  20%|█▉        | 268/1368 [00:02<00:09, 110.58it/s]Loading weights concurrently:  21%|██        | 290/1368 [00:02<00:10, 107.13it/s]Loading weights concurrently:  23%|██▎       | 309/1368 [00:02<00:09, 109.79it/s]Loading weights concurrently:  24%|██▍       | 326/1368 [00:02<00:09, 106.16it/s]Loading weights concurrently:  25%|██▌       | 347/1368 [00:03<00:08, 113.95it/s]Loading weights concurrently:  28%|██▊       | 377/1368 [00:03<00:06, 144.05it/s]Loading weights concurrently:  29%|██▉       | 398/1368 [00:03<00:06, 149.40it/s]Loading weights concurrently:  30%|███       | 416/1368 [00:03<00:06, 149.25it/s]Loading weights concurrently:  32%|███▏      | 433/1368 [00:03<00:10, 87.79it/s] Loading weights concurrently:  36%|███▌      | 495/1368 [00:03<00:05, 167.63it/s]Loading weights concurrently:  38%|███▊      | 521/1368 [00:04<00:06, 131.35it/s]Loading weights concurrently:  40%|███▉      | 542/1368 [00:04<00:06, 119.95it/s]Loading weights concurrently:  41%|████      | 562/1368 [00:04<00:06, 126.87it/s]Loading weights concurrently:  42%|████▏     | 579/1368 [00:04<00:06, 124.64it/s]Loading weights concurrently:  43%|████▎     | 595/1368 [00:04<00:06, 127.08it/s]Loading weights concurrently:  46%|████▌     | 627/1368 [00:05<00:04, 152.68it/s]Loading weights concurrently:  47%|████▋     | 647/1368 [00:05<00:04, 153.26it/s]Loading weights concurrently:  49%|████▊     | 664/1368 [00:05<00:04, 155.16it/s]Loading weights concurrently:  50%|████▉     | 681/1368 [00:05<00:05, 118.19it/s]Loading weights concurrently:  51%|█████     | 695/1368 [00:05<00:05, 113.71it/s]Loading weights concurrently:  52%|█████▏    | 708/1368 [00:05<00:06, 108.24it/s]Loading weights concurrently:  53%|█████▎    | 727/1368 [00:05<00:05, 115.39it/s]Loading weights concurrently:  55%|█████▍    | 750/1368 [00:06<00:05, 115.87it/s]Loading weights concurrently:  56%|█████▋    | 772/1368 [00:06<00:04, 121.48it/s]Loading weights concurrently:  57%|█████▋    | 786/1368 [00:06<00:05, 106.35it/s]Loading weights concurrently:  58%|█████▊    | 798/1368 [00:06<00:06, 89.63it/s] Loading weights concurrently:  60%|██████    | 822/1368 [00:06<00:04, 114.69it/s]Loading weights concurrently:  62%|██████▏   | 847/1368 [00:06<00:03, 142.93it/s]Loading weights concurrently:  63%|██████▎   | 864/1368 [00:07<00:04, 116.53it/s]Loading weights concurrently:  66%|██████▋   | 908/1368 [00:07<00:02, 177.95it/s]Loading weights concurrently:  68%|██████▊   | 930/1368 [00:07<00:02, 168.48it/s]Loading weights concurrently:  69%|██████▉   | 950/1368 [00:07<00:02, 155.50it/s]Loading weights concurrently:  71%|███████   | 968/1368 [00:07<00:02, 138.70it/s]Loading weights concurrently:  72%|███████▏  | 987/1368 [00:07<00:02, 132.21it/s]Loading weights concurrently:  73%|███████▎  | 1002/1368 [00:08<00:02, 125.58it/s]Loading weights concurrently:  75%|███████▌  | 1027/1368 [00:08<00:02, 141.07it/s]Loading weights concurrently:  77%|███████▋  | 1052/1368 [00:08<00:02, 156.68it/s]Loading weights concurrently:  79%|███████▊  | 1077/1368 [00:08<00:01, 169.64it/s]Loading weights concurrently:  80%|████████  | 1095/1368 [00:08<00:02, 130.32it/s]Loading weights concurrently:  81%|████████  | 1110/1368 [00:08<00:02, 120.06it/s]Loading weights concurrently:  83%|████████▎ | 1130/1368 [00:09<00:02, 114.41it/s]Loading weights concurrently:  84%|████████▍ | 1155/1368 [00:09<00:01, 123.30it/s]Loading weights concurrently:  86%|████████▌ | 1170/1368 [00:09<00:01, 128.59it/s]Loading weights concurrently:  87%|████████▋ | 1195/1368 [00:09<00:01, 151.57it/s]Loading weights concurrently:  89%|████████▊ | 1212/1368 [00:09<00:01, 151.48it/s]Loading weights concurrently:  90%|█████████ | 1237/1368 [00:09<00:00, 173.15it/s]Loading weights concurrently:  92%|█████████▏| 1256/1368 [00:09<00:00, 138.61it/s]Loading weights concurrently:  93%|█████████▎| 1272/1368 [00:10<00:00, 106.37it/s]Loading weights concurrently:  94%|█████████▍| 1285/1368 [00:10<00:00, 107.70it/s]Loading weights concurrently:  95%|█████████▍| 1298/1368 [00:10<00:00, 106.57it/s]Loading weights concurrently:  98%|█████████▊| 1339/1368 [00:10<00:00, 156.12it/s]Loading weights concurrently:  99%|█████████▉| 1356/1368 [00:10<00:00, 93.43it/s] Loading weights concurrently: 100%|██████████| 1368/1368 [00:11<00:00, 119.30it/s]
+[11/06/2026-17:28:50] [TRT-LLM] [E] [executor] Failed to initialize executor on rank 0: The V2 Mamba GPU cache quota is too small for live recurrent states and attention pages: got 25916925542 bytes, need at least 160739164160 bytes.
+[11/06/2026-17:28:50] [TRT-LLM] [E] [executor] Traceback (most recent call last):
+  File "/root/venv-trtllm/lib/python3.12/site-packages/tensorrt_llm/executor/worker.py", line 443, in worker_main
+    worker: GenerationExecutorWorker = worker_cls(
+                                       ^^^^^^^^^^^
+  File "/root/venv-trtllm/lib/python3.12/site-packages/tensorrt_llm/executor/worker.py", line 87, in __init__
+    self.setup_engine()
+  File "/root/venv-trtllm/lib/python3.12/site-packages/tensorrt_llm/executor/base_worker.py", line 181, in setup_engine
+    self.engine = create_py_executor(**args)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/venv-trtllm/lib/python3.12/site-packages/tensorrt_llm/_torch/pyexecutor/py_executor_creator.py", line 1341, in create_py_executor
+    return _create_py_executor_impl(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/venv-trtllm/lib/python3.12/site-packages/tensorrt_llm/_torch/pyexecutor/py_executor_creator.py", line 509, in _create_py_executor_impl
+    py_executor = _create_py_executor(
+                  ^^^^^^^^^^^^^^^^^^^^
+  File "/root/venv-trtllm/lib/python3.12/site-packages/tensorrt_llm/_torch/pyexecutor/py_executor_creator.py", line 1164, in _create_py_executor
+    kv_cache_creator.build_managers(resources, estimating_kv_cache)
+  File "/root/venv-trtllm/lib/python3.12/site-packages/tensorrt_llm/_torch/pyexecutor/_util.py", line 3099, in build_managers
+    kv_cache_manager = self._create_kv_cache_manager(
+                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/venv-trtllm/lib/python3.12/site-packages/tensorrt_llm/_torch/pyexecutor/_util.py", line 2055, in _create_kv_cache_manager
+    kv_cache_manager = _create_kv_cache_manager(
+                       ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/venv-trtllm/lib/python3.12/site-packages/tensorrt_llm/_torch/pyexecutor/_util.py", line 3819, in _create_kv_cache_manager
+    kv_cache_manager = kv_cache_manager_cls(
+                       ^^^^^^^^^^^^^^^^^^^^^
+  File "/root/venv-trtllm/lib/python3.12/site-packages/tensorrt_llm/_torch/pyexecutor/kv_cache/mamba_cache_manager.py", line 3386, in __init__
+    super().__init__(
+  File "/root/venv-trtllm/lib/python3.12/site-packages/tensorrt_llm/_torch/pyexecutor/kv_cache/kv_cache_manager_v2.py", line 1786, in __init__
+    config = self._build_cache_config(config)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/venv-trtllm/lib/python3.12/site-packages/tensorrt_llm/_torch/pyexecutor/kv_cache/mamba_cache_manager.py", line 4221, in _build_cache_config
+    raise ValueError(
+ValueError: The V2 Mamba GPU cache quota is too small for live recurrent states and attention pages: got 25916925542 bytes, need at least 160739164160 bytes.
+
+[11/06/2026-17:28:50] [TRT-LLM] [E] [executor] Executor worker initialization error: Traceback (most recent call last):
+  File "/root/venv-trtllm/lib/python3.12/site-packages/tensorrt_llm/executor/worker.py", line 443, in worker_main
+    worker: GenerationExecutorWorker = worker_cls(
+                                       ^^^^^^^^^^^
+  File "/root/venv-trtllm/lib/python3.12/site-packages/tensorrt_llm/executor/worker.py", line 87, in __init__
+    self.setup_engine()
+  File "/root/venv-trtllm/lib/python3.12/site-packages/tensorrt_llm/executor/base_worker.py", line 181, in setup_engine
+    self.engine = create_py_executor(**args)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/venv-trtllm/lib/python3.12/site-packages/tensorrt_llm/_torch/pyexecutor/py_executor_creator.py", line 1341, in create_py_executor
+    return _create_py_executor_impl(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/venv-trtllm/lib/python3.12/site-packages/tensorrt_llm/_torch/pyexecutor/py_executor_creator.py", line 509, in _create_py_executor_impl
+    py_executor = _create_py_executor(
+                  ^^^^^^^^^^^^^^^^^^^^
+  File "/root/venv-trtllm/lib/python3.12/site-packages/tensorrt_llm/_torch/pyexecutor/py_executor_creator.py", line 1164, in _create_py_executor
+    kv_cache_creator.build_managers(resources, estimating_kv_cache)
+  File "/root/venv-trtllm/lib/python3.12/site-packages/tensorrt_llm/_torch/pyexecutor/_util.py", line 3099, in build_managers
+    kv_cache_manager = self._create_kv_cache_manager(
+                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/venv-trtllm/lib/python3.12/site-packages/tensorrt_llm/_torch/pyexecutor/_util.py", line 2055, in _create_kv_cache_manager
+    kv_cache_manager = _create_kv_cache_manager(
+                       ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/venv-trtllm/lib/python3.12/site-packages/tensorrt_llm/_torch/pyexecutor/_util.py", line 3819, in _create_kv_cache_manager
+    kv_cache_manager = kv_cache_manager_cls(
+                       ^^^^^^^^^^^^^^^^^^^^^
+  File "/root/venv-trtllm/lib/python3.12/site-packages/tensorrt_llm/_torch/pyexecutor/kv_cache/mamba_cache_manager.py", line 3386, in __init__
+    super().__init__(
+  File "/root/venv-trtllm/lib/python3.12/site-packages/tensorrt_llm/_torch/pyexecutor/kv_cache/kv_cache_manager_v2.py", line 1786, in __init__
+    config = self._build_cache_config(config)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/venv-trtllm/lib/python3.12/site-packages/tensorrt_llm/_torch/pyexecutor/kv_cache/mamba_cache_manager.py", line 4221, in _build_cache_config
+    raise ValueError(
+ValueError: The V2 Mamba GPU cache quota is too small for live recurrent states and attention pages: got 25916925542 bytes, need at least 160739164160 bytes.
+
+[11/06/2026-17:28:50] [TRT-LLM] [E] [executor] Fatal engine error recorded: ValueError('The V2 Mamba GPU cache quota is too small for live recurrent states and attention pages: got 25916925542 bytes, need at least 160739164160 bytes.')
+ValueError: The V2 Mamba GPU cache quota is too small for live recurrent states and attention pages: got 25916925542 bytes, need at least 160739164160 bytes.
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/root/r2g/evidence/results/scripts/trtllm_tput.py", line 135, in <module>
+    main()
+  File "/root/r2g/evidence/results/scripts/trtllm_tput.py", line 77, in main
+    llm = LLM(model=a.model, **kw)
+          ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/venv-trtllm/lib/python3.12/site-packages/tensorrt_llm/llmapi/llm.py", line 2208, in __init__
+    super().__init__(model, tokenizer, tokenizer_mode, skip_tokenizer_init,
+  File "/root/venv-trtllm/lib/python3.12/site-packages/tensorrt_llm/llmapi/llm.py", line 1884, in __init__
+    super().__init__(model,
+  File "/root/venv-trtllm/lib/python3.12/site-packages/tensorrt_llm/llmapi/llm.py", line 507, in __init__
+    self._build_model()
+  File "/root/venv-trtllm/lib/python3.12/site-packages/tensorrt_llm/llmapi/llm.py", line 2158, in _build_model
+    self._executor = self._executor_cls.create(
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/venv-trtllm/lib/python3.12/site-packages/tensorrt_llm/executor/executor.py", line 702, in create
+    return GenerationExecutor._create_ipc_executor(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/venv-trtllm/lib/python3.12/site-packages/tensorrt_llm/executor/executor.py", line 550, in _create_ipc_executor
+    return GenerationExecutorProxy(
+           ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/venv-trtllm/lib/python3.12/site-packages/tensorrt_llm/executor/proxy.py", line 217, in __init__
+    self._start_executor_workers(worker_kwargs)
+  File "/root/venv-trtllm/lib/python3.12/site-packages/tensorrt_llm/executor/proxy.py", line 939, in _start_executor_workers
+    self._fail_initialization(
+  File "/root/venv-trtllm/lib/python3.12/site-packages/tensorrt_llm/executor/proxy.py", line 849, in _fail_initialization
+    raise error from cause
+RuntimeError: Executor worker returned error
+EXIT=1
