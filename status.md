@@ -3,7 +3,7 @@
 **READY FOR REVIEW**
 
 **Phase:** review 1 answered
-**UTC:** 2026-11-06 11:42
+**UTC:** 2026-11-06 11:38
 
 ## Verdict
 - **The gap is real on current main, and larger than the site's:** pie's best is 474.8 tok/s (c256) against vLLM 0.32.0's 656.5 (c128), -27.7% (site: -18.1%).
