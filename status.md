@@ -78,6 +78,11 @@ nothing at W4A16 near the 4.5% bar. TRT-LLM's W4A8 grouped GEMMs run ~517 TFLOP/
 (+0.6% .. -0.5%, n=1 for vLLM). vLLM prefills 512 tokens a prompt, pie 448; at equal tokens pie 120b pf256 is 28.5k vs vLLM 28.9k (-1.4%).
 The site's vLLM 120b (22.3k, 2026-11-03, same day as pie's 13.8k) is 24% below vLLM here (29.2k): that day's site 120b runs ran low for both engines.
 
+### 11:50Z: note-4 acknowledged (wrap up by ~13:30Z). 20b pf16 "dip" is noise at 0.1-0.2 s walls (main pf16 43.1k in a rerun vs 38.1k in round 1;
+pf8 36.1k vs 41.3k); 3 more rounds queued. 8192-row fires are slower at pf16 (36.9k), so the profile's split helps there. ea800efeb (site's 20b
+commit) is not faster than main at pf8-32 (no regression). Running: pie vs vLLM alternating rounds 2-3 at 120b pf64/256/1024 and 20b pf512,
+120b batching c1024 pie vs TRT-LLM, pie's W4A8 select timing; ETA ~12:50Z, then self-review and READY FOR REVIEW ~13:30Z.
+
 ## Fairness notes
 - TRT-LLM reproduced with KV block reuse OFF (cold); its default is ON (80 shared harmony tokens = 2 blocks of 32 a prompt would be reused).
 - pie renders 448 tokens a prompt where HF/TRT-LLM/vLLM render 512 (pie's harmony template has no "You are ChatGPT..." system preamble):

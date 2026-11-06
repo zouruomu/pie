@@ -112,7 +112,39 @@ The kernel lists behind every number: results/prof/*_cuda_gpu_kern_sum.csv (pie)
 
 ## A W4A8 gpt-oss path on sm_120a (decision for Felix, measurement only)
 
-pending
+Orchestrator note 3 scoped a default-precision change out of this PR. This section is decision material only. I built no W4A8 gpt-oss kernel.
+
+**Projected win.** Suppose pie's expert GEMMs ran at TRT-LLM's measured ~517 TFLOP/s instead of ~270:
+- 120b: 3478 → ~1820 ms at pf256 (equal tokens). Add pie's quantize pass (TRT-LLM's `quantize_with_block_size` is 10 ms). pie's 4.60 s would become ~2.96 s, so 120b would reach **~44k tok/s, level with TRT-LLM's 43.4k**.
+- 20b: 2091 → ~1000 ms, so 2.84 s → ~1.76 s, **~74k vs TRT-LLM's 72k**.
+- pie keeps its cheaper glue (its GLU and bias fuse), and its attention is faster. So the precision alone closes both cells.
+
+pie's own sm_120a W4A8 select (`moe_select_mxfp4_w4a8_ws`, tuned on this card for DeepSeek-V4/MiMo), timed at gpt-oss-120b's shape with K padded to 3072: `pending` (results/w4a8/).
+
+**What it needs, with estimates:**
+1. **K = 2880.** The sm_120a W4A8 selects take only whole 128s:
+   - `w4a8_takes`, `select_fp4.rs:413-421`;
+   - `chunks = k >> 7` in `moe_select_mxfp4_w4a8_ws` (`select_fp4_sm120.cu`);
+   - the routed quantize's chunk-major exponent words, `quantize_rows_mxfp8_routed`.
+
+   The x and w boxes can rely on TMA's zero fill past the tensor's extent. The weight-scale loads are 8-byte `uint2` loads at `row * (k / 32)`, misaligned at k / 32 = 90, so they need narrower loads. The last chunk's exponent bytes must be zeroed, not left uninitialized: e8m0 0xFF is NaN. Plus `moe_select.rs` cases at K = 2880. **~4–6 h.**
+2. **Gate-up epilogue.** gpt-oss's gate-up needs per-expert biases and SwiGLU clamped at 7 with alpha 1.702. The W4A8 select passes `bias = None`, GLU code 0 (`select_fp4.rs:453`).
+   - Unfused, it can run the existing `swiglu_clamp_alpha` (`crates/kernels-cuda/src/linear/glu.rs:116`) and a bias pass, at the cost of an extra pass over the routes × 5760 product: **~2 h**.
+   - Fused into the ws kernel's epilogue, as pie's W4A16 select does: **~4–6 h**.
+3. **Precision plumbing.** A gpt-oss deployment `weights = [dtype.bf16, dtype.mxfp4a8g32]` (`models/gpt_oss.poem:17-31`; `mxfp4a8g32` already exists, `crates/poem/src/declare.rs:818`).
+   - Today the loader refuses a declared activation precision over the stock checkpoint: "stores its weights at [Bf16, Mxfp4] and the config asks for [Bf16, Mxfp4 a8g32]; import the checkpoint at that precision" (`crates/runtime/src/engine/load.rs:146`). I tried it on a worktree build.
+   - Either the import path or accepting the declared act precision over an MXFP4 bank: **~1–2 h**.
+   - Policy: the site measures pie's default deployment, so the cells change only if this becomes gpt-oss's default on sm_120, which is the precision decision itself. Opt-in only, the site would not see it.
+4. **Quality evidence** (note 2): teacher-forced KL and top-1 agreement vs the W4A16 path over a few hundred tokens, greedy agreement on raw and batching runs, a short task-accuracy check: **~3 h**.
+5. **Verification:** curve, cross-model, GPU suite: **~3–4 h.**
+
+**Total: ~13–19 h**, about two working days. Without the fused epilogue (item 2 unfused), ~11–15 h, and part of the win goes to the extra pass.
+
+The W4A8 select is gated at 256 routes a fire (`kernel.moe.mxfp4_w4a8_from = 256` in the PRO 6000 profile; `w4a8_takes` counts the fire's routes):
+- single-request decode and fires of fewer than 64 tokens would stay W4A16;
+- prefill and large-batch decode steps would go W4A8.
+
+So a W4A8 deployment makes gpt-oss's numerics depend on the fire width, and the quality evidence has to cover both.
 
 ## Other loads and related cells
 
@@ -120,8 +152,27 @@ pending
 
 ## Side findings
 
-pending
+- **The site's 2026-11-03 rows for 120b ran low for both engines:** pie 13.8k (ee9098f60) and vLLM 22.3k. On this pod, ee9098f60 runs 28.7k and vLLM 0.32 29.2k at their best points (results/baseline/ee9098-*, vllm-120b-*). The site's 120b gap to vLLM (−38%) and the 0.28 120b/20b ratio come from that run. pie's 120b/20b ratio here is 0.62, TRT-LLM's 0.60.
+- **pie's harmony prompt is 64 tokens shorter than HF's** (`crates/chat-template/src/harmony.rs:142-147`).
+  - pie sends the system prompt as a developer message with no system message: no identity, knowledge cutoff, current date, "Reasoning: medium", or valid-channels lines.
+  - Every engine's tok/s on the site is over a different token count, and TTFTs compare prompts of different lengths: pie 448 vs 512 here; on the 128-token batching shape, pie 64 vs 128.
+  - Whether the model should see that preamble is a template-fidelity question for the maintainers. It is not a throughput issue: pie's tok/s is the same at 512 tokens of its own rendering.
+- **TRT-LLM's KV block reuse is on by default.** The harmony prompts share 80 tokens (2 blocks of 32). My cold runs reproduce the site's numbers, so either the site turned it off or it made no visible difference. Harness authors should turn it off explicitly (`KvCacheConfig(enable_block_reuse=False)`).
+- **The 8-warp pipe select's K-tail prototype is not worth shipping.** It took gpt-oss's K = 2880 by zero-filling the last half chunk and reading scales a chunk ahead from registers, and it ran at the same speed as the staged select (results/prof/pipe-20b-pf256*). Both are dequant + bf16 `mma.sync` bound.
+- **RTX 5090 and RTX PRO 4500 share the cause.**
+  - Their profiles (`crates/engine-cuda/profiles/sm120/`) route gpt-oss's wide MXFP4 selects through the same W4A16 staged select. TRT-LLM's AUTO path is W4A8 on every sm_120/121 card (`model_config.py:579-587, 729-741`; `SmSupport {…, 120, 121}`).
+  - Their larger gaps (5090 pbatch −44%) are consistent with GeForce's consumer tensor rates, but I could not measure them on this pod.
+- **The 20b pf16 dip:** `pending`.
 
 ## Playbook notes
 
-pending
+- **Timestamps:** take every status time from `date -u`. Elapsed time is easy to misjudge while waiting on queues; the orchestrator caught one status line 20 minutes off.
+- **TRT-LLM 1.4 setup on a fresh pod:**
+  - needs `libopenmpi-dev`;
+  - must load from the local HF snapshot path: given the repo id, it re-downloads and failed on the files the `hf download` excluded;
+  - `OVERRIDE_QUANT_ALGO` is the only switch for gpt-oss's MoE precision;
+  - for nsys, run with `--trace-fork-before-exec=true` (the executor is a child process) and cut the kernels to an NVTX range pushed around the measured point (`scripts/kern_window.py`).
+- **TRT-LLM kernel names:** classify `cutlass::gemm::GroupProblemShape` kernels as the MoE. A naive "gemm" rule files them under dense GEMMs.
+- **Equal tokens:** for harmony models (gpt-oss), compare at equal prompt-token counts. pie's prompt is 64 tokens shorter than HF's; build a pie-specific prompts file (HF length + 64).
+- **Engines from other commits:** an engine at another commit builds in ~2 minutes in a git worktree with its own `CARGO_TARGET_DIR` (`cargo build --release --lib` in `packages/python/server`, then copy `libpie_engine.so` to the worktree's `python/pie/_engine.abi3.so`). Point `PYTHONPATH` at the worktree's `python` dir to swap engines without touching the main build. This answered the site-commit question (ee9098f60) in minutes.
+- **zsh:** it runs `&` jobs at nice 5 (BG_NICE). Foreground tool calls stop at 10 minutes, so queue GPU work in scripts and wait with a background `until` loop.

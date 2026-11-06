@@ -1,0 +1,32 @@
+engine-cuda: bodies armed 125 of 125 compositions at load (decode 6/6, prefill 44/44, mixed 43/43, tower 0/0, wide 32/32; 0 segmented; 91 MiB of 4096 MiB, 93 of 1024 seats) (pool declared 67968 MiB, high water 384 MiB, committed 384 MiB, spare under the ceiling 3819 MiB) [13 key(s) never fired — this deployment cannot synthesize them, or their present set was already refused admission; e.g. mixed c2+c0 at bucket 1 (64 seat(s) x 2048 context, 32 lane(s))] [sealed: every key attempted]
+╭─ Pie Engine ───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╮
+│ Host         127.0.0.1:42615                                                                                                       │
+│ Model        default (/root/.cache/huggingface/hub/models--openai--gpt-oss-20b/snapshots/6cee5e81ee83917806bbde320786a8fb61efebee) │
+│ Backend      cuda                                                                                                                  │
+│ Device       cuda:0                                                                                                                │
+╰────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╯
+[pie-bench] measured-start
+[pie-bench] measured-end
+[2m2026-11-06T11:44:00.222219Z[0m [33m WARN[0m [2mtarpc::server[0m[2m:[0m Requests stream errored out: could not ready the transport for writes: an error occurred readying to send into the channel: the channel is closed and cannot accept new items for sending
+[2m2026-11-06T11:44:00.222229Z[0m [33m WARN[0m [2mtarpc::client[0m[2m:[0m Connection broken: could not ready the transport for writes: an error occurred readying to send into the channel: the channel is closed and cannot accept new items for sending
+
+----------------------------------------------------
+mode:              tput
+engine:            pie
+model:             openai/gpt-oss-20b
+completed:         32/32  failed=0
+wall:              0.332 s
+requests/sec:      96.28
+output tokens:     32
+prompt tokens:     14336
+output tok/sec:    96.28
+lat mean/p50:      228.0 / 234.3 ms
+lat p95/p99:       330.2 / 331.1 ms
+total batches:     3
+avg batch latency us: 171274.66666666666
+last batch latency us: 198569
+total requests:    32
+max forward requests: 11
+batch size hist:   [0, 0, 0, 3, 0, 0, 0, 0]
+----------------------------------------------------
+EXIT=0
