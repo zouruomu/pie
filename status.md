@@ -1,7 +1,7 @@
 # Status: 20261106-0130-b200-x1-minimax-m3-1-flash-decode
 
-UTC: 2026-11-06 04:50Z
-Phase: verify. Fix committed (98dccdc21, not pushed yet); A/B done; cross-model running; then curves, then the GPU suite.
+UTC: 2026-11-06 05:05Z
+Phase: verify. Running: base vs fix curves on both cuts (c4-c64, pf4-pf32), GPU suite build. Next: nsys at c32 (note 3.2), GPU suite, write-up. ETA hand-over ~09:30Z.
 
 ## Early verdict (B200, main e2e9d1e, SM 1965 MHz)
 The gap is real, but not as the site states it.
@@ -22,6 +22,26 @@ Whatever the site's vLLM ran (most likely a dev build or a different cut), cut B
 | B (M3-MXFP8) | 9.62 / 9.63 / 9.63 | 9.28 / 9.29 / 9.30 | 103.8 -> 107.6 (+3.6%) | 6.92 / 6.87 / 6.97 |
 Tokens: deterministic run to run on both builds. Cut B base vs fix identical, 8/8 requests x 256 tokens. Cut A first diverges at token 1 on 5/8 (247, 8 on two, one identical): near-tie logits on the NVFP4 miniature; token 0 (prefill) always identical.
 Remaining on cut B after the fix: 9.29 vs 6.92 ms (pie 25.5% behind vLLM).
+
+## Note 3 (04:02Z), acknowledged
+1. Numerics, done (results/analysis/logit-cmp.txt; inferlet results/scripts/logit-probe, client logit_probe.py, comparison logit_cmp.py): teacher-forced on base's own greedy tokens (prompt + 32 forced decode steps = 33 positions, 4 requests a cut, full 200064-wide logits; base's teacher-forced argmax reproduces its greedy tokens 33/33 on every request). Reference: base with `sdpa.selected_mma = false` (the scalar walk, an existing path the unit test holds equal to the MMA walk), via a user profile layer, removed after.
+| cut, req | fix: max abs dlogit / KL mean / tf top-1 | scalar walk: max abs dlogit / KL mean / tf top-1 |
+|---|---|---|
+| A 0 | 4.34 / 0.024 / 33 | 5.39 / 0.093 / 33 |
+| A 1 | 4.22 / 0.036 / 32 | 4.62 / 0.068 / 32 |
+| A 2 | 5.26 / 0.056 / 31 | 5.67 / 0.078 / 31 |
+| A 3 | 6.16 / 0.149 / 25 | 6.94 / 0.253 / 24 |
+| B 0 | 2.16 / 0.0037 / 33 | 2.88 / 0.0154 / 33 |
+| B 1 | 3.19 / 0.0140 / 33 | 3.88 / 0.0170 / 33 |
+| B 2 | 2.52 / 0.0137 / 33 | 3.44 / 0.0210 / 33 |
+| B 3 | 4.69 / 0.0063 / 33 | 3.75 / 0.0189 / 32 |
+The fix's KL is below the scalar walk's on all 8. At cut A's greedy first divergences base's top-2 margin is 0.0625 (req 2, pos 1), 0.6875 (req 3, pos 1), 1.0 (req 1, pos 8) against medians of 0.9-6.4; logits land in bf16 (margins come in 1/16 steps), and the scalar walk flips the same two positions 1 with the same margins. The miniature's logits move by several units under either reduction order (a 16-expert cut: a small change in a layer's input can change its top-4 experts).
+2. Running (curves on both cuts; nsys at c32 next).
+3. Fix 2 (q/k norm + RoPE) will be a separate commit if I do it; see below for why it isn't started.
+
+## Cross-model (B200, base vs fix, 2 rounds each, results/raw/x-*)
+- Qwen3.8-Flash-Next mini (4 layers, 16 experts, bf16; takes the selected kernel, 2 kv heads of 256): ITL 0.85 / 0.85 -> 0.82 / 0.82 ms (+3.7%); tokens deterministic per build, base vs fix diverge at 38-229 on 7/8 (one identical).
+- Qwen3-0.6B bf16 (the dense tensor-core decode's clusters, whose two helpers moved to prim/device.cuh): 1.03 / 1.03 -> 1.03 / 1.03 ms, tokens identical 8/8.
 
 ## Fix 1 (details): selected attention over a cluster of 8 blocks a kv head
 - `crates/kernels-cuda/kernels/attn/selected.cuh`: `sdpa_paged_selected_mma_kernel` gains `kRanks`: a cluster of that many blocks reads a (row, kv head), each a slice of the 16-key chunks, folding the slices' normalized outputs by their log-sum-exps through distributed shared memory (the fold `decode_gqa_sm80.cu` already uses). `selected.rs`: where the fire's (row, kv head) blocks are too few to fill a quarter of the SMs (where it already widened to 16 warps), 8 warps a block over `kernel.sdpa.selected_cluster` ranks; `tuning.rs` the decision (default 0); B200 profile 8.

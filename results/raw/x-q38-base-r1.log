@@ -56,3 +56,195 @@ Remark: The warnings can be suppressed with "-diag-suppress <warning-number>"
 Remark: The warnings can be suppressed with "-diag-suppress <warning-number>"
 
 
+[2m2026-11-06T04:50:26.377917Z[0m [33m WARN[0m [2mkernels_cuda::jit::cache[0m[2m:[0m a device instantiation compiled with something to say [3mroot[0m[2m=[0m"ssm/gdn_chunk_sm100" [3minstantiation[0m[2m=[0m"::pie::ssm::sm100::gdn_chunked" [3march[0m[2m=[0m"sm_100a" [3mlog[0m[2m=[0mssm/gdn_chunk_sm100(63): warning #177-D: variable "pie::ssm::sm100::LDA" was declared but never referenced
+  constexpr int LDA = 68;
+                ^
+
+Remark: The warnings can be suppressed with "-diag-suppress <warning-number>"
+
+
+[2m2026-11-06T04:50:27.496143Z[0m [33m WARN[0m [2mkernels_cuda::jit::cache[0m[2m:[0m a device instantiation compiled with something to say [3mroot[0m[2m=[0m"linear/moe/route" [3minstantiation[0m[2m=[0m"::pie::linear::moe_topk_softmax_lane<::pie::bf16, 1>" [3march[0m[2m=[0m"sm_100" [3mlog[0m[2m=[0mlinear/moe/route(446): warning #177-D: variable "pie::linear::kRouterMaxExperts" was declared but never referenced
+  constexpr int kRouterMaxExperts = 512;
+                ^
+
+Remark: The warnings can be suppressed with "-diag-suppress <warning-number>"
+
+
+[2m2026-11-06T04:50:28.665242Z[0m [33m WARN[0m [2mkernels_cuda::jit::cache[0m[2m:[0m a device instantiation compiled with something to say [3mroot[0m[2m=[0m"ssm/conv1d" [3minstantiation[0m[2m=[0m"::pie::ssm::conv1d_update<::pie::bf16>" [3march[0m[2m=[0m"sm_100" [3mlog[0m[2m=[0mssm/conv1d(187): warning #177-D: variable "pie::ssm::CONV_TT" was declared but never referenced
+  constexpr int CONV_TT = 32;
+                ^
+
+Remark: The warnings can be suppressed with "-diag-suppress <warning-number>"
+
+
+[2m2026-11-06T04:50:28.804647Z[0m [33m WARN[0m [2mkernels_cuda::jit::cache[0m[2m:[0m a device instantiation compiled with something to say [3mroot[0m[2m=[0m"elemwise/pointwise" [3minstantiation[0m[2m=[0m"::pie::elemwise::residual_add_vec8" [3march[0m[2m=[0m"sm_100" [3mlog[0m[2m=[0melemwise/pointwise(126): warning #177-D: variable "pie::elemwise::kBinAdd" was declared but never referenced
+  constexpr int kBinAdd = 0;
+                ^
+
+Remark: The warnings can be suppressed with "-diag-suppress <warning-number>"
+
+elemwise/pointwise(127): warning #177-D: variable "pie::elemwise::kBinMul" was declared but never referenced
+  constexpr int kBinMul = 1;
+                ^
+
+elemwise/pointwise(128): warning #177-D: variable "pie::elemwise::kBinDiv" was declared but never referenced
+  constexpr int kBinDiv = 2;
+                ^
+
+elemwise/pointwise(129): warning #177-D: variable "pie::elemwise::kBinMod" was declared but never referenced
+  constexpr int kBinMod = 3;
+                ^
+
+elemwise/pointwise(158): warning #177-D: variable "pie::elemwise::kActSilu" was declared but never referenced
+  constexpr int kActSilu = 0;
+                ^
+
+elemwise/pointwise(159): warning #177-D: variable "pie::elemwise::kActTanh" was declared but never referenced
+  constexpr int kActTanh = 1;
+                ^
+
+elemwise/pointwise(160): warning #177-D: variable "pie::elemwise::kActSqrt" was declared but never referenced
+  constexpr int kActSqrt = 2;
+                ^
+
+elemwise/pointwise(161): warning #177-D: variable "pie::elemwise::kActGelu" was declared but never referenced
+  constexpr int kActGelu = 3;
+                ^
+
+
+[2m2026-11-06T04:50:29.252495Z[0m [33m WARN[0m [2mkernels_cuda::jit::cache[0m[2m:[0m a device instantiation compiled with something to say [3mroot[0m[2m=[0m"attn/compressed/pool" [3minstantiation[0m[2m=[0m"::pie::attn::compressed::pool_boundary_decode<::pie::i32>" [3march[0m[2m=[0m"sm_100" [3mlog[0m[2m=[0mattn/compressed/pool(5): warning #177-D: variable "pie::attn::compressed::ATTN_BLOCK" was declared but never referenced
+  constexpr int ATTN_BLOCK = 128;
+                ^
+
+Remark: The warnings can be suppressed with "-diag-suppress <warning-number>"
+
+
+[2m2026-11-06T04:50:29.289742Z[0m [33m WARN[0m [2mkernels_cuda::jit::cache[0m[2m:[0m a device instantiation compiled with something to say [3mroot[0m[2m=[0m"attn/compressed/pool" [3minstantiation[0m[2m=[0m"::pie::attn::compressed::pool_boundary_prefill<::pie::i32>" [3march[0m[2m=[0m"sm_100" [3mlog[0m[2m=[0mattn/compressed/pool(5): warning #177-D: variable "pie::attn::compressed::ATTN_BLOCK" was declared but never referenced
+  constexpr int ATTN_BLOCK = 128;
+                ^
+
+Remark: The warnings can be suppressed with "-diag-suppress <warning-number>"
+
+
+[2m2026-11-06T04:50:29.347240Z[0m [33m WARN[0m [2mkernels_cuda::jit::cache[0m[2m:[0m a device instantiation compiled with something to say [3mroot[0m[2m=[0m"attn/compressed/pool" [3minstantiation[0m[2m=[0m"::pie::attn::compressed::index_block_mean_paged<::pie::bf16>" [3march[0m[2m=[0m"sm_100" [3mlog[0m[2m=[0mattn/compressed/pool(5): warning #177-D: variable "pie::attn::compressed::ATTN_BLOCK" was declared but never referenced
+  constexpr int ATTN_BLOCK = 128;
+                ^
+
+Remark: The warnings can be suppressed with "-diag-suppress <warning-number>"
+
+
+[2m2026-11-06T04:50:29.382629Z[0m [33m WARN[0m [2mkernels_cuda::jit::cache[0m[2m:[0m a device instantiation compiled with something to say [3mroot[0m[2m=[0m"attn/compressed/pool" [3minstantiation[0m[2m=[0m"::pie::attn::compressed::pool_store_entries<::pie::bf16>" [3march[0m[2m=[0m"sm_100" [3mlog[0m[2m=[0mattn/compressed/pool(5): warning #177-D: variable "pie::attn::compressed::ATTN_BLOCK" was declared but never referenced
+  constexpr int ATTN_BLOCK = 128;
+                ^
+
+Remark: The warnings can be suppressed with "-diag-suppress <warning-number>"
+
+
+[2m2026-11-06T04:50:30.033398Z[0m [33m WARN[0m [2mkernels_cuda::jit::cache[0m[2m:[0m a device instantiation compiled with something to say [3mroot[0m[2m=[0m"attn/index/logits_sm100" [3minstantiation[0m[2m=[0m"::pie::attn::index::index_select_rows<true>" [3march[0m[2m=[0m"sm_100a" [3mlog[0m[2m=[0mattn/index/logits_sm100(30): warning #177-D: variable "pie::attn::index::kD" was declared but never referenced
+  constexpr int kD = 128;
+                ^
+
+Remark: The warnings can be suppressed with "-diag-suppress <warning-number>"
+
+attn/index/logits_sm100(31): warning #177-D: variable "pie::attn::index::kBN" was declared but never referenced
+  constexpr int kBN = 128;                 // blocks a tile
+                ^
+
+attn/index/logits_sm100(35): warning #177-D: variable "pie::attn::index::kOffQ" was declared but never referenced
+  constexpr u32 kOffQ = 0;                 // two Q buffers
+                ^
+
+attn/index/logits_sm100(40): warning #177-D: variable "pie::attn::index::kCols" was declared but never referenced
+  constexpr u32 kCols = 512;
+                ^
+
+attn/index/logits_sm100(41): warning #177-D: variable "pie::attn::index::kSBufs" was declared but never referenced
+  constexpr int kSBufs = 4;  // S buffers in TMEM, a tile each
+                ^
+
+
+[2m2026-11-06T04:50:30.191360Z[0m [33m WARN[0m [2mkernels_cuda::jit::cache[0m[2m:[0m a device instantiation compiled with something to say [3mroot[0m[2m=[0m"attn/selected_sm80" [3minstantiation[0m[2m=[0m"::pie::attn::selected::mma::sdpa_paged_selected_mma_kernel<256>" [3march[0m[2m=[0m"sm_100" [3mlog[0m[2m=[0mattn/selected_sm80(5): warning #177-D: variable "pie::attn::selected::kMaxPer" was declared but never referenced
+  constexpr int kMaxPer = 16;
+                ^
+
+Remark: The warnings can be suppressed with "-diag-suppress <warning-number>"
+
+
+[2m2026-11-06T04:50:30.454263Z[0m [33m WARN[0m [2mkernels_cuda::jit::cache[0m[2m:[0m a device instantiation compiled with something to say [3mroot[0m[2m=[0m"attn/selected_sm80" [3minstantiation[0m[2m=[0m"::pie::attn::selected::mma::sdpa_paged_selected_tile_kernel<256>" [3march[0m[2m=[0m"sm_100" [3mlog[0m[2m=[0mattn/selected_sm80(5): warning #177-D: variable "pie::attn::selected::kMaxPer" was declared but never referenced
+  constexpr int kMaxPer = 16;
+                ^
+
+Remark: The warnings can be suppressed with "-diag-suppress <warning-number>"
+
+
+[2m2026-11-06T04:50:31.740683Z[0m [33m WARN[0m [2mkernels_cuda::jit::cache[0m[2m:[0m a device instantiation compiled with something to say [3mroot[0m[2m=[0m"linear/moe/select" [3minstantiation[0m[2m=[0m"::pie::linear::moe_matmul_select_gemv_by_token<::pie::bf16, 4>" [3march[0m[2m=[0m"sm_100" [3mlog[0m[2m=[0mlinear/moe/select(427): warning #177-D: variable "pie::linear::kBlock" was declared but never referenced
+  constexpr int kBlock = 256;
+                ^
+
+Remark: The warnings can be suppressed with "-diag-suppress <warning-number>"
+
+
+[2m2026-11-06T04:50:31.819429Z[0m [33m WARN[0m [2mkernels_cuda::jit::cache[0m[2m:[0m a device instantiation compiled with something to say [3mroot[0m[2m=[0m"linear/glu" [3minstantiation[0m[2m=[0m"::pie::linear::swiglu_vec8<::pie::bf16>" [3march[0m[2m=[0m"sm_100" [3mlog[0m[2m=[0mlinear/glu(25): warning #177-D: variable "lane" was declared but never referenced
+      const int lane = static_cast<int>(threadIdx.x % 32);
+                ^
+
+Remark: The warnings can be suppressed with "-diag-suppress <warning-number>"
+
+
+[2m2026-11-06T04:50:31.874870Z[0m [33m WARN[0m [2mkernels_cuda::jit::cache[0m[2m:[0m a device instantiation compiled with something to say [3mroot[0m[2m=[0m"linear/moe/select" [3minstantiation[0m[2m=[0m"::pie::linear::moe_matmul_select_gemv_by_route<::pie::bf16, 4>" [3march[0m[2m=[0m"sm_100" [3mlog[0m[2m=[0mlinear/moe/select(427): warning #177-D: variable "pie::linear::kBlock" was declared but never referenced
+  constexpr int kBlock = 256;
+                ^
+
+Remark: The warnings can be suppressed with "-diag-suppress <warning-number>"
+
+
+[2m2026-11-06T04:50:32.331154Z[0m [33m WARN[0m [2mkernels_cuda::jit::cache[0m[2m:[0m a device instantiation compiled with something to say [3mroot[0m[2m=[0m"attn/index/index" [3minstantiation[0m[2m=[0m"::pie::attn::index::index_topk_paged_mma<::pie::bf16, 1, true, false>" [3march[0m[2m=[0m"sm_100" [3mlog[0m[2m=[0mattn/index/index(149): warning #177-D: variable "pie::attn::index::kMaxRopeDim" was declared but never referenced
+  constexpr int kMaxRopeDim = 256;
+                ^
+
+Remark: The warnings can be suppressed with "-diag-suppress <warning-number>"
+
+attn/index/index(665): warning #177-D: variable "pie::attn::index::kMaxIndexHeads" was declared but never referenced
+  constexpr int kMaxIndexHeads = 8;
+                ^
+
+attn/index/index(667): warning #177-D: variable "pie::attn::index::kMaxIndexPer" was declared but never referenced
+  constexpr int kMaxIndexPer = 8;
+                ^
+
+
+engine-cuda: bodies armed 102 of 102 compositions at load (decode 18/18, prefill 32/32, mixed 31/31, tower 0/0, wide 21/21; 31 segmented; 24 MiB of 4096 MiB, 81 of 1024 seats) (pool declared 150598 MiB, high water 2622 MiB, committed 2622 MiB, spare under the ceiling 1797 MiB) [12 key(s) never fired — this deployment cannot synthesize them, or their present set was already refused admission; e.g. mixed c1+c0 at bucket 1 (1024 seat(s) x 2048 context, 512 lane(s))] [sealed: every key attempted]
+╭─ Pie Engine ────────────────────────────────────────────────────────────────────────────────────────────╮
+│ Host         127.0.0.1:40653                                                                            │
+│ Model        default (/root/.cache/huggingface/hub/models--Qwen--Qwen3.8-Flash-Next/snapshots/mini-e16) │
+│ Backend      cuda                                                                                       │
+│ Device       cuda:0                                                                                     │
+╰─────────────────────────────────────────────────────────────────────────────────────────────────────────╯
+[pie-bench] measured-start
+[pie-bench] measured-end
+[2m2026-11-06T04:51:08.175496Z[0m [33m WARN[0m [2mtarpc::client[0m[2m:[0m Connection broken: could not ready the transport for writes: an error occurred readying to send into the channel: the channel is closed and cannot accept new items for sending
+[2m2026-11-06T04:51:08.175497Z[0m [33m WARN[0m [2mtarpc::server[0m[2m:[0m Requests stream errored out: could not ready the transport for writes: an error occurred readying to send into the channel: the channel is closed and cannot accept new items for sending
+
+----------------------------------------------------
+mode:              latency
+engine:            pie
+model:             /root/.cache/huggingface/hub/models--Qwen--Qwen3.8-Flash-Next/snapshots/mini-e16
+completed:         8/8  failed=0
+wall:              1.773 s
+requests/sec:      4.51
+output tokens:     2048
+prompt tokens:     3792
+output tok/sec:    1154.80
+lat mean/p50:      221.6 / 221.5 ms
+lat p95/p99:       222.2 / 222.3 ms
+ttft mean/p50:     3.8 / 3.8 ms
+ttft p95/p99:      4.1 / 4.2 ms
+intertoken p50/p99/max: 0.85 / 0.87 / 0.93 ms
+total batches:     1032
+avg batch latency us: 3374.3333333333335
+last batch latency us: 2571
+total requests:    2048
+max forward requests: 2
+batch size hist:   [16, 1016, 0, 0, 0, 0, 0, 0]
+----------------------------------------------------
+EXIT=0

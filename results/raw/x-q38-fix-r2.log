@@ -1,0 +1,37 @@
+[2m2026-11-06T04:53:25.305792Z[0m [32m INFO[0m [2mruntime::engine::load[0m[2m:[0m serving [3mdeployment[0m[2m=[0m"qwen38-flash-next-mini-bf16-kv-bf16" [3midentified[0m[2m=[0m"qwen38-flash-next-mini-bf16-kv-bf16" [3mcheckpoint[0m[2m=[0m"/root/.cache/huggingface/hub/models--Qwen--Qwen3.8-Flash-Next/snapshots/mini-e16"
+engine-cuda: 6.0 GiB of planes the package declares `host` serve from pinned host memory (engine.host_planes)
+engine-cuda: bodies armed 102 of 102 compositions at load (decode 18/18, prefill 32/32, mixed 31/31, tower 0/0, wide 21/21; 31 segmented; 24 MiB of 4096 MiB, 81 of 1024 seats) (pool declared 150598 MiB, high water 2622 MiB, committed 2622 MiB, spare under the ceiling 1839 MiB) [12 key(s) never fired — this deployment cannot synthesize them, or their present set was already refused admission; e.g. mixed c1+c0 at bucket 1 (1024 seat(s) x 2048 context, 512 lane(s))] [sealed: every key attempted]
+╭─ Pie Engine ────────────────────────────────────────────────────────────────────────────────────────────╮
+│ Host         127.0.0.1:43549                                                                            │
+│ Model        default (/root/.cache/huggingface/hub/models--Qwen--Qwen3.8-Flash-Next/snapshots/mini-e16) │
+│ Backend      cuda                                                                                       │
+│ Device       cuda:0                                                                                     │
+╰─────────────────────────────────────────────────────────────────────────────────────────────────────────╯
+[pie-bench] measured-start
+[pie-bench] measured-end
+[2m2026-11-06T04:53:38.916654Z[0m [33m WARN[0m [2mtarpc::client[0m[2m:[0m Connection broken: could not ready the transport for writes: an error occurred readying to send into the channel: the channel is closed and cannot accept new items for sending
+[2m2026-11-06T04:53:38.916654Z[0m [33m WARN[0m [2mtarpc::server[0m[2m:[0m Requests stream errored out: could not ready the transport for writes: an error occurred readying to send into the channel: the channel is closed and cannot accept new items for sending
+
+----------------------------------------------------
+mode:              latency
+engine:            pie
+model:             /root/.cache/huggingface/hub/models--Qwen--Qwen3.8-Flash-Next/snapshots/mini-e16
+completed:         8/8  failed=0
+wall:              1.719 s
+requests/sec:      4.65
+output tokens:     2048
+prompt tokens:     3792
+output tok/sec:    1191.15
+lat mean/p50:      214.8 / 214.4 ms
+lat p95/p99:       217.3 / 218.2 ms
+ttft mean/p50:     4.0 / 4.0 ms
+ttft p95/p99:      4.7 / 4.8 ms
+intertoken p50/p99/max: 0.82 / 0.84 / 6.91 ms
+total batches:     1032
+avg batch latency us: 3265.5184108527133
+last batch latency us: 2460
+total requests:    2048
+max forward requests: 2
+batch size hist:   [16, 1016, 0, 0, 0, 0, 0, 0]
+----------------------------------------------------
+EXIT=0
