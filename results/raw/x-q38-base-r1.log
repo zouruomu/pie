@@ -1,0 +1,58 @@
+[2m2026-11-06T04:50:14.050261Z[0m [32m INFO[0m [2mruntime::engine::load[0m[2m:[0m serving [3mdeployment[0m[2m=[0m"qwen38-flash-next-mini-bf16-kv-bf16" [3midentified[0m[2m=[0m"qwen38-flash-next-mini-bf16-kv-bf16" [3mcheckpoint[0m[2m=[0m"/root/.cache/huggingface/hub/models--Qwen--Qwen3.8-Flash-Next/snapshots/mini-e16"
+engine-cuda: 6.0 GiB of planes the package declares `host` serve from pinned host memory (engine.host_planes)
+[2m2026-11-06T04:50:25.022224Z[0m [33m WARN[0m [2mkernels_cuda::jit::cache[0m[2m:[0m a device instantiation compiled with something to say [3mroot[0m[2m=[0m"elemwise/pointwise" [3minstantiation[0m[2m=[0m"::pie::elemwise::silu_scaled<::pie::bf16>" [3march[0m[2m=[0m"sm_100" [3mlog[0m[2m=[0melemwise/pointwise(126): warning #177-D: variable "pie::elemwise::kBinAdd" was declared but never referenced
+  constexpr int kBinAdd = 0;
+                ^
+
+Remark: The warnings can be suppressed with "-diag-suppress <warning-number>"
+
+elemwise/pointwise(127): warning #177-D: variable "pie::elemwise::kBinMul" was declared but never referenced
+  constexpr int kBinMul = 1;
+                ^
+
+elemwise/pointwise(128): warning #177-D: variable "pie::elemwise::kBinDiv" was declared but never referenced
+  constexpr int kBinDiv = 2;
+                ^
+
+elemwise/pointwise(129): warning #177-D: variable "pie::elemwise::kBinMod" was declared but never referenced
+  constexpr int kBinMod = 3;
+                ^
+
+elemwise/pointwise(158): warning #177-D: variable "pie::elemwise::kActSilu" was declared but never referenced
+  constexpr int kActSilu = 0;
+                ^
+
+elemwise/pointwise(159): warning #177-D: variable "pie::elemwise::kActTanh" was declared but never referenced
+  constexpr int kActTanh = 1;
+                ^
+
+elemwise/pointwise(160): warning #177-D: variable "pie::elemwise::kActSqrt" was declared but never referenced
+  constexpr int kActSqrt = 2;
+                ^
+
+elemwise/pointwise(161): warning #177-D: variable "pie::elemwise::kActGelu" was declared but never referenced
+  constexpr int kActGelu = 3;
+                ^
+
+
+[2m2026-11-06T04:50:25.342294Z[0m [33m WARN[0m [2mkernels_cuda::jit::cache[0m[2m:[0m a device instantiation compiled with something to say [3mroot[0m[2m=[0m"ssm/conv1d" [3minstantiation[0m[2m=[0m"::pie::ssm::conv1d_update_vec8<::pie::bf16>" [3march[0m[2m=[0m"sm_100" [3mlog[0m[2m=[0mssm/conv1d(187): warning #177-D: variable "pie::ssm::CONV_TT" was declared but never referenced
+  constexpr int CONV_TT = 32;
+                ^
+
+Remark: The warnings can be suppressed with "-diag-suppress <warning-number>"
+
+
+[2m2026-11-06T04:50:25.541141Z[0m [33m WARN[0m [2mkernels_cuda::jit::cache[0m[2m:[0m a device instantiation compiled with something to say [3mroot[0m[2m=[0m"ssm/gdn_recurrent" [3minstantiation[0m[2m=[0m"::pie::ssm::gdn_step_fused<4>" [3march[0m[2m=[0m"sm_100" [3mlog[0m[2m=[0mssm/gdn_recurrent(5): warning #177-D: variable "pie::ssm::gqa_smem_bv" was declared but never referenced
+  constexpr int gqa_smem_bv = 128;
+                ^
+
+Remark: The warnings can be suppressed with "-diag-suppress <warning-number>"
+
+
+[2m2026-11-06T04:50:25.735407Z[0m [33m WARN[0m [2mkernels_cuda::jit::cache[0m[2m:[0m a device instantiation compiled with something to say [3mroot[0m[2m=[0m"ssm/conv1d" [3minstantiation[0m[2m=[0m"::pie::ssm::conv1d_state_commit<::pie::bf16>" [3march[0m[2m=[0m"sm_100" [3mlog[0m[2m=[0mssm/conv1d(187): warning #177-D: variable "pie::ssm::CONV_TT" was declared but never referenced
+  constexpr int CONV_TT = 32;
+                ^
+
+Remark: The warnings can be suppressed with "-diag-suppress <warning-number>"
+
+

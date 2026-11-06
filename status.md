@@ -1,7 +1,7 @@
 # Status: 20261106-0130-b200-x1-minimax-m3-1-flash-decode
 
-UTC: 2026-11-06 03:50Z
-Phase: fix 1 built and measured (1 round); deciding on fix 2 (q/k norm + RoPE).
+UTC: 2026-11-06 04:50Z
+Phase: verify. Fix committed (98dccdc21, not pushed yet); A/B done; cross-model running; then curves, then the GPU suite.
 
 ## Early verdict (B200, main e2e9d1e, SM 1965 MHz)
 The gap is real, but not as the site states it.
@@ -15,7 +15,15 @@ The gap is real, but not as the site states it.
 On cut B pie trails vLLM by 28.5% and SGLang by 21.8% (decode tok/s = 1000/ITL p50, medians). vLLM/SGLang ITL from the streaming c1 client (tput --concurrency 1 --report-timing); pie from its latency client. Site: pie 8.99, vLLM 5.73, SGLang 7.80.
 Whatever the site's vLLM ran (most likely a dev build or a different cut), cut B is the fair same-weights comparison I can reproduce, so I attribute and fix on it and check every change on cut A too.
 
-## Fix 1 (in progress, not committed): selected attention over a cluster of 8 blocks a kv head
+## A/B on the committed fix (3 alternating rounds, results/raw/ab-*, engine sha256 in each .meta: base b0ca94bb, fix 2245691c; SM 1965 MHz in-run)
+| cut | base ITL p50 ms | fix ITL p50 ms | decode tok/s | vLLM 0.32.0 |
+|---|---|---|---|---|
+| A (M3.1-Flash) | 8.97 / 8.97 / 8.97 | 8.62 / 8.62 / 8.62 | 111.5 -> 116.0 (+4.1%) | can't load |
+| B (M3-MXFP8) | 9.62 / 9.63 / 9.63 | 9.28 / 9.29 / 9.30 | 103.8 -> 107.6 (+3.6%) | 6.92 / 6.87 / 6.97 |
+Tokens: deterministic run to run on both builds. Cut B base vs fix identical, 8/8 requests x 256 tokens. Cut A first diverges at token 1 on 5/8 (247, 8 on two, one identical): near-tie logits on the NVFP4 miniature; token 0 (prefill) always identical.
+Remaining on cut B after the fix: 9.29 vs 6.92 ms (pie 25.5% behind vLLM).
+
+## Fix 1 (details): selected attention over a cluster of 8 blocks a kv head
 - `crates/kernels-cuda/kernels/attn/selected.cuh`: `sdpa_paged_selected_mma_kernel` gains `kRanks`: a cluster of that many blocks reads a (row, kv head), each a slice of the 16-key chunks, folding the slices' normalized outputs by their log-sum-exps through distributed shared memory (the fold `decode_gqa_sm80.cu` already uses). `selected.rs`: where the fire's (row, kv head) blocks are too few to fill a quarter of the SMs (where it already widened to 16 warps), 8 warps a block over `kernel.sdpa.selected_cluster` ranks; `tuning.rs` the decision (default 0); B200 profile 8.
 - Sweep on cut A (ranks x warps, 4 requests): 1x16 8.98, 8x4 8.77, **8x8 8.63**, 4x8 8.81, 8x16 8.80, 4x16 8.77 ms.
 - Cut A, 8 requests: ITL p50 8.98 -> **8.62 ms** (111.4 -> 116.0 tok/s, +4.2%). nsys: the attention's critical path 18.4 -> 11.8 us a layer.
