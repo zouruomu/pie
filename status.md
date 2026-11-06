@@ -1,6 +1,6 @@
 # status: 20261106-0910-pro6000-x1-gpt-oss-120b-pbatch
 
-**12:54Z: review 1 — running ea800efeb vs main, 20b pf32/256/1024, 3 alternating rounds (ETA ~13:30Z).**
+**READY FOR REVIEW (13:09Z).** Review 1 answered: ea800efeb vs main at 20b pf32/256/1024 (3 alternating rounds): main +1.7% / +1.2% / -0.1%, no regression >=4.5%; ea800efeb also does not reach the site's 49.8k here. Details in report.md (baseline section) and results/ea800e-ab/.
 
 ## Verdict
 Both cells red on main dc6282d7. The gap is the MoE expert GEMMs, which TRT-LLM 1.4.0rc2.post1 runs at W4A8 (MXFP4 x MXFP8) on sm_120,

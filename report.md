@@ -74,10 +74,15 @@ prompt tokens a request: {'pie': [448], 'trt': [512], 'vllm': [512]}
 
 - pie prefills 448 tokens a prompt, TRT-LLM and vLLM 512 (see Fairness). At 512 of pie's own tokens, pie's tok/s is unchanged (results/equal-tokens: 120b pf256 29.0k, 20b 46.6k, one round each).
 - Small points are noisy for pie at 0.1–0.2 s walls: four rounds at 20b pf8 span 30.0–41.3k, pf16 38.1–43.5k. Round 1's pf16 "dip" (38.1k below pf8's 41.3k) is not there in the medians (39.8k, 40.2k).
-- The site's 20b pie number (49.8k at ea800efeb, TTFT p50 188 ms) is above anything measured here.
-  - Its TTFT puts its point between pf16 and pf32 on pie's curve (129 / 224 ms here).
-  - ea800efeb, built and run on this pod, is not faster than main at pf8/pf16/pf32: 34.3 / 40.8 / 43.1k vs main's 36.1 / 43.1 / 43.8k (results/explore). That is one round each, at points with ~±15% round-to-round noise.
-  - So no regression is visible since the site's commit, but this check is weak.
+- **No regression since ea800efeb (the site's 20b commit).** The site's 20b pie number is 49.8k at ea800efeb, TTFT p50 188 ms, 6% above main's best here. I ran ea800efeb (engine sha256 `75392759…`) vs main (`22af6e94…`) at 20b pf32, pf256 and pf1024: 3 alternating rounds, the same prompts file, both engines prefilling 448 tokens a prompt (results/ea800e-ab/):
+
+  | pf | ea800efeb | main | main vs ea800efeb |
+  |---|---|---|---|
+  | 32 | 43.0k (42.3–43.5, n=3) | 43.7k (43.7–44.0, n=3) | +1.7% |
+  | 256 | 46.0k (45.7–46.3, n=3) | 46.6k (46.6–46.8, n=3) | +1.2% |
+  | 1024 | 46.8k (46.4–46.9, n=3) | 46.8k (46.7–46.8, n=3) | −0.1% |
+
+  There is no regression of 4.5% or more at any of these points; main is equal or faster. ea800efeb doesn't reach 49.8k on this pod either, so the site's 20b pie number doesn't reproduce here at the site's own commit.
 - An 8192-row fire (`--max-forward-tokens 8192`, TRT-LLM's max_num_tokens) instead of the profile's `fire_rows = 5120`:
   - 20b: pf256 46.9k (same), pf16 36.9k vs 43.1k, pf32 41.4k vs 43.8k: slower at the small points;
   - 120b pf16: 27.3k vs 26.7k, one round each.
