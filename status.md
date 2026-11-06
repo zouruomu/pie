@@ -1,7 +1,7 @@
 # Status: 20261105-2035-a100-sxm-x1-gemma-4-31b-batching
 
 **Phase:** fix pushed (r2g branch = 54385f76); engine-cuda GPU suite running on it; report and pr.md final except the suite
-**UTC:** 2026-11-06 09:42
+**UTC:** 2026-11-06 10:50
 
 ## Preliminary verdict (1 round so far; rounds 2-3 running)
 
@@ -63,6 +63,9 @@ The pool-size half of the remaining gap. At c512 (fix v1 + user layer, 1 round):
 - Tests on the fix tree so far: runtime 101 passed; pie-profile 41 passed; engine-cuda chip 13 passed.
 
 ## Latest
+- **The disk filled again (~10:40Z).** The engine-cuda integration tests write test checkpoints to /tmp (9.8 GB from one test), beside 216 GB of HF blobs. Bash could not start until a Monitor-run `rm` got through. I deleted the uv cache, a leftover /tmp test pack, and 109 GB of HF blobs no kept model references (gpt-oss-120b and abandoned partial downloads; every Gemma/Qwen shard was checked to resolve to a kept file first). 126 GB is free now.
+- **Integration tests on 54385f76 so far:** 42 ok, 9 failed. 8 of the failures fall in the disk-full window and will be rerun alone. `a_joined_projection_answers_what_its_legs_answer` fails on its own assertion (qwen35-d0.8b worst gap 0.2207 over a spread of 13.19, line 309); its base-binary rerun is running. Lib tests: 61 ok, 0 failed.
+- Hand-over by ~11:50Z, with whatever test reruns have finished. The deadline is 12:37Z.
 - Second review pass: the bootstrap logic was confirmed. 7 wording/number fixes were made in report.md and pr.md (26B tails 4 of 8 runs; long-run base cap 28; pbatch against the site's vLLM 3793 is within noise, so not called green; clock ranges; vision-tower claim dropped; v1 diff saved as exp-src/fix-v1.diff; footprint 3.9 GiB). fix.patch = 54385f76.
 - GPU suite on 54385f76: lib unit tests running, 60 passed and 0 failed so far. Hand-over ETA ~11:15Z, after the suite. The deadline is 12:37Z.
 - **Pushed:** origin `r2g/20261105-2035-a100-sxm-x1-gemma-4-31b-batching` = `54385f76`, on upstream main dc6282d7.
