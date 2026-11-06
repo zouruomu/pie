@@ -1,0 +1,36 @@
+    Finished `test` profile [optimized + debuginfo] target(s) in 0.15s
+     Running tests/engine_cuda_ep/main.rs (target/debug/deps/engine_cuda_ep-073d082661b5e0e2)
+
+running 6 tests
+test an_expert_parallel_group_rebalances_its_experts::an_expert_parallel_group_rebalances_its_experts ... ok
+test an_expert_parallel_group_serves_through_its_engines::an_expert_parallel_group_serves_through_its_engines ... ok
+test an_expert_parallel_group_that_arms_little_serves_eagerly::an_expert_parallel_group_that_arms_little_serves_eagerly ... ok
+test an_expert_parallel_pair_answers_what_one_rank_answers::an_expert_parallel_pair_answers_what_one_rank_answers ... FAILED
+test an_expert_parallel_wire_carries_tokens_out_and_back::an_expert_parallel_wire_carries_tokens_out_and_back ... ok
+test peer_collectives_answer_what_every_rank_holds::peer_collectives_answer_what_every_rank_holds ... ok
+
+failures:
+
+---- an_expert_parallel_pair_answers_what_one_rank_answers::an_expert_parallel_pair_answers_what_one_rank_answers stdout ----
+engine-cuda: engine.graphs is off, a diagnostic mode — every fire walks eagerly (~470 kernel launches of host time per decode step) with nothing captured; a profile serves `on` with bodies
+engine-cuda: engine.graphs is off, a diagnostic mode — every fire walks eagerly (~470 kernel launches of host time per decode step) with nothing captured; a profile serves `on` with bodies
+engine-cuda: engine.graphs is off, a diagnostic mode — every fire walks eagerly (~470 kernel launches of host time per decode step) with nothing captured; a profile serves `on` with bodies
+engine-cuda: bodies armed 0 of 19 compositions at load (decode 0/1, prefill 0/9, mixed 0/0, tower 0/0, wide 0/0, idle 0/9; 0 segmented; 0 MiB of 4096 MiB, 0 of 1024 seats) (pool declared 64 MiB, high water 16 MiB, committed 16 MiB, spare under the ceiling 171168 MiB) [18 key(s) never fired — this deployment cannot synthesize them, or their present set was already refused admission; e.g. mixed c2+c0 at bucket 1 (2 seat(s) x 256 context, 1 lane(s))] [sealed empty: nothing armed, and an expert-parallel rank captures nothing past arming, so every composition walks eagerly]
+engine-cuda: bodies armed 0 of 19 compositions at load (decode 0/1, prefill 0/9, mixed 0/0, tower 0/0, wide 0/0, idle 0/9; 0 segmented; 0 MiB of 4096 MiB, 0 of 1024 seats) (pool declared 64 MiB, high water 16 MiB, committed 16 MiB, spare under the ceiling 171168 MiB) [18 key(s) never fired — this deployment cannot synthesize them, or their present set was already refused admission; e.g. mixed c2+c0 at bucket 1 (2 seat(s) x 256 context, 1 lane(s))] [sealed empty: nothing armed, and an expert-parallel rank captures nothing past arming, so every composition walks eagerly]
+
+thread 'an_expert_parallel_pair_answers_what_one_rank_answers::an_expert_parallel_pair_answers_what_one_rank_answers' (192184) panicked at crates/engine-cuda/tests/engine_cuda_ep/an_expert_parallel_pair_answers_what_one_rank_answers.rs:358:9:
+the last layer's experts are two selects
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+
+failures:
+    an_expert_parallel_pair_answers_what_one_rank_answers::an_expert_parallel_pair_answers_what_one_rank_answers
+
+test result: FAILED. 5 passed; 1 failed; 0 ignored; 0 measured; 0 filtered out; finished in 15.13s
+
+error: test failed, to rerun pass `-p engine-cuda --test engine_cuda_ep`
+
+real	0m16.141s
+user	0m13.360s
+sys	0m3.109s
+EXIT=101

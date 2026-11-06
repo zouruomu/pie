@@ -1,0 +1,176 @@
+    Finished `test` profile [optimized + debuginfo] target(s) in 0.09s
+     Running tests/kernels_cuda/main.rs (target/debug/deps/kernels_cuda-7c0fdcbee88e54a0)
+
+running 145 tests
+test attn::compressed::a_padded_lane_closes_no_pool_entry ... ok
+test attn::compressed::a_recorded_pass_reads_the_page_tables_its_replay_states ... ok
+test attn::compressed::deepseeks_attention_answers_the_reference ... ok
+test attn::compressed::the_pool_attention_answers_the_reference ... ok
+test attn::fa2::the_paged_attention_answers_the_reference ... ok
+test attn::fa2_masked::the_masked_and_biased_arms_read_an_e4m3_pool ... ok
+test attn::index::logits_fp4::fp4_logits_score_as_the_widened_keys_do ... ok
+test attn::index::select::a_spread_ranking_picks_as_the_block_a_row_one ... ok
+test attn::index::the_block_max_ranking_answers_the_reference ... ok
+test attn::index::the_indexers_rotations_answer_the_host ... ok
+test attn::index::the_pooled_index_selects_its_best_blocks ... ok
+test attn::mla_expand::the_expanded_mla_prefill_lands_what_the_absorbed_one_does ... ok
+test attn::mla_fa2::the_mla_prefill_ada_arm_answers_the_reference ... ok
+test attn::mla_lse::the_mla_scores_land_their_log_sum_exp ... ok
+test attn::mla_prep::a_staged_window_appends_only_its_own_rows ... ok
+test attn::mla_prep::the_mla_append_lands_each_request_in_its_own_pages ... ok
+test attn::mla_sparse::fp8_rows_read_any_head_count_sixty_four_a_pass ... ok
+test attn::mla_sparse::fp8_rows_widen_on_the_mma_kernel ... ok
+test attn::mla_sparse::glm_decodes_selected_attention_lands_split_over_the_multiprocessors ... ok
+test attn::mla_sparse::glm_fp8_rows_score_in_e4m3 ... ok
+test attn::mla_sparse::glm_reads_a_short_selection_dense ... ok
+test attn::mla_sparse::the_sparse_mla_lands_on_tcgen05 ... ok
+test attn::mla_sparse::the_sparse_mla_lands_on_wgmma ... ok
+test attn::ragged::the_ragged_arm_answers_the_reference ... ok
+test attn::ragged::the_ragged_arm_replays_from_a_captured_graph ... ok
+test attn::score::a_score_capture_lands_each_lanes_mass_at_its_row ... ok
+test attn::selected::a_clusters_slices_fold_into_what_one_block_walks ... ok
+test attn::selected::the_selected_attention_lands_alike_on_the_tensor_cores ... ok
+test attn::voxel::the_spatial_attention_answers_the_cpu_reference_every_case ... ok
+test attn::voxel_segments::the_attention_blocks_per_frame_run_rather_than_per_clip ... ok
+test collective::dispatch::a_fire_past_one_count_block_scans_across_its_chunks ... ok
+test collective::dispatch::every_rank_lands_its_routes_rows_in_rank_then_token_order ... ok
+test collective::dispatch::real_peers_land_and_return_what_one_device_does ... ok
+test collective::dispatch::replicas_a_window_and_short_rows_keep_the_rows_where_the_host_puts_them ... ok
+test conv::conv3d::the_conv3d_answers_the_cpu_reference_every_case ... ok
+test conv::pixel_shuffle::a_trimmed_pixel_shuffle_drops_its_anchor_frames ... ok
+test conv::resample::the_voxel_reshapes_land_the_reference_ordering_every_case ... ok
+test elemwise::group_norm::the_group_norm_answers_the_cpu_reference_every_case ... ok
+test elemwise::hc::the_fold_and_the_norms_answer_the_host ... ok
+test elemwise::hc::the_projection_and_the_gates_answer_the_host ... ok
+test elemwise::hc::the_seam_answers_the_fold_and_the_pre_it_replaces ... ok
+test elemwise::hc::the_seam_replays_in_a_graph ... ok
+test elemwise::hc::the_tensor_core_prenorm_projection_answers_the_host ... ok
+test elemwise::modulate::a_modulation_may_write_the_rectangle_it_read ... ok
+test elemwise::modulate::the_modulate_forms_answer_the_broadcast_and_the_per_token_reference_every_case ... ok
+test elemwise::norm::a_row_norm_the_ranks_split_answers_the_whole_rows ... ok
+test elemwise::norm::attn_res_blends_what_the_host_blends ... ok
+test elemwise::norm::the_gated_norm_answers_the_host ... ok
+test elemwise::norm::the_narrow_head_norm_answers_the_host ... ok
+test elemwise::norm::the_tail_rotations_answer_the_host ... ok
+test elemwise::norm::the_wide_row_norm_answers_the_host ... ok
+test elemwise::pointwise::the_bare_binary_and_activation_ops_answer_the_reference_every_case ... ok
+test elemwise::posenc_bucket::a_max_distance_inside_the_exact_band_is_refused ... ok
+test elemwise::posenc_bucket::the_relative_bucket_bias_table_reads_the_bucket_torch_lands_every_case ... ok
+test elemwise::posenc_sinusoid::the_sinusoid_embedding_matches_the_diffusers_formula_every_case ... ok
+test elemwise::rope_axes::the_axial_rope_answers_the_one_axis_kernel_and_the_three_axis_reference_every_case ... ok
+test elemwise::rope_mrope::the_interleaved_mrope_turns_the_rotary_prefix_as_its_own_head_every_case ... ok
+test elemwise::rope_partial::the_partial_rope_turns_only_the_rotary_pairs_every_case ... ok
+test elemwise::rope_table::a_stated_rope_table_turns_each_pair_at_its_frequency ... ok
+test elemwise::skeleton::the_skeleton_residual_norm_lands_its_math ... ok
+test elemwise::synth::a_captured_synthesized_kernel_replays_its_eager_fire ... ok
+test elemwise::synth::a_double_residual_region_rounds_once ... ok
+test elemwise::synth::a_kernel_never_loaded_is_refused_at_its_fire ... ok
+test elemwise::synth::a_residual_norms_region_lands_its_math ... ok
+test elemwise::synth::an_add_then_mul_region_lands_its_math ... ok
+test elemwise::synth::the_hand_body_through_synth_lands_the_skeletons_bits ... FAILED
+test elemwise::synth_blend::a_blends_region_streams_its_candidates_and_lands_its_math ... ok
+test elemwise::synth_embed::a_per_layer_inputs_region_lands_its_math ... ok
+test elemwise::synth_modulate::a_modulated_norms_region_lands_its_math ... ok
+test elemwise::synth_paged::a_result_lands_its_window_or_its_cache_row ... ok
+test elemwise::synth_rope::a_norm_and_its_turn_land_their_math ... ok
+test elemwise::synth_rope::a_staged_window_lands_its_rows_alone ... ok
+test elemwise::synth_rules::each_chains_region_lands_its_math ... ok
+test gather::pack_rows::every_dit_seat_entry_retires_the_staged_windows_padded_rows_every_case ... ok
+test gather::qkv_split::a_padded_qkv_split_lays_each_head_out ... ok
+test gather::qkv_split::a_qkv_split_reaches_every_row_of_a_tall_fire ... ok
+test linear::act_quant::the_activation_quantizers_land_what_the_host_rounds ... ok
+test linear::act_quant::the_alpha_glu_lands_alike_over_packed_rows_and_split_planes ... ok
+test linear::act_quant::the_e4m3_table_gathers_widen_only_their_rows ... ok
+test linear::act_quant::the_fp8b128_requantize_lands_every_value_and_back ... ok
+test linear::act_quant::the_routed_glus_land_the_clamped_swiglu_and_its_read_back ... ok
+test linear::affine_tiled::the_tiled_decode_point_lands_alike_on_the_tensor_cores ... ok
+test linear::dequant_scratch::a_body_captured_on_its_own_stream_takes_its_owners_tile ... ok
+test linear::gemm::an_mxfp8_release_laid_a_row_a_32_answers_the_dot ... ok
+test linear::gemm::the_affine_gemv_on_the_tensor_cores_answers_the_dequantized_dot ... ok
+test linear::gemm::the_few_rows_and_narrow_gemms_land_the_dot ... ok
+test linear::gemm::the_fp8_block_projections_answer_the_dot ... ok
+test linear::gemm::the_fp8_select_lands_its_swiglu_as_the_glu_after_it ... ok
+test linear::gemm::the_lane_projection_and_the_scalar_multiply_land_each_dtype ... ok
+test linear::gemm::the_quantized_dense_projections_answer_the_dequantized_dot ... ok
+test linear::gemm::the_quantizing_products_answer_the_read_back_dot ... ok
+test linear::gemm::the_skinny_skeleton_refuses_shapes_off_its_tile ... ok
+test linear::gemm::the_strided_grouped_projection_answers_each_group ... ok
+test linear::gemm::the_w8a16_projections_answer_the_dot ... ok
+test linear::gemm_sm100::a_dependent_gemm_reads_what_its_producer_landed ... ok
+test linear::gemm_sm100::a_swapped_contiguous_group_of_scaled_rows_refuses_a_q_tile_past_64 ... ok
+test linear::gemm_sm100::the_tcgen05_gemm_answers_the_dequantized_dot_every_case ... ok
+test linear::gemm_sm100_epilogue::the_tcgen05_epilogues_land_quantized_rows ... ok
+test linear::moe_mega::a_cooperative_programmatic_launch_seats_its_grid_whole_or_not_at_all ... ok
+test linear::moe_mega::the_bf16_mega_moe_answers_the_composition_apart ... ok
+test linear::moe_mega::the_mega_moe_lands_beside_another_streams_long_kernel ... ok
+test linear::moe_mega::the_mega_moe_lands_its_live_window_alone ... ok
+test linear::moe_mega::the_w4a8_mega_moe_answers_the_composition_apart ... ok
+test linear::moe_route::a_replayed_fused_gate_lands_what_it_lands_eagerly ... ok
+test linear::moe_route::the_fused_gate_declines_what_it_does_not_take ... ok
+test linear::moe_route::the_fused_gate_lands_the_unfused_routes ... ok
+test linear::moe_route::the_ranked_routers_pick_the_best_experts ... ok
+test linear::moe_route::the_softmax_routers_pick_the_best_experts ... ok
+test linear::moe_select::nvfp4_wide_selects_answer_the_routed_dot ... ok
+test linear::moe_select::the_bf16_prefill_selects_answer_the_routed_dot ... ok
+test linear::moe_select::the_routed_mlp_kept_by_expert_answers_the_host ... ok
+test linear::moe_select::the_routed_selects_answer_the_routed_dot ... FAILED
+test linear::moe_select::the_w8a16_selects_answer_the_routed_dot ... ok
+test linear::moe_select::w4a8_select_timing ... ignored, timing only
+test linear::moe_select_mlxu4::the_grouped_affine_select_lands_its_walk_off_the_wmma_arm ... ok
+test linear::skeleton::a_head_major_window_lands_a_head_of_every_stride ... ok
+test linear::skeleton::a_heads_norm_and_turn_lands_its_windows_as_the_interpreter ... ok
+test linear::skeleton::a_paged_epilogue_lands_k_and_v_in_their_caches_rows ... ok
+test linear::skeleton::a_turned_row_past_the_row_skeletons_width_lands_on_its_slices ... ok
+test linear::skeleton::cublaslts_own_epilogue_lands_the_anchored_region ... ok
+test linear::skeleton::each_skeleton_lands_each_epilogue_as_the_interpreter ... ok
+test linear::skeleton::the_anchored_entry_lands_an_epilogue_on_its_pick ... ok
+test runtime::channel::the_word_gather_lands_each_run_where_its_table_says ... ok
+test runtime::jit_capture::a_carried_kernel_first_fired_inside_a_capture_leaves_it_whole ... ok
+test runtime::jit_capture::a_cold_load_on_another_thread_leaves_an_open_capture_whole ... ok
+test runtime::jit_capture::a_gpu_dropped_on_another_thread_leaves_an_open_capture_whole ... ok
+test runtime::jit_capture::a_kernel_first_fired_inside_a_capture_leaves_it_whole ... ok
+test sampling::walk::the_argmax_lands_the_lowest_tied_column_and_skips_a_nan ... ok
+test sampling::walk::the_column_concat_lands_what_the_host_lands ... ok
+test sampling::walk::the_kv_ends_land_what_the_host_lands ... ok
+test sampling::walk::the_markov_walk_biases_each_row_by_the_pick_before_it ... ok
+test sampling::walk::the_selector_walk_follows_the_best_successor_from_the_anchor ... ok
+test sampling::walk::the_topk_is_sorted_with_ties_to_the_lower_column ... ok
+test ssm::conv1d::the_conv_update_convolves_the_window_and_shifts_it ... ok
+test ssm::conv1d::the_row_cut_lands_both_halves ... ok
+test ssm::conv1d_chunked::the_row_tiled_causal_conv_answers_the_per_row_reference ... ok
+test ssm::dyn_conv::the_dynamic_conv_mixes_each_row_with_the_one_before_it ... ok
+test ssm::gdn_chunk::the_chunked_gated_delta_answers_the_serial_scan ... ok
+test ssm::gdn_chunk_snapshot::a_snapshot_lands_what_a_pass_cut_there_folds ... ok
+test ssm::gdn_recurrent::the_fused_gdn_step_answers_what_the_recurrence_says_every_case ... ok
+test ssm::kda::the_chunked_kda_folds_its_commit_and_replays_its_tail ... ok
+test ssm::kda::the_kda_decode_step_lands_the_serial_walk ... ok
+test ssm::kda::the_tensor_core_kda_lands_the_serial_walk ... ok
+test ssm::mamba2::the_mamba2_scan_and_step_answer_the_serial_recurrence ... ok
+test ssm::short_conv::the_inkling_points_answer_their_host_reference_every_case ... ok
+
+failures:
+
+---- elemwise::synth::the_hand_body_through_synth_lands_the_skeletons_bits stdout ----
+
+thread 'elemwise::synth::the_hand_body_through_synth_lands_the_skeletons_bits' (191956) panicked at crates/kernels-cuda/tests/kernels_cuda/elemwise/synth.rs:202:13:
+64 rows of 4096: the normed row
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+---- linear::moe_select::the_routed_selects_answer_the_routed_dot stdout ----
+
+thread 'linear::moe_select::the_routed_selects_answer_the_routed_dot' (192072) panicked at crates/kernels-cuda/tests/kernels_cuda/common/linear_ref.rs:130:5:
+Mx 8x400x4 false 320x1024 None 0 even false: 512000 off: [(0, (3.3895313892515355e38, (-928.1639613509178, 216.29599112085998))), (1, (3.3895313892515355e38, (-281.6262198090553, 130.25559726171196))), (2, (3.3895313892515355e38, (424.74415278434753, 243.23024497181177))), (3, (3.3895313892515355e38, (-67.6502857208252, 125.25854116678238)))]
+
+
+failures:
+    elemwise::synth::the_hand_body_through_synth_lands_the_skeletons_bits
+    linear::moe_select::the_routed_selects_answer_the_routed_dot
+
+test result: FAILED. 142 passed; 2 failed; 1 ignored; 0 measured; 0 filtered out; finished in 308.05s
+
+error: test failed, to rerun pass `-p kernels-cuda --test kernels_cuda`
+
+real	5m8.485s
+user	4m59.218s
+sys	0m8.010s
+EXIT=101

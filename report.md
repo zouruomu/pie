@@ -1,6 +1,13 @@
 # Report: B200 × MiniMax-M3.1-Flash (miniature) × decode
 
-Draft, in progress. Anything not yet measured is marked pending.
+Fix branch `r2g/20261106-0130-b200-x1-minimax-m3-1-flash-decode` at `d06613bc4`: one commit, rebased onto upstream main dc6282d76 (the three commits since e2e9d1e touch `vllm_bench.py`, server-web and engine-metal; the rebased CUDA engine is byte-identical to the tested one, sha256 `fff664e3…`). Measured and tested as `3da03d2c1`, the same diff on e2e9d1e.
+
+## Summary
+
+- **Verdict:** pie's decode on B200 trails, but the site's competitor numbers for this cell can't be this checkpoint: no released vLLM (0.32.0, 0.33.0) or SGLang (0.5.22) loads MiniMax-M3.1-Flash's NVFP4 experts. On the same 60-layer, 16-expert cut of MiniMax-M3-MXFP8 (same architecture, MXFP8 experts), which they do load, pie trails vLLM 0.32.0 by 28% and SGLang 0.5.22 by 22% at c1.
+- **Cause fixed:** a decode's selected attention ran a block a (row, kv head): MiniMax's lone row is 4 blocks on 148 SMs, 18.4 us a layer, where vLLM splits each kv head 16 ways (4.9 + 2.2 us). Now a cluster of up to 8 blocks a kv head, folded in distributed shared memory: c1 ITL 8.976 -> 8.620 ms on M3.1-Flash (+4.1% decode tok/s), 9.623 -> 9.286 ms on M3-MXFP8 (+3.6%), c2 +1.8% / +2.5%, c4 -0.1% / +1.7%, nothing else moves; Qwen3.8-Flash-Next mini +3.4%. Tokens identical on M3-MXFP8; on M3.1-Flash they diverge at bf16 near-ties, with teacher-forced KL below an existing accepted path's.
+- **Remaining gap** (M3-MXFP8, 9.29 vs 6.93 ms): q/k norm + RoPE + KV append in two 1-CTA epilogue slices (~0.7 ms a step; a reverted prototype of the retired hand rule buys ~4%), the MXFP8 expert glue (~0.6 ms), the selected attention still (~0.3 ms), GEMMs at one row. Handed over as attribution.
+- **Side findings:** pie identifies these cuts as bf16 and OOMs widening them (`identify-bug.md`); pie reads M3.1-Flash's first three layers as dense attention though its config indexes them.
 
 ## The cut and its parameters (note 1)
 
@@ -110,6 +117,8 @@ Engines (`results/engines.sha256`): base `b0ca94bb…` (main e2e9d1e), final `ff
 - nsys (cut A, the sweep build at the same 8 ranks x 8 warps, trace `sel-r8w8-node` on the pod): `sdpa_paged_selected_mma_kernel<128, 8, 8>` on a grid of 8 x 4 blocks in clusters of 8, kernel median 11.71 us against the base's `<128, 16>` on 1 x 4 blocks, 18.37 us; on the critical path 18.4 -> 11.8 us a layer.
 - TTFT p50 (pie, c1): cut A base 28.4 / 28.0 / 27.9 ms (`ab-a-base-*`), fix 27.8 / 28.2 / 28.2 (`ab-a-fix-*`); cut B 31.5 -> 31.7 (round 1). This workload's ~500-token prefill doesn't take the cluster (at 4 kv heads a fire of 5 rows or more doesn't); a prefill of a few rows would.
 
+- Final pass on the rebased commit (`results/raw/final-*`, one round, engines `b0ca94bb…` and `fff664e3…`): cut A 8.98 -> 8.62 ms, cut B 9.62 -> 9.29 ms; tokens as in the rounds above.
+
 ## Tokens and numerics
 
 - Greedy token ids are deterministic run to run in both builds (r1 vs r3: 8/8 identical, both cuts).
@@ -142,7 +151,7 @@ Engines (`results/engines.sha256`): base `b0ca94bb…` (main e2e9d1e), final `ff
 - Only GQA models with selected attention take the changed kernel: MiniMax-M3 and Qwen3.8-Flash-Next (`qwen_4.poem`). The MLA models with selections (GLM-5.x, DeepSeek-V4, Kimi-K3) go through `attn/mla` kernels, untouched. Every other model sees only the helper move, a byte-for-byte move of two device functions; Qwen3-0.6B's identical tokens and speed are consistent with that (I didn't trace that its decode took the clustered kernel). So no block-FP8 MoE beyond the two cuts was rerun; GLM-5.3's cut (MLA) doesn't reach the change.
 - Memory: the fix adds 8256 bytes of shared memory to a clustered block (`mma_fold_bytes`) and no device or host allocation; nothing starts or stops fitting.
 
-## Other loads (final build vs base, one round a point, `results/raw/curve/`, table `results/analysis/curve-table.txt`)
+## Other loads (final build vs base, one round a point unless said, `results/raw/curve/`, table `results/analysis/curve-table.txt`)
 
 Batching: 256-token prompts (the chat template alone renders past 128), 128 out, 4 requests per slot of concurrency. Prefill batch: 512-token prompts, 1 out (a pf fire takes no decode step, so it can't reach the change). The cluster's reach on B200 (rows in a fire): MiniMax 1 row 8 ranks, 2 rows 4, 3-4 rows 2, 5+ off.
 
@@ -155,21 +164,27 @@ Batching: 256-token prompts (the chat template alone renders past 128), 128 out,
 | c32 (off) | 2582.0 -> 2595.1, ITL 11.72 -> 11.69 | 2096.0 -> 2101.8, ITL 14.47 -> 14.42 |
 | c64 (off) | 4403.1 -> 4390.3, ITL 13.15 -> 13.17 | 3635.5 -> 3626.7, ITL 15.94 -> 15.97 |
 | pf4 | 34166 -> 34302 prefill tok/s | 28249 -> 28439 |
-| pf8 | 39439 -> 39147 (-0.7%) | 31601 -> 30613 (-3.1%; 3 rounds PENDING) |
+| pf8 | 39439 -> 39147 (-0.7%) | 31601 -> 30613 (-3.1%); rerun x3: +2.0%, +0.8%, +1.2% |
 | pf16 | 41352 -> 41596 | 32696 -> 32563 |
-| pf32 | PENDING (the curve's prompt file was 2 short) | PENDING |
+| pf32 (80-prompt file; the curve's was 2 short) | 41553 -> 42216 (+1.6%) | 32675 -> 32152 (-1.6%) |
 
-- Where the cluster is off (c8 and up, every pf point) the points sit within +-0.7% of base but cut B's pf8, which can't take the cluster; its 3-round rerun is pending. The first build's curve (any fire under a quarter of the SMs took 8 ranks; `results/raw/curve-fix1/`) had cut A c4 9.72 -> 9.73 and c8 10.11 -> 10.21 ms, which is what the halving rule fixes.
-- nsys at c32 on the final build (that the kernel is the base's): PENDING.
+- Where the cluster is off (c8 and up, every pf point) the points sit within +-0.7% of base on the curve, pf32 within +-1.6% in its own single round, and cut B's one-round pf8 -3.1% doesn't reproduce: rerun 3 alternating rounds it's +0.8-2.0% (`b-*-pf8-r*`). The first build's curve (any fire under a quarter of the SMs took 8 ranks; `results/raw/curve-fix1/`) had cut A c4 9.72 -> 9.73 and c8 10.11 -> 10.21 ms, which is what the halving rule fixes.
+- nsys at c32 on the final build (cut A; `results/analysis/nsys-final-a-c32-selected.txt`): every decode launch of the selected attention is `sdpa_paged_selected_mma_kernel<128, 4, 1>` (the base's 4-warp instantiation, `kRanks` at its default) on a 32 x 4 grid of 128-thread blocks with no cluster (clusterX 0); the 2897-row prefill fires take the same, unclustered.
 
-## Tests (final commit 3da03d2c1 unless said; logs in `results/tests/`)
+## Tests (final commit 3da03d2c1; logs in `results/tests/`)
 
-- `kernels-cuda` `attn::selected` (the extended case and the new MiniMax-shaped one): 2/2 pass (`kernels-selected-final.log`, run on the final source before the amend; the GPU suite reruns them). With the fold's weights removed (`v += out[r] / kRanks`), both fail, the new test at walk 2, head 0 (`kernels-selected-mutation-unweighted-fold.log`).
-- `cargo fmt --all --check` (CI's step): clean.
-- `engine-cuda` unit tests: on the first fix build 68/69, the failure being `chip::tests::the_b200_runs_its_family_measured_with_the_skinny_gemm_off`, which lists the B200's own settings and now lists `selected_cluster` too (`engine-cuda-lib-fix1b.log`, `engine-cuda-lib-chip-fix1c.log`: 12/12 chip tests after it).
-- GPU suite, single-threaded at `CARGO_PROFILE_DEV_OPT_LEVEL=2` (`gpu-suite-*.log`, commit in `gpu-suite-commit.txt`):
-  - `kernels-cuda`: the lib unit tests ran 34/35, `jit::nvrtc::tests::every_unit_lowers` failing in ptxas ("Instruction 'mma with block scale' not supported on .target 'sm_100a'"); cargo then skipped the integration tests (no `--no-fail-fast`), rerun separately: PENDING. Same test on base e2e9d1e: PENDING.
-  - `engine-cuda`: PENDING.
+GPU suite, single-threaded, dev profile at `CARGO_PROFILE_DEV_OPT_LEVEL=2`, nothing else on the GPU (`gpu-suite-*.log`; commit and clean tree in `gpu-suite-commit.txt`). Cargo stops at a failing test binary, so the binaries it skipped ran apart (`gpu-suite-kernels-cuda-integration.log`, `gpu-suite-engine-cuda-ep.log`). Every failure was rerun alone on base e2e9d1e (worktree, `base-*.log`) and fails there the same way.
+
+| binary | final 3da03d2c1 | failures, and the same test on base e2e9d1e |
+|---|---|---|
+| engine-cuda lib | 69 / 69 | - |
+| engine-cuda `engine_cuda` | 58 / 59, 1 ignored | `a_joined_projection_answers_what_its_legs_answer`: glm45-air-mini-bf16 joined vs unjoined token 75882 vs 110881; base: same assertion, same tokens (`base-a_joined_projection.log`) |
+| engine-cuda `engine_cuda_ep` | 5 / 6 | `an_expert_parallel_pair_answers_what_one_rank_answers`: "the last layer's experts are two selects"; base: same (`base-ep-pair.log`) |
+| kernels-cuda lib | 34 / 35 | `jit::nvrtc::tests::every_unit_lowers`: ptxas "Instruction 'mma with block scale' not supported on .target 'sm_100a'" on `select_fp4_sm120.cu` / `select_fp8_sm120.cu`; base: same (`base-every_unit_lowers.log`) |
+| kernels-cuda `kernels_cuda` | 142 / 144, 1 ignored (145 tests; base has 144, the new test being the difference) | `elemwise::synth::the_hand_body_through_synth_lands_the_skeletons_bits` ("64 rows of 4096: the normed row") and `linear::moe_select::the_routed_selects_answer_the_routed_dot` (the ledger's known off-sm_120a failure); base: both the same (`base-kernels-two-failures.log`) |
+
+- `attn::selected` (both tests) and `attn::fa2`, `attn::fa2_masked` pass in the suite run. With the fold's weights removed (`v += out[r] / kRanks`), both selected tests fail, the new one at walk 2, head 0 (`kernels-selected-mutation-unweighted-fold.log`).
+- `cargo fmt --all --check` (CI's step): clean, before and after the rebase.
 
 ## Fix 2, measured but not shipped: the q/k norm + RoPE + KV append
 

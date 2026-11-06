@@ -101,4 +101,104 @@ test a_fused_geglu_reads_its_affine_bank_as_planes::a_fused_geglu_reads_its_affi
 test a_fused_router_answers_what_its_product_and_pick_answer::a_fused_router_answers_what_its_product_and_pick_answer ... ok
 test a_fused_swiglu_sizes_the_decoded_tile_to_its_packed_plane::a_fused_swiglu_sizes_the_decoded_tile_to_its_packed_plane ... ok
 test a_grouped_window_is_one_window_and_a_segment_list::the_segment_lists_are_staged_beside_the_boundaries_in_the_one_copy ... ok
-test a_joined_projection_answers_what_its_legs_answer::a_joined_projection_answers_what_its_legs_answer ... 
+test a_joined_projection_answers_what_its_legs_answer::a_joined_projection_answers_what_its_legs_answer ... FAILED
+test a_joined_projection_answers_what_its_legs_answer::the_open_rows_answer_apart_what_they_answer_joined ... ignored, the engine's apart forms of these rows are open
+test a_lane_sampler_draws_what_the_interpreter_draws::a_lane_sampler_draws_what_the_interpreter_draws ... ok
+test a_missing_or_misshapen_input_feed_is_refused_by_name::a_missing_feed_and_a_wrong_cell_are_refused_by_name ... ok
+test a_nucleus_cut_agrees_with_the_host_interpreter::a_nucleus_cut_agrees_with_the_host_interpreter_every_case ... ok
+test a_padded_row_writes_nothing::a_padded_row_writes_nothing ... ok
+test a_prefill_past_the_gemvs_grid_is_served::a_prefill_past_the_gemvs_grid_is_served_every_case ... ok
+test a_prologue_put_input_is_the_cell_the_forward_reads::the_forward_reads_the_latent_its_prologue_put ... ok
+test a_prologue_put_port_is_the_cell_the_fire_resolves::the_forward_reads_the_ports_its_prologue_put ... ok
+test a_regions_own_values_outlive_its_last_pass::the_row_max_keeps_its_slot_until_the_region_ends ... ok
+test a_repacked_projection_serves_what_the_row_major_one_serves::a_tiled_declaration_bands_the_rows_on_both_sides ... ok
+test a_repacked_projection_serves_what_the_row_major_one_serves::a_tiled_projection_answers_what_the_row_major_one_answers ... ok
+test a_schedule_is_carved_where_it_is_launched::the_token_class_fires_alone ... ok
+test a_second_fire_reads_the_input_cells_it_was_handed::the_second_fire_lands_the_second_cells ... ok
+test a_shared_adapter_is_one_slot_and_one_load::a_shared_adapter_is_one_slot_and_one_load_every_case ... ok
+test a_shifted_body_admits_the_split_that_moved::a_shifted_body_admits_the_split_that_moved_every_case ... ok
+test a_stored_k_quant_row_serves_as_stored::a_stored_declaration_interns_one_byte_rectangle ... ok
+test a_synthesized_region_serves_the_logits_of_its_ops::a_paged_epilogue_serves_the_logits_of_its_kv_append ... ok
+test a_synthesized_region_serves_the_logits_of_its_ops::a_synthesized_region_serves_the_logits_of_its_ops ... ok
+test a_synthesized_region_serves_the_logits_of_its_ops::an_anchored_region_serves_the_logits_of_its_ops ... ok
+test a_synthesized_region_serves_the_logits_of_its_ops::two_models_served_at_once_answer_what_each_answers_alone ... ok
+test a_tapped_fire_reads_each_layer_out_as_the_pool_holds_it::a_tapped_fire_reads_each_layer_out_as_the_pool_holds_it ... ok
+test a_tower_region_reads_the_patch_window::a_tower_region_reads_the_patch_window_every_case ... ok
+test a_two_axis_plan_arms_its_token_bodies::the_token_regions_arm_while_the_voxel_regions_stay_eager ... ok
+test a_two_class_plan_reads_each_lane_back_from_its_own_seam::each_lane_reads_back_its_own_arms_seam ... ok
+test a_verify_lands_what_the_point_rule_reads::a_verify_lands_what_the_point_rule_reads ... ok
+test a_wide_class_attends_every_key_without_a_mask::a_wide_class_attends_every_key_without_a_mask_every_case ... ok
+test a_windowed_row_reads_what_the_full_row_reads::a_windowed_row_reads_what_the_full_row_reads ... ok
+test an_adapter_is_not_a_lanes_scratch::an_adapter_is_not_a_lanes_scratch_every_case ... ok
+test an_epilogue_agrees_with_the_host_interpreter::an_epilogue_agrees_with_the_host_interpreter_every_case ... ok
+test an_exported_kv_stays_mapped::an_exported_kv_stays_mapped ... ok
+test an_output_of_ids_reads_as_stored::an_output_of_ids_reads_as_stored ... ok
+test every_catalog_deployment_dispatches::every_catalog_deployment_dispatches_every_case ... ok
+test every_diagnostic_is_a_word_the_boot_states::every_diagnostic_is_a_word_the_boot_states ... ok
+test every_op_agrees_with_the_host_interpreter::every_op_agrees_with_the_host_interpreter ... ok
+test every_suite_step_agrees_with_the_host_interpreter::every_suite_step_agrees_with_the_host_interpreter ... ok
+test masked_axis::the_masked_axis_is_declared_by_gemma_and_qwen_and_by_nobody_else ... ok
+test no_shell_reads_the_environment::no_shell_reads_the_environment ... ok
+test routed_experts_stream::routed_experts_stream_every_case ... ok
+test the_operators_fraction_sizes_the_pool::the_operators_fraction_sizes_the_pool_every_case ... ok
+
+failures:
+
+---- a_joined_projection_answers_what_its_legs_answer::a_joined_projection_answers_what_its_legs_answer stdout ----
+engine-cuda: engine.graphs is off, a diagnostic mode — every fire walks eagerly (~470 kernel launches of host time per decode step) with nothing captured; a profile serves `on` with bodies
+engine-cuda: engine.graphs is off, a diagnostic mode — every fire walks eagerly (~470 kernel launches of host time per decode step) with nothing captured; a profile serves `on` with bodies
+qwen3-0.6b-bf16-kv-bf16: 56 joins, worst gap 0.04296875 over a spread of 7.015625
+engine-cuda: engine.graphs is off, a diagnostic mode — every fire walks eagerly (~470 kernel launches of host time per decode step) with nothing captured; a profile serves `on` with bodies
+engine-cuda: engine.graphs is off, a diagnostic mode — every fire walks eagerly (~470 kernel launches of host time per decode step) with nothing captured; a profile serves `on` with bodies
+llama33-70b-mini-l4-bf16-kv-bf16: 8 joins, worst gap 0.15625 over a spread of 18.375
+engine-cuda: engine.graphs is off, a diagnostic mode — every fire walks eagerly (~470 kernel launches of host time per decode step) with nothing captured; a profile serves `on` with bodies
+engine-cuda: engine.graphs is off, a diagnostic mode — every fire walks eagerly (~470 kernel launches of host time per decode step) with nothing captured; a profile serves `on` with bodies
+glm45-air-mini-bf16-kv-bf16: 15 joins, worst gap 0.09765625 over a spread of 12.3125
+
+thread 'a_joined_projection_answers_what_its_legs_answer::a_joined_projection_answers_what_its_legs_answer' (155178) panicked at crates/engine-cuda/tests/engine_cuda/a_joined_projection_answers_what_its_legs_answer.rs:297:5:
+assertion `left == right` failed: glm45-air-mini-bf16-kv-bf16: the joined model picks the same token
+  left: 75882
+ right: 110881
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+engine-cuda: engine.graphs is off, a diagnostic mode — every fire walks eagerly (~470 kernel launches of host time per decode step) with nothing captured; a profile serves `on` with bodies
+engine-cuda: engine.graphs is off, a diagnostic mode — every fire walks eagerly (~470 kernel launches of host time per decode step) with nothing captured; a profile serves `on` with bodies
+gemma4-e4b-mini-l6-bf16-kv-bf16: 12 joins, worst gap 0.0703125 over a spread of 9.28125
+engine-cuda: engine.graphs is off, a diagnostic mode — every fire walks eagerly (~470 kernel launches of host time per decode step) with nothing captured; a profile serves `on` with bodies
+engine-cuda: engine.graphs is off, a diagnostic mode — every fire walks eagerly (~470 kernel launches of host time per decode step) with nothing captured; a profile serves `on` with bodies
+hy4-mini-bf16-kv-bf16: 6 joins, worst gap 0.0625 over a spread of 15.71875
+engine-cuda: engine.graphs is off, a diagnostic mode — every fire walks eagerly (~470 kernel launches of host time per decode step) with nothing captured; a profile serves `on` with bodies
+engine-cuda: engine.graphs is off, a diagnostic mode — every fire walks eagerly (~470 kernel launches of host time per decode step) with nothing captured; a profile serves `on` with bodies
+minimax-m3-mini-bf16-kv-bf16: 15 joins, worst gap 0.25 over a spread of 32.75
+engine-cuda: engine.graphs is off, a diagnostic mode — every fire walks eagerly (~470 kernel launches of host time per decode step) with nothing captured; a profile serves `on` with bodies
+engine-cuda: engine.graphs is off, a diagnostic mode — every fire walks eagerly (~470 kernel launches of host time per decode step) with nothing captured; a profile serves `on` with bodies
+nemotron3-nano-mini-bf16-kv-bf16: 1 joins, worst gap 0.03125 over a spread of 10.53125
+engine-cuda: engine.graphs is off, a diagnostic mode — every fire walks eagerly (~470 kernel launches of host time per decode step) with nothing captured; a profile serves `on` with bodies
+engine-cuda: engine.graphs is off, a diagnostic mode — every fire walks eagerly (~470 kernel launches of host time per decode step) with nothing captured; a profile serves `on` with bodies
+qwen3-30b-a3b-mini-bf16-kv-bf16: 8 joins, worst gap 0.03125 over a spread of 9.375
+engine-cuda: engine.graphs is off, a diagnostic mode — every fire walks eagerly (~470 kernel launches of host time per decode step) with nothing captured; a profile serves `on` with bodies
+engine-cuda: engine.graphs is off, a diagnostic mode — every fire walks eagerly (~470 kernel launches of host time per decode step) with nothing captured; a profile serves `on` with bodies
+qwen35-d0.8b-bf16-kv-bf16: 66 joins, worst gap 0.19262695 over a spread of 13.25
+engine-cuda: engine.graphs is off, a diagnostic mode — every fire walks eagerly (~470 kernel launches of host time per decode step) with nothing captured; a profile serves `on` with bodies
+engine-cuda: engine.graphs is off, a diagnostic mode — every fire walks eagerly (~470 kernel launches of host time per decode step) with nothing captured; a profile serves `on` with bodies
+dots3-note-mini-bf16-kv-bf16: 11 joins, worst gap 0.0625 over a spread of 14.90625
+engine-cuda: engine.graphs is off, a diagnostic mode — every fire walks eagerly (~470 kernel launches of host time per decode step) with nothing captured; a profile serves `on` with bodies
+engine-cuda: engine.graphs is off, a diagnostic mode — every fire walks eagerly (~470 kernel launches of host time per decode step) with nothing captured; a profile serves `on` with bodies
+inkling-mini-l7-e8-bf16-kv-bf16: 14 joins, worst gap 0.001953125 over a spread of 0.6738281
+
+thread 'a_joined_projection_answers_what_its_legs_answer::a_joined_projection_answers_what_its_legs_answer' (155178) panicked at crates/engine-cuda/tests/engine_cuda/a_joined_projection_answers_what_its_legs_answer.rs:245:5:
+glm45-air-mini-bf16-kv-bf16: assertion `left == right` failed: glm45-air-mini-bf16-kv-bf16: the joined model picks the same token
+  left: 75882
+ right: 110881
+
+
+failures:
+    a_joined_projection_answers_what_its_legs_answer::a_joined_projection_answers_what_its_legs_answer
+
+test result: FAILED. 58 passed; 1 failed; 1 ignored; 0 measured; 0 filtered out; finished in 2234.39s
+
+error: test failed, to rerun pass `-p engine-cuda --test engine_cuda`
+
+real	58m57.872s
+user	49m44.183s
+sys	18m7.432s
+EXIT=101

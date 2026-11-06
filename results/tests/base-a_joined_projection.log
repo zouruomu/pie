@@ -1,0 +1,67 @@
+    Finished `test` profile [optimized + debuginfo] target(s) in 0.14s
+     Running tests/engine_cuda/main.rs (target/debug/deps/engine_cuda-13d98812d365c373)
+
+running 2 tests
+test a_joined_projection_answers_what_its_legs_answer::a_joined_projection_answers_what_its_legs_answer ... FAILED
+test a_joined_projection_answers_what_its_legs_answer::the_open_rows_answer_apart_what_they_answer_joined ... ignored, the engine's apart forms of these rows are open
+
+failures:
+
+---- a_joined_projection_answers_what_its_legs_answer::a_joined_projection_answers_what_its_legs_answer stdout ----
+engine-cuda: engine.graphs is off, a diagnostic mode — every fire walks eagerly (~470 kernel launches of host time per decode step) with nothing captured; a profile serves `on` with bodies
+engine-cuda: engine.graphs is off, a diagnostic mode — every fire walks eagerly (~470 kernel launches of host time per decode step) with nothing captured; a profile serves `on` with bodies
+qwen3-0.6b-bf16-kv-bf16: 56 joins, worst gap 0.04296875 over a spread of 7.015625
+engine-cuda: engine.graphs is off, a diagnostic mode — every fire walks eagerly (~470 kernel launches of host time per decode step) with nothing captured; a profile serves `on` with bodies
+engine-cuda: engine.graphs is off, a diagnostic mode — every fire walks eagerly (~470 kernel launches of host time per decode step) with nothing captured; a profile serves `on` with bodies
+llama33-70b-mini-l4-bf16-kv-bf16: 8 joins, worst gap 0.15625 over a spread of 18.375
+engine-cuda: engine.graphs is off, a diagnostic mode — every fire walks eagerly (~470 kernel launches of host time per decode step) with nothing captured; a profile serves `on` with bodies
+engine-cuda: engine.graphs is off, a diagnostic mode — every fire walks eagerly (~470 kernel launches of host time per decode step) with nothing captured; a profile serves `on` with bodies
+glm45-air-mini-bf16-kv-bf16: 15 joins, worst gap 0.09765625 over a spread of 12.3125
+
+thread 'a_joined_projection_answers_what_its_legs_answer::a_joined_projection_answers_what_its_legs_answer' (185859) panicked at crates/engine-cuda/tests/engine_cuda/a_joined_projection_answers_what_its_legs_answer.rs:297:5:
+assertion `left == right` failed: glm45-air-mini-bf16-kv-bf16: the joined model picks the same token
+  left: 75882
+ right: 110881
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+engine-cuda: engine.graphs is off, a diagnostic mode — every fire walks eagerly (~470 kernel launches of host time per decode step) with nothing captured; a profile serves `on` with bodies
+engine-cuda: engine.graphs is off, a diagnostic mode — every fire walks eagerly (~470 kernel launches of host time per decode step) with nothing captured; a profile serves `on` with bodies
+gemma4-e4b-mini-l6-bf16-kv-bf16: 12 joins, worst gap 0.0703125 over a spread of 9.28125
+engine-cuda: engine.graphs is off, a diagnostic mode — every fire walks eagerly (~470 kernel launches of host time per decode step) with nothing captured; a profile serves `on` with bodies
+engine-cuda: engine.graphs is off, a diagnostic mode — every fire walks eagerly (~470 kernel launches of host time per decode step) with nothing captured; a profile serves `on` with bodies
+hy4-mini-bf16-kv-bf16: 6 joins, worst gap 0.0625 over a spread of 15.71875
+engine-cuda: engine.graphs is off, a diagnostic mode — every fire walks eagerly (~470 kernel launches of host time per decode step) with nothing captured; a profile serves `on` with bodies
+engine-cuda: engine.graphs is off, a diagnostic mode — every fire walks eagerly (~470 kernel launches of host time per decode step) with nothing captured; a profile serves `on` with bodies
+minimax-m3-mini-bf16-kv-bf16: 15 joins, worst gap 0.2734375 over a spread of 32.6875
+engine-cuda: engine.graphs is off, a diagnostic mode — every fire walks eagerly (~470 kernel launches of host time per decode step) with nothing captured; a profile serves `on` with bodies
+engine-cuda: engine.graphs is off, a diagnostic mode — every fire walks eagerly (~470 kernel launches of host time per decode step) with nothing captured; a profile serves `on` with bodies
+nemotron3-nano-mini-bf16-kv-bf16: 1 joins, worst gap 0.03125 over a spread of 10.53125
+engine-cuda: engine.graphs is off, a diagnostic mode — every fire walks eagerly (~470 kernel launches of host time per decode step) with nothing captured; a profile serves `on` with bodies
+engine-cuda: engine.graphs is off, a diagnostic mode — every fire walks eagerly (~470 kernel launches of host time per decode step) with nothing captured; a profile serves `on` with bodies
+qwen3-30b-a3b-mini-bf16-kv-bf16: 8 joins, worst gap 0.03125 over a spread of 9.375
+engine-cuda: engine.graphs is off, a diagnostic mode — every fire walks eagerly (~470 kernel launches of host time per decode step) with nothing captured; a profile serves `on` with bodies
+engine-cuda: engine.graphs is off, a diagnostic mode — every fire walks eagerly (~470 kernel launches of host time per decode step) with nothing captured; a profile serves `on` with bodies
+qwen35-d0.8b-bf16-kv-bf16: 66 joins, worst gap 0.19262695 over a spread of 13.25
+engine-cuda: engine.graphs is off, a diagnostic mode — every fire walks eagerly (~470 kernel launches of host time per decode step) with nothing captured; a profile serves `on` with bodies
+engine-cuda: engine.graphs is off, a diagnostic mode — every fire walks eagerly (~470 kernel launches of host time per decode step) with nothing captured; a profile serves `on` with bodies
+dots3-note-mini-bf16-kv-bf16: 11 joins, worst gap 0.0625 over a spread of 14.90625
+engine-cuda: engine.graphs is off, a diagnostic mode — every fire walks eagerly (~470 kernel launches of host time per decode step) with nothing captured; a profile serves `on` with bodies
+engine-cuda: engine.graphs is off, a diagnostic mode — every fire walks eagerly (~470 kernel launches of host time per decode step) with nothing captured; a profile serves `on` with bodies
+inkling-mini-l7-e8-bf16-kv-bf16: 14 joins, worst gap 0.001953125 over a spread of 0.6738281
+
+thread 'a_joined_projection_answers_what_its_legs_answer::a_joined_projection_answers_what_its_legs_answer' (185859) panicked at crates/engine-cuda/tests/engine_cuda/a_joined_projection_answers_what_its_legs_answer.rs:245:5:
+glm45-air-mini-bf16-kv-bf16: assertion `left == right` failed: glm45-air-mini-bf16-kv-bf16: the joined model picks the same token
+  left: 75882
+ right: 110881
+
+
+failures:
+    a_joined_projection_answers_what_its_legs_answer::a_joined_projection_answers_what_its_legs_answer
+
+test result: FAILED. 0 passed; 1 failed; 1 ignored; 0 measured; 58 filtered out; finished in 364.29s
+
+error: test failed, to rerun pass `-p engine-cuda --test engine_cuda`
+
+real	6m4.777s
+user	3m33.812s
+sys	3m35.646s
+EXIT=101
