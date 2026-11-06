@@ -23,7 +23,7 @@ pie 120b on main is 2.1x the site's 13.8k (ee9098f60): the brief's 120b-specific
 **Why (attribution so far, pie 120b pf256 nsys):** 76% of pie's GPU time is the MXFP4 expert selects
 (`moe_select_mxfp4_mma_staged`, register-dequant bf16 mma.sync, ~270 TFLOP/s; cuBLAS's bf16 dense GEMMs reach ~400 TFLOP/s on this card).
 TRT-LLM 1.4.0rc2.post1 runs gpt-oss's MoE on sm_120 as **W4A8** (MXFP4 weights x MXFP8 e4m3 activations, CUTLASS SM120 block-scaled
-grouped GEMM, FP8-rate tensor cores, no dequant): `_torch/model_config.py:730-741`. It has no W4A16 MXFP4 MoE on sm_120 (forcing it fails).
+grouped GEMM, FP8-rate tensor cores, no dequant): `_torch/model_config.py:729-741`. It has no W4A16 MXFP4 MoE on sm_120 (forcing it fails).
 At equal precision pie is level: vLLM 0.32 (MARLIN W4A16) 120b pf256 = 28.9k vs pie 29.0k.
 A W4A16 kernel can't close a 1.5x gap: the 8-warp pipe select with gpt-oss's K tail (prototyped, it ran) is no faster (1198 vs 1196 ms gate-up).
 An 8192-row fire (TRT-LLM's max_num_tokens) instead of the profile's 5120 changes nothing (46.9k vs 47.0k).
@@ -72,6 +72,11 @@ nothing at W4A16 near the 4.5% bar. TRT-LLM's W4A8 grouped GEMMs run ~517 TFLOP/
 - ee9098f60 (the site's 120b commit) on this pod: 28.7k tok/s at pf256, same kernels and component times as main (results/prof/ee9098-*):
   the site's 13.8k was that site run, not pie. #1430 changes nothing for gpt-oss (same W4A16 staged selects at both commits).
 - pie at 512 tokens a prompt: 120b 28.5k, 20b 46.1k at pf256 (vs 29.0k / 46.7k at 448): token count is not the gap.
+
+### pie vs vLLM 0.32 (W4A16, MARLIN), 11:40Z: nothing red
+20b: pie leads at every pf (+35% at pf8 .. +4.1% at pf512, +4.8% at pf1024). 120b: pie leads pf4-pf64 (+41% .. +1.5%), level pf128-pf1024
+(+0.6% .. -0.5%, n=1 for vLLM). vLLM prefills 512 tokens a prompt, pie 448; at equal tokens pie 120b pf256 is 28.5k vs vLLM 28.9k (-1.4%).
+The site's vLLM 120b (22.3k, 2026-11-03, same day as pie's 13.8k) is 24% below vLLM here (29.2k): that day's site 120b runs ran low for both engines.
 
 ## Fairness notes
 - TRT-LLM reproduced with KV block reuse OFF (cold); its default is ON (80 shared harmony tokens = 2 blocks of 32 a prompt would be reused).
