@@ -1,0 +1,245 @@
+From d678268d74af22d69128716dd1dc76c9575ee33a Mon Sep 17 00:00:00 2001
+From: zouruomu <zouruomu@gmail.com>
+Date: Fri, 6 Nov 2026 03:13:03 +0000
+Subject: [PATCH] Batching part of the pie vs vLLM gap on A100 (Gemma-4-31B
+ seated to the end past the five-sequence cap, a smaller working set)
+
+* engine.uncapped_admission: a profile lifts the five-sequence cap where its pools seat to the end
+
+* A100 profile: processes seat to the end, uncapped
+
+* A100 profile: a fire's working set held to 40%
+---
+ .../engine-cuda/profiles/sm80/nvidia-a100.toml   | 16 ++++++++++++++++
+ crates/engine-cuda/src/api.rs                    |  1 +
+ crates/engine-cuda/src/chip.rs                   | 12 ++++++++++++
+ crates/engine-cuda/src/serve.rs                  |  9 +++++++++
+ crates/engine-cuda/src/serve/load.rs             |  1 +
+ crates/engine-metal/src/api.rs                   |  1 +
+ crates/engine-vulkan/src/api.rs                  |  1 +
+ crates/engine/src/caps.rs                        |  5 +++++
+ crates/runtime/src/bootstrap.rs                  |  5 ++++-
+ crates/worker/src/translate.rs                   |  1 +
+ 10 files changed, 51 insertions(+), 1 deletion(-)
+
+diff --git a/crates/engine-cuda/profiles/sm80/nvidia-a100.toml b/crates/engine-cuda/profiles/sm80/nvidia-a100.toml
+index 7534b1c1..ac3c215a 100644
+--- a/crates/engine-cuda/profiles/sm80/nvidia-a100.toml
++++ b/crates/engine-cuda/profiles/sm80/nvidia-a100.toml
+@@ -69,6 +69,19 @@ lattice_steps = 2
+ # 19.5 GiB pool) c512 2.6k -> 4.5k tok/s, c1024 2.5k -> 4.5k; Gemma-4-31B c128
+ # 309 -> 465.
+ seated_first = true
++# A process starts only while the pools hold the started ones to the end, as
++# the A40, H100, H200 and RTX PRO 6000 profiles, and that gate, not five
++# declared-context sequences, bounds admission: Gemma-4-31B's 671 pages seat 35
++# of its 297-token sequences, the cap 26; c512 454 -> 559 tok/s (the gate alone
++# under the cap 454, no cap without it 433). Greedy tokens differ as the lanes a
++# step do.
++seat_to_end = true
++uncapped_admission = true
++# A fire's working set held to 40% of the card past the weights: Gemma-4-31B's
++# fires 3757 -> 2436 tokens, and its pool's planes re-reserved in finer map
++# units, 671 -> 735 pages; c512 559 -> 597 tok/s, Gemma-4-26B c512 5.07k ->
++# 5.16k.
++working_set_percent = 40
+ 
+ # Independent chains on side streams: decode latency +5-11% (Gemma 4, Qwen3.6-A3B,
+ # DeepSeek-V4, GLM-5.3, Hy4), outputs unchanged; a join's branches on them too.
+@@ -114,6 +127,9 @@ measured = [
+   "engine.prefill_lattice_from",
+   "engine.lattice_steps",
+   "engine.seated_first",
++  "engine.seat_to_end",
++  "engine.uncapped_admission",
++  "engine.working_set_percent",
+   "compiler.dag_streams",
+   "kernel.elemwise.hc_tile",
+   "kernel.elemwise.hc_mma",
+diff --git a/crates/engine-cuda/src/api.rs b/crates/engine-cuda/src/api.rs
+index 59a3d974..6bee1ad8 100644
+--- a/crates/engine-cuda/src/api.rs
++++ b/crates/engine-cuda/src/api.rs
+@@ -711,6 +711,7 @@ impl Engine for Cuda {
+                 one_frame_when_short: shell.one_frame_when_short(),
+                 seated_first: shell.seated_first(),
+                 seat_to_end: shell.seat_to_end(),
++                uncapped_admission: shell.uncapped_admission(),
+             },
+             limits: FireLimits {
+                 max_lanes: shell.budget().max_lanes,
+diff --git a/crates/engine-cuda/src/chip.rs b/crates/engine-cuda/src/chip.rs
+index 035734de..149f1613 100644
+--- a/crates/engine-cuda/src/chip.rs
++++ b/crates/engine-cuda/src/chip.rs
+@@ -106,6 +106,13 @@ pub struct SeatedFirst;
+ #[decision(id = "engine.seat_to_end", flag, default = false, tune = engine)]
+ pub struct SeatToEnd;
+ 
++/// Whether a seated-first pool admits past five sequences a sequence at the
++/// declared context holds (`PoolFacts::uncapped_admission`), for a card
++/// whose pools seat to the end. Off keeps the cap.
++#[derive(Clone, Copy, Debug, PartialEq, Eq, Decision)]
++#[decision(id = "engine.uncapped_admission", flag, default = false, tune = engine)]
++pub struct UncappedAdmission;
++
+ /// Whether a windowed pool of short lanes takes a page a lane past its kv
+ /// pages (`Paging::spare`), for a card whose ring, not its kv pages, runs
+ /// dry first. Off cuts it 1:1.
+@@ -175,6 +182,7 @@ static REGISTRY: LazyLock<Registry> = LazyLock::new(|| {
+         .add::<OneFrameWhenShort>()
+         .add::<SeatedFirst>()
+         .add::<SeatToEnd>()
++        .add::<UncappedAdmission>()
+         .add::<WindowSpare>()
+         .add::<ForwardTokens>()
+         .add::<WalkFireRows>()
+@@ -271,6 +279,7 @@ pub struct Engine {
+     pub one_frame_when_short: bool,
+     pub seated_first: bool,
+     pub seat_to_end: bool,
++    pub uncapped_admission: bool,
+     pub window_spare: bool,
+     pub forward_tokens: u32,
+     pub walk_fire_rows: u32,
+@@ -305,6 +314,7 @@ impl Engine {
+             one_frame_when_short: profile.on::<OneFrameWhenShort>(&Anywhere),
+             seated_first: profile.on::<SeatedFirst>(&Anywhere),
+             seat_to_end: profile.on::<SeatToEnd>(&Anywhere),
++            uncapped_admission: profile.on::<UncappedAdmission>(&Anywhere),
+             window_spare: profile.on::<WindowSpare>(&Anywhere),
+             forward_tokens: profile.get::<ForwardTokens>().0,
+             walk_fire_rows: profile.get::<WalkFireRows>().0,
+@@ -786,6 +796,7 @@ mod tests {
+                 one_frame_when_short: false,
+                 seated_first: false,
+                 seat_to_end: false,
++                uncapped_admission: false,
+                 window_spare: false,
+                 forward_tokens: 0,
+                 walk_fire_rows: 0,
+@@ -867,6 +878,7 @@ mod tests {
+                 one_frame_when_short: false,
+                 seated_first: false,
+                 seat_to_end: false,
++                uncapped_admission: false,
+                 window_spare: false,
+                 forward_tokens: 0,
+                 walk_fire_rows: 0,
+diff --git a/crates/engine-cuda/src/serve.rs b/crates/engine-cuda/src/serve.rs
+index d5fa3bf1..e6e29808 100644
+--- a/crates/engine-cuda/src/serve.rs
++++ b/crates/engine-cuda/src/serve.rs
+@@ -119,6 +119,8 @@ pub struct Shell {
+     seated_first: bool,
+     /// `engine.seat_to_end`.
+     seat_to_end: bool,
++    /// `engine.uncapped_admission`.
++    uncapped_admission: bool,
+     /// `engine.prefill_lanes`.
+     prefill_lanes: u32,
+     pad: bool,
+@@ -397,6 +399,13 @@ impl Shell {
+         self.seat_to_end
+     }
+ 
++    /// Whether this load asks the runtime not to cap a seated-first pool's
++    /// admission (`engine.uncapped_admission`).
++    #[must_use]
++    pub fn uncapped_admission(&self) -> bool {
++        self.uncapped_admission
++    }
++
+     /// Host rs rows: a state slot and a buffer page each, parked apart.
+     #[must_use]
+     pub fn host_state_slots(&self) -> u32 {
+diff --git a/crates/engine-cuda/src/serve/load.rs b/crates/engine-cuda/src/serve/load.rs
+index a22347e9..ea64fa24 100644
+--- a/crates/engine-cuda/src/serve/load.rs
++++ b/crates/engine-cuda/src/serve/load.rs
+@@ -1059,6 +1059,7 @@ impl Shell {
+             one_frame_when_short: engine.one_frame_when_short,
+             seated_first: engine.seated_first,
+             seat_to_end: engine.seat_to_end,
++            uncapped_admission: engine.uncapped_admission,
+             prefill_lanes: engine.prefill_lanes,
+             pad: engine.recording.pad(),
+             golden_arm: Golden::Off,
+diff --git a/crates/engine-metal/src/api.rs b/crates/engine-metal/src/api.rs
+index 00ebf019..f047c08a 100644
+--- a/crates/engine-metal/src/api.rs
++++ b/crates/engine-metal/src/api.rs
+@@ -565,6 +565,7 @@ impl Engine for Metal {
+                 one_frame_when_short: false,
+                 seated_first: false,
+                 seat_to_end: false,
++                uncapped_admission: false,
+                 buffer_pages: shell.buffer_pages(),
+                 host_state_slots: shell.parked_state_slots(),
+                 host_buffer_pages: shell.parked_buffer_pages(),
+diff --git a/crates/engine-vulkan/src/api.rs b/crates/engine-vulkan/src/api.rs
+index b3f94c77..53a1ae80 100644
+--- a/crates/engine-vulkan/src/api.rs
++++ b/crates/engine-vulkan/src/api.rs
+@@ -419,6 +419,7 @@ impl Engine for Vulkan {
+                 one_frame_when_short: false,
+                 seated_first: false,
+                 seat_to_end: false,
++                uncapped_admission: false,
+                 buffer_pages: shell.buffer_pages(),
+                 host_state_slots: shell.parked_state_slots(),
+                 host_buffer_pages: shell.parked_buffer_pages(),
+diff --git a/crates/engine/src/caps.rs b/crates/engine/src/caps.rs
+index 35380e52..59608454 100644
+--- a/crates/engine/src/caps.rs
++++ b/crates/engine/src/caps.rs
+@@ -102,6 +102,11 @@ pub struct PoolFacts {
+     /// once and evict lanes the pools then run short for.
+     #[serde(default)]
+     pub seat_to_end: bool,
++    /// The engine would rather its seated-first pools admit past five
++    /// sequences a sequence at the declared context holds, its seat-to-end
++    /// gate holding each process to the pages it reaches instead.
++    #[serde(default)]
++    pub uncapped_admission: bool,
+ }
+ 
+ impl PoolFacts {
+diff --git a/crates/runtime/src/bootstrap.rs b/crates/runtime/src/bootstrap.rs
+index 8e732145..7779b887 100644
+--- a/crates/runtime/src/bootstrap.rs
++++ b/crates/runtime/src/bootstrap.rs
+@@ -144,6 +144,9 @@ pub struct EngineConfig {
+     /// The engine asks the planner to start a process only while the pools
+     /// hold the started ones to the end (`PoolFacts::seat_to_end`).
+     pub seat_to_end: bool,
++    /// The engine asks for no cap on a seated-first pool's admission
++    /// (`PoolFacts::uncapped_admission`).
++    pub uncapped_admission: bool,
+     pub rs_cache_slot_bytes: u64,
+     pub rs_host_slots: usize,
+     pub rs_buffer_pages: u32,
+@@ -323,7 +326,7 @@ async fn bootstrap_inner(config: Config) -> Result<BootstrapHandle> {
+             // admitting all 512, 4.7k at 224; its 5791 pages seat 45 at 2048).
+             let seats = engine_configs
+                 .iter()
+-                .filter(|d| d.seated_first && d.limits.max_context > 0)
++                .filter(|d| d.seated_first && !d.uncapped_admission && d.limits.max_context > 0)
+                 .map(|d| 5 * d.total_pages * kv_page_size / d.limits.max_context)
+                 .min();
+             match seats {
+diff --git a/crates/worker/src/translate.rs b/crates/worker/src/translate.rs
+index 8f352926..4cbf3f1f 100644
+--- a/crates/worker/src/translate.rs
++++ b/crates/worker/src/translate.rs
+@@ -159,6 +159,7 @@ fn build_model(
+                 one_frame_when_short: g.caps.pools.one_frame_when_short,
+                 seated_first: g.caps.pools.seated_first,
+                 seat_to_end: g.caps.pools.seat_to_end,
++                uncapped_admission: g.caps.pools.uncapped_admission,
+                 rs_cache_slot_bytes: g.caps.pools.state_slot_bytes,
+                 rs_host_slots: g.caps.pools.host_state_slots as usize,
+                 rs_buffer_pages: g.caps.pools.buffer_pages,
+-- 
+2.43.0
+
