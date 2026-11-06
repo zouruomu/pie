@@ -1,0 +1,63 @@
+{
+ "engine": "tensorrt_llm",
+ "version": "1.4.0rc2.post1",
+ "model": "openai/gpt-oss-20b",
+ "config": {
+  "model": "openai/gpt-oss-20b",
+  "prompts_file": "/root/prompts-gptoss-512.json",
+  "points": "256,256,256",
+  "warmup": 16,
+  "max_tokens": 1,
+  "reuse": false,
+  "max_num_tokens": null,
+  "max_batch_size": null,
+  "moe_backend": null,
+  "mem_frac": null,
+  "cuda_graphs": true,
+  "rounds": 1,
+  "json_out": "/root/r2g/evidence/results/smoke/trt-20b-pf256.json",
+  "dump_ids": null
+ },
+ "rows": [
+  {
+   "point": "pf256",
+   "round": 0,
+   "requests": 256,
+   "prompt_tokens": 131072,
+   "wall_s": 1.8335357781033963,
+   "prefill_tok_s": 71485.92439007679,
+   "output_tokens": 256,
+   "ttft_p50_ms": 960.2430110098794,
+   "ttft_max_ms": 1833.2540430128574,
+   "clocks_before": "2347 MHz, 12481 MHz, 258.43 W, 49",
+   "clocks_after": "2310 MHz, 12481 MHz, 590.37 W, 52"
+  },
+  {
+   "point": "pf256",
+   "round": 0,
+   "requests": 256,
+   "prompt_tokens": 131072,
+   "wall_s": 1.8370731670875102,
+   "prefill_tok_s": 71348.2741723353,
+   "output_tokens": 256,
+   "ttft_p50_ms": 962.4216010561213,
+   "ttft_max_ms": 1836.9909811299294,
+   "clocks_before": "2310 MHz, 12481 MHz, 590.37 W, 52",
+   "clocks_after": "2310 MHz, 12481 MHz, 598.51 W, 54"
+  },
+  {
+   "point": "pf256",
+   "round": 0,
+   "requests": 256,
+   "prompt_tokens": 131072,
+   "wall_s": 1.828628079034388,
+   "prefill_tok_s": 71677.77937064868,
+   "output_tokens": 256,
+   "ttft_p50_ms": 954.223629902117,
+   "ttft_max_ms": 1828.336759004742,
+   "clocks_before": "2310 MHz, 12481 MHz, 598.51 W, 54",
+   "clocks_after": "2302 MHz, 12481 MHz, 598.93 W, 56"
+  }
+ ],
+ "prompt_ids_sha256": "ffdec922cea87298f49a7e9db060de5907cb297bbede991402803d63be0cd9ff"
+}

@@ -1,0 +1,225 @@
+Skipping import of cpp extensions due to incompatible torch version 2.14.0+cu130 for torchao version 0.15.0             Please see https://github.com/pytorch/ao/issues/2919 for more info
+[TensorRT-LLM] TensorRT LLM version: 1.4.0rc2.post1
+[11/06/2026-09:31:28] [TRT-LLM] [I] [llmapi] Using LLM with PyTorch backend
+[11/06/2026-09:31:28] [TRT-LLM] [W] [llmapi] Using default gpus_per_node: 1
+[11/06/2026-09:31:28] [TRT-LLM] [I] [llmapi] neither checkpoint_format nor checkpoint_loader were provided, checkpoint_format will be set to HF.
+`torch_dtype` is deprecated! Use `dtype` instead!
+[33;20mrank 0 using MpiPoolSession to spawn MPI processes
+[0mSkipping import of cpp extensions due to incompatible torch version 2.14.0+cu130 for torchao version 0.15.0             Please see https://github.com/pytorch/ao/issues/2919 for more info
+[TensorRT-LLM] TensorRT LLM version: 1.4.0rc2.post1
+[TRT-LLM] [I] [runtime][RANK 0] Refreshed the MPI local session
+`torch_dtype` is deprecated! Use `dtype` instead!
+[11/06/2026-09:31:40] [TRT-LLM] [E] [executor] Failed to initialize executor on rank 0: no MoE implementation can serve this layer. MoE resolution: none (via failed, requested CUTLASS, env e563f4fd3caa79ef); turned down: DeepgemmCudaHopperFp8BlockScalesImpl=quant_unsupported, TrtllmTritonFp8BlockScalesImpl=quant_unsupported, TrtllmCutlassNvfp4Impl=quant_unsupported, TrtllmCutlassW4a16Nvfp4Impl=quant_unsupported, TrtllmCutlassMxfp8Impl=quant_unsupported, TrtllmCutlassW4a8Mxfp4Fp8Impl=quant_unsupported, TrtllmCutlassW4a8Mxfp4Mxfp8Impl=quant_unsupported, TrtllmCutlassW4a16Mxfp4Impl=sm_unsupported, TrtllmCutlassW4a8AwqImpl=quant_unsupported, TrtllmCutlassW8a16Impl=quant_unsupported, TrtllmCutlassFp8Impl=quant_unsupported, TrtllmCutlassUnquantizedImpl=quant_unsupported Each candidate's reason: DeepgemmCudaHopperFp8BlockScalesImpl: quant_unsupported (DeepgemmCudaHopperFp8BlockScalesImpl implements quant=fp8_block_scales, got w4a16_mxfp4); TrtllmTritonFp8BlockScalesImpl: quant_unsupported (TrtllmTritonFp8BlockScalesImpl implements quant=fp8_block_scales, got w4a16_mxfp4); TrtllmCutlassNvfp4Impl: quant_unsupported (TrtllmCutlassNvfp4Impl implements quant=nvfp4, got w4a16_mxfp4); TrtllmCutlassW4a16Nvfp4Impl: quant_unsupported (TrtllmCutlassW4a16Nvfp4Impl implements quant=w4a16_nvfp4, got w4a16_mxfp4); TrtllmCutlassMxfp8Impl: quant_unsupported (TrtllmCutlassMxfp8Impl implements quant=mxfp8, got w4a16_mxfp4); TrtllmCutlassW4a8Mxfp4Fp8Impl: quant_unsupported (TrtllmCutlassW4a8Mxfp4Fp8Impl implements quant=w4a8_mxfp4_fp8, got w4a16_mxfp4); TrtllmCutlassW4a8Mxfp4Mxfp8Impl: quant_unsupported (TrtllmCutlassW4a8Mxfp4Mxfp8Impl implements quant=w4a8_mxfp4_mxfp8, got w4a16_mxfp4); TrtllmCutlassW4a16Mxfp4Impl: sm_unsupported (TrtllmCutlassW4a16Mxfp4Impl supports SM90 only, got SM120); TrtllmCutlassW4a8AwqImpl: quant_unsupported (TrtllmCutlassW4a8AwqImpl implements quant=w4a8_awq, got w4a16_mxfp4); TrtllmCutlassW8a16Impl: quant_unsupported (TrtllmCutlassW8a16Impl implements quant=w8a16, got w4a16_mxfp4); TrtllmCutlassFp8Impl: quant_unsupported (TrtllmCutlassFp8Impl implements quant=fp8, got w4a16_mxfp4); TrtllmCutlassUnquantizedImpl: quant_unsupported (TrtllmCutlassUnquantizedImpl implements quant=none, got w4a16_mxfp4)
+[11/06/2026-09:31:40] [TRT-LLM] [E] [executor] Traceback (most recent call last):
+  File "/root/venv-trtllm/lib/python3.12/site-packages/tensorrt_llm/_torch/pyexecutor/model_loader.py", line 1089, in load
+    model = AutoModelForCausalLM.from_config(config_copy)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/venv-trtllm/lib/python3.12/site-packages/tensorrt_llm/_torch/models/modeling_auto.py", line 78, in from_config
+    model = cls(config)
+            ^^^^^^^^^^^
+  File "/root/venv-trtllm/lib/python3.12/site-packages/tensorrt_llm/_torch/models/modeling_utils.py", line 524, in __call__
+    obj = type.__call__(cls, *args, **kwargs)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/venv-trtllm/lib/python3.12/site-packages/tensorrt_llm/_torch/models/modeling_gpt_oss.py", line 628, in __init__
+    Transformer(model_config),
+    ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/venv-trtllm/lib/python3.12/site-packages/tensorrt_llm/_torch/models/modeling_utils.py", line 244, in __call__
+    obj = type.__call__(cls, *args, **kwargs)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/venv-trtllm/lib/python3.12/site-packages/tensorrt_llm/_torch/models/modeling_gpt_oss.py", line 512, in __init__
+    TransformerBlock(
+  File "/root/venv-trtllm/lib/python3.12/site-packages/tensorrt_llm/_torch/models/modeling_gpt_oss.py", line 329, in __init__
+    self.mlp = MLPBlock(config,
+               ^^^^^^^^^^^^^^^^
+  File "/root/venv-trtllm/lib/python3.12/site-packages/tensorrt_llm/_torch/models/modeling_gpt_oss.py", line 202, in __init__
+    self.experts = create_moe(**moe_params)
+                   ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/venv-trtllm/lib/python3.12/site-packages/tensorrt_llm/_torch/moe/fused_moe/create_moe.py", line 345, in create_moe
+    moe_cls = resolve_moe_cls(
+              ^^^^^^^^^^^^^^^^
+  File "/root/venv-trtllm/lib/python3.12/site-packages/tensorrt_llm/_torch/moe/fused_moe/moe_resolution.py", line 680, in resolve_moe_cls
+    return impl_class_for(resolve_moe_impl(model_config, **kwargs))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/venv-trtllm/lib/python3.12/site-packages/tensorrt_llm/_torch/moe/fused_moe/moe_resolution.py", line 666, in impl_class_for
+    raise ValueError(
+ValueError: no MoE implementation can serve this layer. MoE resolution: none (via failed, requested CUTLASS, env e563f4fd3caa79ef); turned down: DeepgemmCudaHopperFp8BlockScalesImpl=quant_unsupported, TrtllmTritonFp8BlockScalesImpl=quant_unsupported, TrtllmCutlassNvfp4Impl=quant_unsupported, TrtllmCutlassW4a16Nvfp4Impl=quant_unsupported, TrtllmCutlassMxfp8Impl=quant_unsupported, TrtllmCutlassW4a8Mxfp4Fp8Impl=quant_unsupported, TrtllmCutlassW4a8Mxfp4Mxfp8Impl=quant_unsupported, TrtllmCutlassW4a16Mxfp4Impl=sm_unsupported, TrtllmCutlassW4a8AwqImpl=quant_unsupported, TrtllmCutlassW8a16Impl=quant_unsupported, TrtllmCutlassFp8Impl=quant_unsupported, TrtllmCutlassUnquantizedImpl=quant_unsupported Each candidate's reason: DeepgemmCudaHopperFp8BlockScalesImpl: quant_unsupported (DeepgemmCudaHopperFp8BlockScalesImpl implements quant=fp8_block_scales, got w4a16_mxfp4); TrtllmTritonFp8BlockScalesImpl: quant_unsupported (TrtllmTritonFp8BlockScalesImpl implements quant=fp8_block_scales, got w4a16_mxfp4); TrtllmCutlassNvfp4Impl: quant_unsupported (TrtllmCutlassNvfp4Impl implements quant=nvfp4, got w4a16_mxfp4); TrtllmCutlassW4a16Nvfp4Impl: quant_unsupported (TrtllmCutlassW4a16Nvfp4Impl implements quant=w4a16_nvfp4, got w4a16_mxfp4); TrtllmCutlassMxfp8Impl: quant_unsupported (TrtllmCutlassMxfp8Impl implements quant=mxfp8, got w4a16_mxfp4); TrtllmCutlassW4a8Mxfp4Fp8Impl: quant_unsupported (TrtllmCutlassW4a8Mxfp4Fp8Impl implements quant=w4a8_mxfp4_fp8, got w4a16_mxfp4); TrtllmCutlassW4a8Mxfp4Mxfp8Impl: quant_unsupported (TrtllmCutlassW4a8Mxfp4Mxfp8Impl implements quant=w4a8_mxfp4_mxfp8, got w4a16_mxfp4); TrtllmCutlassW4a16Mxfp4Impl: sm_unsupported (TrtllmCutlassW4a16Mxfp4Impl supports SM90 only, got SM120); TrtllmCutlassW4a8AwqImpl: quant_unsupported (TrtllmCutlassW4a8AwqImpl implements quant=w4a8_awq, got w4a16_mxfp4); TrtllmCutlassW8a16Impl: quant_unsupported (TrtllmCutlassW8a16Impl implements quant=w8a16, got w4a16_mxfp4); TrtllmCutlassFp8Impl: quant_unsupported (TrtllmCutlassFp8Impl implements quant=fp8, got w4a16_mxfp4); TrtllmCutlassUnquantizedImpl: quant_unsupported (TrtllmCutlassUnquantizedImpl implements quant=none, got w4a16_mxfp4)
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/root/venv-trtllm/lib/python3.12/site-packages/tensorrt_llm/executor/worker.py", line 443, in worker_main
+    worker: GenerationExecutorWorker = worker_cls(
+                                       ^^^^^^^^^^^
+  File "/root/venv-trtllm/lib/python3.12/site-packages/tensorrt_llm/executor/worker.py", line 87, in __init__
+    self.setup_engine()
+  File "/root/venv-trtllm/lib/python3.12/site-packages/tensorrt_llm/executor/base_worker.py", line 181, in setup_engine
+    self.engine = create_py_executor(**args)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/venv-trtllm/lib/python3.12/site-packages/tensorrt_llm/_torch/pyexecutor/py_executor_creator.py", line 1341, in create_py_executor
+    return _create_py_executor_impl(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/venv-trtllm/lib/python3.12/site-packages/tensorrt_llm/_torch/pyexecutor/py_executor_creator.py", line 509, in _create_py_executor_impl
+    py_executor = _create_py_executor(
+                  ^^^^^^^^^^^^^^^^^^^^
+  File "/root/venv-trtllm/lib/python3.12/site-packages/tensorrt_llm/_torch/pyexecutor/py_executor_creator.py", line 794, in _create_py_executor
+    model_engine = PyTorchModelEngine(
+                   ^^^^^^^^^^^^^^^^^^^
+  File "/root/venv-trtllm/lib/python3.12/site-packages/tensorrt_llm/_torch/pyexecutor/model_engine.py", line 315, in __init__
+    self.model, moe_load_balancer = self.model_loader.load(
+                                    ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/venv-trtllm/lib/python3.12/site-packages/tensorrt_llm/_torch/pyexecutor/model_loader.py", line 1096, in load
+    model = AutoModelForCausalLM.from_config(config)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/venv-trtllm/lib/python3.12/site-packages/tensorrt_llm/_torch/models/modeling_auto.py", line 78, in from_config
+    model = cls(config)
+            ^^^^^^^^^^^
+  File "/root/venv-trtllm/lib/python3.12/site-packages/tensorrt_llm/_torch/models/modeling_utils.py", line 524, in __call__
+    obj = type.__call__(cls, *args, **kwargs)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/venv-trtllm/lib/python3.12/site-packages/tensorrt_llm/_torch/models/modeling_gpt_oss.py", line 628, in __init__
+    Transformer(model_config),
+    ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/venv-trtllm/lib/python3.12/site-packages/tensorrt_llm/_torch/models/modeling_utils.py", line 244, in __call__
+    obj = type.__call__(cls, *args, **kwargs)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/venv-trtllm/lib/python3.12/site-packages/tensorrt_llm/_torch/models/modeling_gpt_oss.py", line 512, in __init__
+    TransformerBlock(
+  File "/root/venv-trtllm/lib/python3.12/site-packages/tensorrt_llm/_torch/models/modeling_gpt_oss.py", line 329, in __init__
+    self.mlp = MLPBlock(config,
+               ^^^^^^^^^^^^^^^^
+  File "/root/venv-trtllm/lib/python3.12/site-packages/tensorrt_llm/_torch/models/modeling_gpt_oss.py", line 202, in __init__
+    self.experts = create_moe(**moe_params)
+                   ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/venv-trtllm/lib/python3.12/site-packages/tensorrt_llm/_torch/moe/fused_moe/create_moe.py", line 345, in create_moe
+    moe_cls = resolve_moe_cls(
+              ^^^^^^^^^^^^^^^^
+  File "/root/venv-trtllm/lib/python3.12/site-packages/tensorrt_llm/_torch/moe/fused_moe/moe_resolution.py", line 680, in resolve_moe_cls
+    return impl_class_for(resolve_moe_impl(model_config, **kwargs))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/venv-trtllm/lib/python3.12/site-packages/tensorrt_llm/_torch/moe/fused_moe/moe_resolution.py", line 666, in impl_class_for
+    raise ValueError(
+ValueError: no MoE implementation can serve this layer. MoE resolution: none (via failed, requested CUTLASS, env e563f4fd3caa79ef); turned down: DeepgemmCudaHopperFp8BlockScalesImpl=quant_unsupported, TrtllmTritonFp8BlockScalesImpl=quant_unsupported, TrtllmCutlassNvfp4Impl=quant_unsupported, TrtllmCutlassW4a16Nvfp4Impl=quant_unsupported, TrtllmCutlassMxfp8Impl=quant_unsupported, TrtllmCutlassW4a8Mxfp4Fp8Impl=quant_unsupported, TrtllmCutlassW4a8Mxfp4Mxfp8Impl=quant_unsupported, TrtllmCutlassW4a16Mxfp4Impl=sm_unsupported, TrtllmCutlassW4a8AwqImpl=quant_unsupported, TrtllmCutlassW8a16Impl=quant_unsupported, TrtllmCutlassFp8Impl=quant_unsupported, TrtllmCutlassUnquantizedImpl=quant_unsupported Each candidate's reason: DeepgemmCudaHopperFp8BlockScalesImpl: quant_unsupported (DeepgemmCudaHopperFp8BlockScalesImpl implements quant=fp8_block_scales, got w4a16_mxfp4); TrtllmTritonFp8BlockScalesImpl: quant_unsupported (TrtllmTritonFp8BlockScalesImpl implements quant=fp8_block_scales, got w4a16_mxfp4); TrtllmCutlassNvfp4Impl: quant_unsupported (TrtllmCutlassNvfp4Impl implements quant=nvfp4, got w4a16_mxfp4); TrtllmCutlassW4a16Nvfp4Impl: quant_unsupported (TrtllmCutlassW4a16Nvfp4Impl implements quant=w4a16_nvfp4, got w4a16_mxfp4); TrtllmCutlassMxfp8Impl: quant_unsupported (TrtllmCutlassMxfp8Impl implements quant=mxfp8, got w4a16_mxfp4); TrtllmCutlassW4a8Mxfp4Fp8Impl: quant_unsupported (TrtllmCutlassW4a8Mxfp4Fp8Impl implements quant=w4a8_mxfp4_fp8, got w4a16_mxfp4); TrtllmCutlassW4a8Mxfp4Mxfp8Impl: quant_unsupported (TrtllmCutlassW4a8Mxfp4Mxfp8Impl implements quant=w4a8_mxfp4_mxfp8, got w4a16_mxfp4); TrtllmCutlassW4a16Mxfp4Impl: sm_unsupported (TrtllmCutlassW4a16Mxfp4Impl supports SM90 only, got SM120); TrtllmCutlassW4a8AwqImpl: quant_unsupported (TrtllmCutlassW4a8AwqImpl implements quant=w4a8_awq, got w4a16_mxfp4); TrtllmCutlassW8a16Impl: quant_unsupported (TrtllmCutlassW8a16Impl implements quant=w8a16, got w4a16_mxfp4); TrtllmCutlassFp8Impl: quant_unsupported (TrtllmCutlassFp8Impl implements quant=fp8, got w4a16_mxfp4); TrtllmCutlassUnquantizedImpl: quant_unsupported (TrtllmCutlassUnquantizedImpl implements quant=none, got w4a16_mxfp4)
+
+[11/06/2026-09:31:40] [TRT-LLM] [E] [executor] Executor worker initialization error: Traceback (most recent call last):
+  File "/root/venv-trtllm/lib/python3.12/site-packages/tensorrt_llm/_torch/pyexecutor/model_loader.py", line 1089, in load
+    model = AutoModelForCausalLM.from_config(config_copy)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/venv-trtllm/lib/python3.12/site-packages/tensorrt_llm/_torch/models/modeling_auto.py", line 78, in from_config
+    model = cls(config)
+            ^^^^^^^^^^^
+  File "/root/venv-trtllm/lib/python3.12/site-packages/tensorrt_llm/_torch/models/modeling_utils.py", line 524, in __call__
+    obj = type.__call__(cls, *args, **kwargs)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/venv-trtllm/lib/python3.12/site-packages/tensorrt_llm/_torch/models/modeling_gpt_oss.py", line 628, in __init__
+    Transformer(model_config),
+    ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/venv-trtllm/lib/python3.12/site-packages/tensorrt_llm/_torch/models/modeling_utils.py", line 244, in __call__
+    obj = type.__call__(cls, *args, **kwargs)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/venv-trtllm/lib/python3.12/site-packages/tensorrt_llm/_torch/models/modeling_gpt_oss.py", line 512, in __init__
+    TransformerBlock(
+  File "/root/venv-trtllm/lib/python3.12/site-packages/tensorrt_llm/_torch/models/modeling_gpt_oss.py", line 329, in __init__
+    self.mlp = MLPBlock(config,
+               ^^^^^^^^^^^^^^^^
+  File "/root/venv-trtllm/lib/python3.12/site-packages/tensorrt_llm/_torch/models/modeling_gpt_oss.py", line 202, in __init__
+    self.experts = create_moe(**moe_params)
+                   ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/venv-trtllm/lib/python3.12/site-packages/tensorrt_llm/_torch/moe/fused_moe/create_moe.py", line 345, in create_moe
+    moe_cls = resolve_moe_cls(
+              ^^^^^^^^^^^^^^^^
+  File "/root/venv-trtllm/lib/python3.12/site-packages/tensorrt_llm/_torch/moe/fused_moe/moe_resolution.py", line 680, in resolve_moe_cls
+    return impl_class_for(resolve_moe_impl(model_config, **kwargs))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/venv-trtllm/lib/python3.12/site-packages/tensorrt_llm/_torch/moe/fused_moe/moe_resolution.py", line 666, in impl_class_for
+    raise ValueError(
+ValueError: no MoE implementation can serve this layer. MoE resolution: none (via failed, requested CUTLASS, env e563f4fd3caa79ef); turned down: DeepgemmCudaHopperFp8BlockScalesImpl=quant_unsupported, TrtllmTritonFp8BlockScalesImpl=quant_unsupported, TrtllmCutlassNvfp4Impl=quant_unsupported, TrtllmCutlassW4a16Nvfp4Impl=quant_unsupported, TrtllmCutlassMxfp8Impl=quant_unsupported, TrtllmCutlassW4a8Mxfp4Fp8Impl=quant_unsupported, TrtllmCutlassW4a8Mxfp4Mxfp8Impl=quant_unsupported, TrtllmCutlassW4a16Mxfp4Impl=sm_unsupported, TrtllmCutlassW4a8AwqImpl=quant_unsupported, TrtllmCutlassW8a16Impl=quant_unsupported, TrtllmCutlassFp8Impl=quant_unsupported, TrtllmCutlassUnquantizedImpl=quant_unsupported Each candidate's reason: DeepgemmCudaHopperFp8BlockScalesImpl: quant_unsupported (DeepgemmCudaHopperFp8BlockScalesImpl implements quant=fp8_block_scales, got w4a16_mxfp4); TrtllmTritonFp8BlockScalesImpl: quant_unsupported (TrtllmTritonFp8BlockScalesImpl implements quant=fp8_block_scales, got w4a16_mxfp4); TrtllmCutlassNvfp4Impl: quant_unsupported (TrtllmCutlassNvfp4Impl implements quant=nvfp4, got w4a16_mxfp4); TrtllmCutlassW4a16Nvfp4Impl: quant_unsupported (TrtllmCutlassW4a16Nvfp4Impl implements quant=w4a16_nvfp4, got w4a16_mxfp4); TrtllmCutlassMxfp8Impl: quant_unsupported (TrtllmCutlassMxfp8Impl implements quant=mxfp8, got w4a16_mxfp4); TrtllmCutlassW4a8Mxfp4Fp8Impl: quant_unsupported (TrtllmCutlassW4a8Mxfp4Fp8Impl implements quant=w4a8_mxfp4_fp8, got w4a16_mxfp4); TrtllmCutlassW4a8Mxfp4Mxfp8Impl: quant_unsupported (TrtllmCutlassW4a8Mxfp4Mxfp8Impl implements quant=w4a8_mxfp4_mxfp8, got w4a16_mxfp4); TrtllmCutlassW4a16Mxfp4Impl: sm_unsupported (TrtllmCutlassW4a16Mxfp4Impl supports SM90 only, got SM120); TrtllmCutlassW4a8AwqImpl: quant_unsupported (TrtllmCutlassW4a8AwqImpl implements quant=w4a8_awq, got w4a16_mxfp4); TrtllmCutlassW8a16Impl: quant_unsupported (TrtllmCutlassW8a16Impl implements quant=w8a16, got w4a16_mxfp4); TrtllmCutlassFp8Impl: quant_unsupported (TrtllmCutlassFp8Impl implements quant=fp8, got w4a16_mxfp4); TrtllmCutlassUnquantizedImpl: quant_unsupported (TrtllmCutlassUnquantizedImpl implements quant=none, got w4a16_mxfp4)
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/root/venv-trtllm/lib/python3.12/site-packages/tensorrt_llm/executor/worker.py", line 443, in worker_main
+    worker: GenerationExecutorWorker = worker_cls(
+                                       ^^^^^^^^^^^
+  File "/root/venv-trtllm/lib/python3.12/site-packages/tensorrt_llm/executor/worker.py", line 87, in __init__
+    self.setup_engine()
+  File "/root/venv-trtllm/lib/python3.12/site-packages/tensorrt_llm/executor/base_worker.py", line 181, in setup_engine
+    self.engine = create_py_executor(**args)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/venv-trtllm/lib/python3.12/site-packages/tensorrt_llm/_torch/pyexecutor/py_executor_creator.py", line 1341, in create_py_executor
+    return _create_py_executor_impl(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/venv-trtllm/lib/python3.12/site-packages/tensorrt_llm/_torch/pyexecutor/py_executor_creator.py", line 509, in _create_py_executor_impl
+    py_executor = _create_py_executor(
+                  ^^^^^^^^^^^^^^^^^^^^
+  File "/root/venv-trtllm/lib/python3.12/site-packages/tensorrt_llm/_torch/pyexecutor/py_executor_creator.py", line 794, in _create_py_executor
+    model_engine = PyTorchModelEngine(
+                   ^^^^^^^^^^^^^^^^^^^
+  File "/root/venv-trtllm/lib/python3.12/site-packages/tensorrt_llm/_torch/pyexecutor/model_engine.py", line 315, in __init__
+    self.model, moe_load_balancer = self.model_loader.load(
+                                    ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/venv-trtllm/lib/python3.12/site-packages/tensorrt_llm/_torch/pyexecutor/model_loader.py", line 1096, in load
+    model = AutoModelForCausalLM.from_config(config)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/venv-trtllm/lib/python3.12/site-packages/tensorrt_llm/_torch/models/modeling_auto.py", line 78, in from_config
+    model = cls(config)
+            ^^^^^^^^^^^
+  File "/root/venv-trtllm/lib/python3.12/site-packages/tensorrt_llm/_torch/models/modeling_utils.py", line 524, in __call__
+    obj = type.__call__(cls, *args, **kwargs)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/venv-trtllm/lib/python3.12/site-packages/tensorrt_llm/_torch/models/modeling_gpt_oss.py", line 628, in __init__
+    Transformer(model_config),
+    ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/venv-trtllm/lib/python3.12/site-packages/tensorrt_llm/_torch/models/modeling_utils.py", line 244, in __call__
+    obj = type.__call__(cls, *args, **kwargs)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/venv-trtllm/lib/python3.12/site-packages/tensorrt_llm/_torch/models/modeling_gpt_oss.py", line 512, in __init__
+    TransformerBlock(
+  File "/root/venv-trtllm/lib/python3.12/site-packages/tensorrt_llm/_torch/models/modeling_gpt_oss.py", line 329, in __init__
+    self.mlp = MLPBlock(config,
+               ^^^^^^^^^^^^^^^^
+  File "/root/venv-trtllm/lib/python3.12/site-packages/tensorrt_llm/_torch/models/modeling_gpt_oss.py", line 202, in __init__
+    self.experts = create_moe(**moe_params)
+                   ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/venv-trtllm/lib/python3.12/site-packages/tensorrt_llm/_torch/moe/fused_moe/create_moe.py", line 345, in create_moe
+    moe_cls = resolve_moe_cls(
+              ^^^^^^^^^^^^^^^^
+  File "/root/venv-trtllm/lib/python3.12/site-packages/tensorrt_llm/_torch/moe/fused_moe/moe_resolution.py", line 680, in resolve_moe_cls
+    return impl_class_for(resolve_moe_impl(model_config, **kwargs))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/venv-trtllm/lib/python3.12/site-packages/tensorrt_llm/_torch/moe/fused_moe/moe_resolution.py", line 666, in impl_class_for
+    raise ValueError(
+ValueError: no MoE implementation can serve this layer. MoE resolution: none (via failed, requested CUTLASS, env e563f4fd3caa79ef); turned down: DeepgemmCudaHopperFp8BlockScalesImpl=quant_unsupported, TrtllmTritonFp8BlockScalesImpl=quant_unsupported, TrtllmCutlassNvfp4Impl=quant_unsupported, TrtllmCutlassW4a16Nvfp4Impl=quant_unsupported, TrtllmCutlassMxfp8Impl=quant_unsupported, TrtllmCutlassW4a8Mxfp4Fp8Impl=quant_unsupported, TrtllmCutlassW4a8Mxfp4Mxfp8Impl=quant_unsupported, TrtllmCutlassW4a16Mxfp4Impl=sm_unsupported, TrtllmCutlassW4a8AwqImpl=quant_unsupported, TrtllmCutlassW8a16Impl=quant_unsupported, TrtllmCutlassFp8Impl=quant_unsupported, TrtllmCutlassUnquantizedImpl=quant_unsupported Each candidate's reason: DeepgemmCudaHopperFp8BlockScalesImpl: quant_unsupported (DeepgemmCudaHopperFp8BlockScalesImpl implements quant=fp8_block_scales, got w4a16_mxfp4); TrtllmTritonFp8BlockScalesImpl: quant_unsupported (TrtllmTritonFp8BlockScalesImpl implements quant=fp8_block_scales, got w4a16_mxfp4); TrtllmCutlassNvfp4Impl: quant_unsupported (TrtllmCutlassNvfp4Impl implements quant=nvfp4, got w4a16_mxfp4); TrtllmCutlassW4a16Nvfp4Impl: quant_unsupported (TrtllmCutlassW4a16Nvfp4Impl implements quant=w4a16_nvfp4, got w4a16_mxfp4); TrtllmCutlassMxfp8Impl: quant_unsupported (TrtllmCutlassMxfp8Impl implements quant=mxfp8, got w4a16_mxfp4); TrtllmCutlassW4a8Mxfp4Fp8Impl: quant_unsupported (TrtllmCutlassW4a8Mxfp4Fp8Impl implements quant=w4a8_mxfp4_fp8, got w4a16_mxfp4); TrtllmCutlassW4a8Mxfp4Mxfp8Impl: quant_unsupported (TrtllmCutlassW4a8Mxfp4Mxfp8Impl implements quant=w4a8_mxfp4_mxfp8, got w4a16_mxfp4); TrtllmCutlassW4a16Mxfp4Impl: sm_unsupported (TrtllmCutlassW4a16Mxfp4Impl supports SM90 only, got SM120); TrtllmCutlassW4a8AwqImpl: quant_unsupported (TrtllmCutlassW4a8AwqImpl implements quant=w4a8_awq, got w4a16_mxfp4); TrtllmCutlassW8a16Impl: quant_unsupported (TrtllmCutlassW8a16Impl implements quant=w8a16, got w4a16_mxfp4); TrtllmCutlassFp8Impl: quant_unsupported (TrtllmCutlassFp8Impl implements quant=fp8, got w4a16_mxfp4); TrtllmCutlassUnquantizedImpl: quant_unsupported (TrtllmCutlassUnquantizedImpl implements quant=none, got w4a16_mxfp4)
+
+[11/06/2026-09:31:40] [TRT-LLM] [E] [executor] Fatal engine error recorded: ValueError("no MoE implementation can serve this layer. MoE resolution: none (via failed, requested CUTLASS, env e563f4fd3caa79ef); turned down: DeepgemmCudaHopperFp8BlockScalesImpl=quant_unsupported, TrtllmTritonFp8BlockScalesImpl=quant_unsupported, TrtllmCutlassNvfp4Impl=quant_unsupported, TrtllmCutlassW4a16Nvfp4Impl=quant_unsupported, TrtllmCutlassMxfp8Impl=quant_unsupported, TrtllmCutlassW4a8Mxfp4Fp8Impl=quant_unsupported, TrtllmCutlassW4a8Mxfp4Mxfp8Impl=quant_unsupported, TrtllmCutlassW4a16Mxfp4Impl=sm_unsupported, TrtllmCutlassW4a8AwqImpl=quant_unsupported, TrtllmCutlassW8a16Impl=quant_unsupported, TrtllmCutlassFp8Impl=quant_unsupported, TrtllmCutlassUnquantizedImpl=quant_unsupported Each candidate's reason: DeepgemmCudaHopperFp8BlockScalesImpl: quant_unsupported (DeepgemmCudaHopperFp8BlockScalesImpl implements quant=fp8_block_scales, got w4a16_mxfp4); TrtllmTritonFp8BlockScalesImpl: quant_unsupported (TrtllmTritonFp8BlockScalesImpl implements quant=fp8_block_scales, got w4a16_mxfp4); TrtllmCutlassNvfp4Impl: quant_unsupported (TrtllmCutlassNvfp4Impl implements quant=nvfp4, got w4a16_mxfp4); TrtllmCutlassW4a16Nvfp4Impl: quant_unsupported (TrtllmCutlassW4a16Nvfp4Impl implements quant=w4a16_nvfp4, got w4a16_mxfp4); TrtllmCutlassMxfp8Impl: quant_unsupported (TrtllmCutlassMxfp8Impl implements quant=mxfp8, got w4a16_mxfp4); TrtllmCutlassW4a8Mxfp4Fp8Impl: quant_unsupported (TrtllmCutlassW4a8Mxfp4Fp8Impl implements quant=w4a8_mxfp4_fp8, got w4a16_mxfp4); TrtllmCutlassW4a8Mxfp4Mxfp8Impl: quant_unsupported (TrtllmCutlassW4a8Mxfp4Mxfp8Impl implements quant=w4a8_mxfp4_mxfp8, got w4a16_mxfp4); TrtllmCutlassW4a16Mxfp4Impl: sm_unsupported (TrtllmCutlassW4a16Mxfp4Impl supports SM90 only, got SM120); TrtllmCutlassW4a8AwqImpl: quant_unsupported (TrtllmCutlassW4a8AwqImpl implements quant=w4a8_awq, got w4a16_mxfp4); TrtllmCutlassW8a16Impl: quant_unsupported (TrtllmCutlassW8a16Impl implements quant=w8a16, got w4a16_mxfp4); TrtllmCutlassFp8Impl: quant_unsupported (TrtllmCutlassFp8Impl implements quant=fp8, got w4a16_mxfp4); TrtllmCutlassUnquantizedImpl: quant_unsupported (TrtllmCutlassUnquantizedImpl implements quant=none, got w4a16_mxfp4)")
+ValueError: no MoE implementation can serve this layer. MoE resolution: none (via failed, requested CUTLASS, env e563f4fd3caa79ef); turned down: DeepgemmCudaHopperFp8BlockScalesImpl=quant_unsupported, TrtllmTritonFp8BlockScalesImpl=quant_unsupported, TrtllmCutlassNvfp4Impl=quant_unsupported, TrtllmCutlassW4a16Nvfp4Impl=quant_unsupported, TrtllmCutlassMxfp8Impl=quant_unsupported, TrtllmCutlassW4a8Mxfp4Fp8Impl=quant_unsupported, TrtllmCutlassW4a8Mxfp4Mxfp8Impl=quant_unsupported, TrtllmCutlassW4a16Mxfp4Impl=sm_unsupported, TrtllmCutlassW4a8AwqImpl=quant_unsupported, TrtllmCutlassW8a16Impl=quant_unsupported, TrtllmCutlassFp8Impl=quant_unsupported, TrtllmCutlassUnquantizedImpl=quant_unsupported Each candidate's reason: DeepgemmCudaHopperFp8BlockScalesImpl: quant_unsupported (DeepgemmCudaHopperFp8BlockScalesImpl implements quant=fp8_block_scales, got w4a16_mxfp4); TrtllmTritonFp8BlockScalesImpl: quant_unsupported (TrtllmTritonFp8BlockScalesImpl implements quant=fp8_block_scales, got w4a16_mxfp4); TrtllmCutlassNvfp4Impl: quant_unsupported (TrtllmCutlassNvfp4Impl implements quant=nvfp4, got w4a16_mxfp4); TrtllmCutlassW4a16Nvfp4Impl: quant_unsupported (TrtllmCutlassW4a16Nvfp4Impl implements quant=w4a16_nvfp4, got w4a16_mxfp4); TrtllmCutlassMxfp8Impl: quant_unsupported (TrtllmCutlassMxfp8Impl implements quant=mxfp8, got w4a16_mxfp4); TrtllmCutlassW4a8Mxfp4Fp8Impl: quant_unsupported (TrtllmCutlassW4a8Mxfp4Fp8Impl implements quant=w4a8_mxfp4_fp8, got w4a16_mxfp4); TrtllmCutlassW4a8Mxfp4Mxfp8Impl: quant_unsupported (TrtllmCutlassW4a8Mxfp4Mxfp8Impl implements quant=w4a8_mxfp4_mxfp8, got w4a16_mxfp4); TrtllmCutlassW4a16Mxfp4Impl: sm_unsupported (TrtllmCutlassW4a16Mxfp4Impl supports SM90 only, got SM120); TrtllmCutlassW4a8AwqImpl: quant_unsupported (TrtllmCutlassW4a8AwqImpl implements quant=w4a8_awq, got w4a16_mxfp4); TrtllmCutlassW8a16Impl: quant_unsupported (TrtllmCutlassW8a16Impl implements quant=w8a16, got w4a16_mxfp4); TrtllmCutlassFp8Impl: quant_unsupported (TrtllmCutlassFp8Impl implements quant=fp8, got w4a16_mxfp4); TrtllmCutlassUnquantizedImpl: quant_unsupported (TrtllmCutlassUnquantizedImpl implements quant=none, got w4a16_mxfp4)
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/root/r2g/scripts/trtllm_pbatch.py", line 112, in <module>
+    main()
+  File "/root/r2g/scripts/trtllm_pbatch.py", line 67, in main
+    llm = LLM(model=a.model, **kw)
+          ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/venv-trtllm/lib/python3.12/site-packages/tensorrt_llm/llmapi/llm.py", line 2208, in __init__
+    super().__init__(model, tokenizer, tokenizer_mode, skip_tokenizer_init,
+  File "/root/venv-trtllm/lib/python3.12/site-packages/tensorrt_llm/llmapi/llm.py", line 1884, in __init__
+    super().__init__(model,
+  File "/root/venv-trtllm/lib/python3.12/site-packages/tensorrt_llm/llmapi/llm.py", line 507, in __init__
+    self._build_model()
+  File "/root/venv-trtllm/lib/python3.12/site-packages/tensorrt_llm/llmapi/llm.py", line 2158, in _build_model
+    self._executor = self._executor_cls.create(
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/venv-trtllm/lib/python3.12/site-packages/tensorrt_llm/executor/executor.py", line 702, in create
+    return GenerationExecutor._create_ipc_executor(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/venv-trtllm/lib/python3.12/site-packages/tensorrt_llm/executor/executor.py", line 550, in _create_ipc_executor
+    return GenerationExecutorProxy(
+           ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/venv-trtllm/lib/python3.12/site-packages/tensorrt_llm/executor/proxy.py", line 217, in __init__
+    self._start_executor_workers(worker_kwargs)
+  File "/root/venv-trtllm/lib/python3.12/site-packages/tensorrt_llm/executor/proxy.py", line 939, in _start_executor_workers
+    self._fail_initialization(
+  File "/root/venv-trtllm/lib/python3.12/site-packages/tensorrt_llm/executor/proxy.py", line 849, in _fail_initialization
+    raise error from cause
+RuntimeError: Executor worker returned error
