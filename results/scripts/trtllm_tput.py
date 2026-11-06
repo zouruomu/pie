@@ -41,6 +41,7 @@ def main():
     p.add_argument("--reuse", action="store_true")
     p.add_argument("--max-num-tokens", type=int, default=None)
     p.add_argument("--max-batch-size", type=int, default=None)
+    p.add_argument("--max-seq-len", type=int, default=2048)
     p.add_argument("--mem-frac", type=float, default=None)
     p.add_argument("--ssm-dtype", default=None, help="kv_cache_config.mamba_ssm_cache_dtype")
     p.add_argument("--rounds", type=int, default=1)
@@ -72,6 +73,8 @@ def main():
     kw = dict(kv_cache_config=KvCacheConfig(**kv))
     if a.max_num_tokens:
         kw["max_num_tokens"] = a.max_num_tokens
+    if a.max_seq_len:
+        kw["max_seq_len"] = a.max_seq_len
     if a.max_batch_size:
         kw["max_batch_size"] = a.max_batch_size
     llm = LLM(model=a.model, **kw)

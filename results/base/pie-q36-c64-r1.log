@@ -1,0 +1,134 @@
+[transformers] PyTorch was not found. Models won't be available and only tokenizers, configuration and file/data utilities can be used.
+engine-cuda: [engine] bodies_mem 4096 MiB is held down to 2303 MiB on this card: with the weights, activations and inputs resident, one sequence at the declared context and the guests' programs seated, 9214 MiB is left for the graph bodies and the cache rows together, and the bodies take at most a quarter of it. State a smaller bodies_mem to choose it.
+engine-cuda: [engine] max_state_slots 128 is served at 84 on this card: the recurrent slab is declared for every slot, and at 128 the kv pages beside it seated fewer sequences than there were slots, so the slots were cut to where the two seat alike, or to half of the room past one sequence where that is more; the pool seats 51 sequences at the declared context. State a smaller max_state_slots to choose it.
+[2m2026-11-06T17:37:39.970694Z[0m [33m WARN[0m [2mkernels_cuda::jit::cache[0m[2m:[0m a device instantiation compiled with something to say [3mroot[0m[2m=[0m"ssm/conv1d" [3minstantiation[0m[2m=[0m"::pie::ssm::conv1d_update_vec8<::pie::bf16>" [3march[0m[2m=[0m"sm_90" [3mlog[0m[2m=[0mssm/conv1d(187): warning #177-D: variable "pie::ssm::CONV_TT" was declared but never referenced
+  constexpr int CONV_TT = 32;
+                ^
+
+Remark: The warnings can be suppressed with "-diag-suppress <warning-number>"
+
+
+[2m2026-11-06T17:37:40.238795Z[0m [33m WARN[0m [2mkernels_cuda::jit::cache[0m[2m:[0m a device instantiation compiled with something to say [3mroot[0m[2m=[0m"ssm/gdn_recurrent" [3minstantiation[0m[2m=[0m"::pie::ssm::gdn_step_fused<4>" [3march[0m[2m=[0m"sm_90" [3mlog[0m[2m=[0mssm/gdn_recurrent(5): warning #177-D: variable "pie::ssm::gqa_smem_bv" was declared but never referenced
+  constexpr int gqa_smem_bv = 128;
+                ^
+
+Remark: The warnings can be suppressed with "-diag-suppress <warning-number>"
+
+
+[2m2026-11-06T17:37:40.542154Z[0m [33m WARN[0m [2mkernels_cuda::jit::cache[0m[2m:[0m a device instantiation compiled with something to say [3mroot[0m[2m=[0m"ssm/conv1d" [3minstantiation[0m[2m=[0m"::pie::ssm::conv1d_state_commit<::pie::bf16>" [3march[0m[2m=[0m"sm_90" [3mlog[0m[2m=[0mssm/conv1d(187): warning #177-D: variable "pie::ssm::CONV_TT" was declared but never referenced
+  constexpr int CONV_TT = 32;
+                ^
+
+Remark: The warnings can be suppressed with "-diag-suppress <warning-number>"
+
+
+[2m2026-11-06T17:37:41.058858Z[0m [33m WARN[0m [2mkernels_cuda::jit::cache[0m[2m:[0m a device instantiation compiled with something to say [3mroot[0m[2m=[0m"ssm/gdn_chunk_sm80" [3minstantiation[0m[2m=[0m"::pie::ssm::gdn_chunk_prep<128, 128>" [3march[0m[2m=[0m"sm_90" [3mlog[0m[2m=[0mssm/gdn_chunk_sm80(699): warning #177-D: variable "pie::ssm::GDN_WARPS" was declared but never referenced
+  constexpr int GDN_WARPS = 8;
+                ^
+
+Remark: The warnings can be suppressed with "-diag-suppress <warning-number>"
+
+
+[2m2026-11-06T17:37:41.478288Z[0m [33m WARN[0m [2mkernels_cuda::jit::cache[0m[2m:[0m a device instantiation compiled with something to say [3mroot[0m[2m=[0m"ssm/gdn_chunk_sm80" [3minstantiation[0m[2m=[0m"::pie::ssm::gdn_chunk_scan<64>" [3march[0m[2m=[0m"sm_90" [3mlog[0m[2m=[0mssm/gdn_chunk_sm80(699): warning #177-D: variable "pie::ssm::GDN_WARPS" was declared but never referenced
+  constexpr int GDN_WARPS = 8;
+                ^
+
+Remark: The warnings can be suppressed with "-diag-suppress <warning-number>"
+
+
+[2m2026-11-06T17:37:41.521224Z[0m [33m WARN[0m [2mkernels_cuda::jit::cache[0m[2m:[0m a device instantiation compiled with something to say [3mroot[0m[2m=[0m"ssm/gdn_chunk_sm80" [3minstantiation[0m[2m=[0m"::pie::ssm::gdn_narrow_rows" [3march[0m[2m=[0m"sm_90" [3mlog[0m[2m=[0mssm/gdn_chunk_sm80(699): warning #177-D: variable "pie::ssm::GDN_WARPS" was declared but never referenced
+  constexpr int GDN_WARPS = 8;
+                ^
+
+Remark: The warnings can be suppressed with "-diag-suppress <warning-number>"
+
+
+[2m2026-11-06T17:37:41.806827Z[0m [33m WARN[0m [2mkernels_cuda::jit::cache[0m[2m:[0m a device instantiation compiled with something to say [3mroot[0m[2m=[0m"elemwise/pointwise" [3minstantiation[0m[2m=[0m"::pie::elemwise::residual_add_vec8" [3march[0m[2m=[0m"sm_90" [3mlog[0m[2m=[0melemwise/pointwise(126): warning #177-D: variable "pie::elemwise::kBinAdd" was declared but never referenced
+  constexpr int kBinAdd = 0;
+                ^
+
+Remark: The warnings can be suppressed with "-diag-suppress <warning-number>"
+
+elemwise/pointwise(127): warning #177-D: variable "pie::elemwise::kBinMul" was declared but never referenced
+  constexpr int kBinMul = 1;
+                ^
+
+elemwise/pointwise(128): warning #177-D: variable "pie::elemwise::kBinDiv" was declared but never referenced
+  constexpr int kBinDiv = 2;
+                ^
+
+elemwise/pointwise(129): warning #177-D: variable "pie::elemwise::kBinMod" was declared but never referenced
+  constexpr int kBinMod = 3;
+                ^
+
+elemwise/pointwise(158): warning #177-D: variable "pie::elemwise::kActSilu" was declared but never referenced
+  constexpr int kActSilu = 0;
+                ^
+
+elemwise/pointwise(159): warning #177-D: variable "pie::elemwise::kActTanh" was declared but never referenced
+  constexpr int kActTanh = 1;
+                ^
+
+elemwise/pointwise(160): warning #177-D: variable "pie::elemwise::kActSqrt" was declared but never referenced
+  constexpr int kActSqrt = 2;
+                ^
+
+elemwise/pointwise(161): warning #177-D: variable "pie::elemwise::kActGelu" was declared but never referenced
+  constexpr int kActGelu = 3;
+                ^
+
+
+[2m2026-11-06T17:37:43.582263Z[0m [33m WARN[0m [2mkernels_cuda::jit::cache[0m[2m:[0m a device instantiation compiled with something to say [3mroot[0m[2m=[0m"elemwise/rope" [3minstantiation[0m[2m=[0m"::pie::elemwise::rope_mrope<::pie::bf16>" [3march[0m[2m=[0m"sm_90" [3mlog[0m[2m=[0melemwise/rope(431): warning #177-D: variable "pie::elemwise::kRopeInterleaved" was declared but never referenced
+  constexpr int kRopeInterleaved = 0;
+                ^
+
+Remark: The warnings can be suppressed with "-diag-suppress <warning-number>"
+
+elemwise/rope(432): warning #177-D: variable "pie::elemwise::kRopeNeox" was declared but never referenced
+  constexpr int kRopeNeox = 1;
+                ^
+
+elemwise/rope(433): warning #177-D: variable "pie::elemwise::kRopeSplit" was declared but never referenced
+  constexpr int kRopeSplit = 2;
+                ^
+
+elemwise/rope(434): warning #177-D: variable "pie::elemwise::kRopeSplitLadder" was declared but never referenced
+  constexpr int kRopeSplitLadder = 3;
+                ^
+
+
+engine-cuda: bodies armed 136 of 136 compositions at load (decode 7/7, prefill 49/49, mixed 48/48, tower 0/0, wide 32/32; 104 segmented; 328 MiB of 2303 MiB, 104 of 1024 seats) (pool declared 14708 MiB, high water 5508 MiB, committed 5508 MiB, spare under the ceiling 937 MiB) [18 key(s) never fired — this deployment cannot synthesize them, or their present set was already refused admission; e.g. mixed c2+c0 at bucket 1 (84 seat(s) x 2048 context, 64 lane(s))] [sealed: every key attempted]
+╭─ Pie Engine ─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╮
+│ Host         127.0.0.1:38505                                                                                                     │
+│ Model        default (/root/.cache/huggingface/hub/models--Qwen--Qwen3.6-27B/snapshots/6a9e13bd6fc8f0983b9b99948120bc37f49c13e9) │
+│ Backend      cuda                                                                                                                │
+│ Device       cuda:0                                                                                                              │
+╰──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╯
+[pie-bench] measured-start
+[pie-bench] measured-end
+[2m2026-11-06T17:39:41.230212Z[0m [33m WARN[0m [2mtarpc::server[0m[2m:[0m Requests stream errored out: could not ready the transport for writes: an error occurred readying to send into the channel: the channel is closed and cannot accept new items for sending
+[2m2026-11-06T17:39:41.230231Z[0m [33m WARN[0m [2mtarpc::client[0m[2m:[0m Connection broken: could not ready the transport for writes: an error occurred readying to send into the channel: the channel is closed and cannot accept new items for sending
+
+----------------------------------------------------
+mode:              tput
+engine:            pie
+model:             Qwen/Qwen3.6-27B
+completed:         128/128  failed=0
+wall:              8.351 s
+requests/sec:      15.33
+output tokens:     16384
+prompt tokens:     21376
+output tok/sec:    1962.02
+lat mean/p50:      4168.5 / 4168.3 ms
+lat p95/p99:       4180.8 / 4182.4 ms
+ttft mean/p50:     755.3 / 795.8 ms
+ttft p95/p99:      920.6 / 921.3 ms
+intertoken p50/p99/max: 25.32 / 30.26 / 941.17 ms
+total batches:     134
+avg batch latency us: 119827.0223880597
+last batch latency us: 75586
+total requests:    16384
+max forward requests: 128
+batch size hist:   [1, 0, 1, 2, 0, 2, 2, 126]
+----------------------------------------------------
+EXIT=0
