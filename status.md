@@ -1,7 +1,7 @@
 # Status: 20261105-2035-a100-sxm-x1-gemma-4-31b-batching
 
 **Phase:** fix v3 built; verification queue q7 running (~6 h GPU)
-**UTC:** 2026-11-06 01:12
+**UTC:** 2026-11-06 01:45
 
 ## Preliminary verdict (1 round so far; rounds 2-3 running)
 
@@ -63,6 +63,8 @@ The pool-size half of the remaining gap. At c512 (fix v1 + user layer, 1 round):
 - Tests on the fix tree so far: runtime 101 passed; pie-profile 41 passed; engine-cuda chip 13 passed.
 
 ## Latest
+- **Fix v3, round 1 (target cell):** c64 541.5, c128 593.3, c256 588.6, c512 596.5, c1024 596.5 tok/s (base 456-475; vLLM 601-657). Best against best: 596.5 vs 656.9, **-9.2% (base: -28%)**. Level with vLLM at c1024 (596.8). Rounds 2-3 running.
+- Upstream since base: #1437 (vllm_bench `--max-num-seqs`, default off), #1432 (L4 profile), server-web, wgpu. None touch this; the final rebase will come before hand-over.
 - fix v3 c512 596.5 (v2 559.2, base 453.8, vLLM 628.6).
 - Gemma-4-26B-A4B (note 1's case), c512, 3 runs each: base median 4661 (4654-4879), v2 5066 (5009-5101), v3 5158 (4736-5163), vLLM 4620. c1024, 1 run: base 4941, v2 5034, v3 5044. v3's first c512 run (4736) was low against its 2 repeats (5158, 5163), so I paused q8 for the repeats (q9) to check whether the working-set line costs 26B. It doesn't.
 - Token equality at c512: base vs base 133/1024 requests differ, fix vs fix 41, base vs fix 697. The fix decodes 35-38 lanes a step, not 26, so the GEMM row counts differ. c16 and raw, where the cap does not bind, are queued as the control.
@@ -85,4 +87,4 @@ The pool-size half of the remaining gap. At c512 (fix v1 + user layer, 1 round):
 - At 21:42Z I edited bench.sh in place while a pie c64 run was executing it. bash resumed at its old byte offset and ran vLLM under pie's c64-r1 label. That file is in results/bad/; no other run was affected (the engine field and sha256 were checked in every JSON).
 - `--pretokenized-prompts` needs transformers in pie's venv; it was installed after the first pie attempt failed.
 
-ETA: the verification queue takes ~5.5 h of GPU time (3 alternating rounds of base/fix/vLLM over c64-c1024, Gemma-4-26B, gpt-oss-120b, Qwen3-0.6B, c4-c32, pf4-pf1024, raw, a 1024-token-out load), then the engine-cuda GPU suite. Hand-over ~06:30Z, about 2 h after the 04:30Z target: the cap and pool attribution took the first 3 h. The deadline is 12:37Z.
+ETA: the verification queue takes ~5.5 h of GPU time (3 alternating rounds of base/fix/vLLM over c64-c1024, Gemma-4-26B, gpt-oss-120b, Qwen3-0.6B, c4-c32, pf4-pf1024, raw, a 1024-token-out load), then the engine-cuda GPU suite. Hand-over ~08:30-09:00Z, later than the 04:30Z target: the cap and pool attribution, then v2 (made profile-scoped for note 1) and v3 (the working-set line), each needed their own runs. The deadline is 12:37Z. The deadline is 12:37Z.
