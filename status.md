@@ -1,7 +1,7 @@
 # Status: 20261105-2035-a100-sxm-x1-gemma-4-31b-batching
 
-**Phase:** final A/B (rebased d678268d vs main a6547509) running, then the GPU suite; independent self-review running; report.md nearly complete
-**UTC:** 2026-11-06 09:00
+**Phase:** self-review done and acted on; final commit 54385f76 being tested (CPU suites, final A/B, then the GPU suite)
+**UTC:** 2026-11-06 09:25
 
 ## Preliminary verdict (1 round so far; rounds 2-3 running)
 
@@ -63,13 +63,19 @@ The pool-size half of the remaining gap. At c512 (fix v1 + user layer, 1 round):
 - Tests on the fix tree so far: runtime 101 passed; pie-profile 41 passed; engine-cuda chip 13 passed.
 
 ## Latest
+- **Self-review (fresh-context subagent)** confirmed every engine sha256 and every number in the target table. What it found, and what I did:
+  1. Tests had run on older trees. They are rerunning on the final commit; every log names its tree.
+  2. A logic gap: `uncapped_admission` without seat_to_end (or a mix of engines) gave neither the cap nor the gate. Fixed: the filter is now `!(d.uncapped_admission && seat_to_end)`, with the runtime-wide seat_to_end hoisted. No change on the A100.
+  3. Unreported latency tails: Gemma-4-31B c1024 ITL p99 49 -> 481 ms (vLLM 649); Gemma-4-26B uncapped p99 670-1040 ms on 4 of 6 runs (base 45-190, vLLM 137). Now in the report, pr.md and the summary.
+  4. Corrected: memory arithmetic, the clock claim, vLLM's seats with block rounding (39/43), 26B's pool (5887 pages, cap 229; the working-set line doesn't change it, so the 26B v2->v3 claim is dropped from the profile comment), the token-claim wording, and the list of cards with seat_to_end.
+- **Final commit `54385f76`** on main dc6282d7 (10 files, +57/-2), worktree /root/r2g/pie-fix, branch fix-wip. Engine sha256 1b4c64bf. Not yet pushed: the r2g branch moves to it after the last GPU run.
 - pbatch done (results/pf-table.md): best point base 3735, fix 3829, vLLM 3702. The pbatch cell stays green.
 - vLLM token reference: share of tokens before divergence from vLLM's own ids at c512: base 25.9-26.2%, fix 25.2-25.5%.
 - report.md is complete except §5.3 (final A/B) and the GPU suite. fix.patch is the final commit. A fresh-context reviewer subagent is recomputing every number now.
 - Rest of the curve (1 round, fix v3 / base): c4 0.0%, c8 +0.1%, c16 -0.1%, **c32 +37.0%** (546.3 vs 398.6: the cap binds there too), raw 25.3 = 25.3. pbatch pf4 3734/3735, pf8 3829/3649, pf16 3637/3733 (~2-s runs). Best pbatch: fix 3829 vs base 3735 vs vLLM 3702.
 - **Tokens:** raw, c8, c16 and pf4-pf512 identical base vs fix; c4 1 of 8 differs. From c32 up the lane count a step changes, and base vs fix differs more than reruns of either engine (report §6).
 - **1024 tokens out at c128 (first-wave check):** base 148.1 tok/s, ITL p99 1162 ms, max 84 s (the cap admits 29 lanes, the pool seats ~10 such sequences, lanes are suspended and replayed); fix 216.7 (+46%), ITL p99 47 ms, ~10 lanes decoding. No thrash in the fix's ungated first wave.
-- Was running: the 1024-token-out c128 check (first wave). The base run has gone 22 min (pool seats ~10 such sequences; the cap admits 29). The final rebased A/B is trimmed to c128+c512 (q13b) to keep the suite inside the deadline. ETA hand-over ~10:45Z.
+- Was running: the 1024-token-out c128 check (first wave). The base run has gone 22 min (pool seats ~10 such sequences; the cap admits 29). The final rebased A/B is trimmed to c128+c512 (q13b) to keep the suite inside the deadline. ETA hand-over ~11:00Z.
 - **Cross-model (1 round unless noted), fix v3 / base:**
   - Gemma-4-26B-A4B: c512 +10.7% (3 runs each: 5158 vs 4661; vLLM 4620), c1024 +2.1% (5044 vs 4941; vLLM 4682).
   - gpt-oss-120b: c256 +0.6%, c512 +1.8%, c1024 +9.1% (3014 vs 2763); vLLM 2431 / 2397 / 2237.
