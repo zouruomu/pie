@@ -1,9 +1,9 @@
 # Status: 20261105-2035-a100-sxm-x1-gemma-4-31b-batching
 
-**IN PROGRESS: Review 1 item 1 (Gemma-4-26B ITL tails). READY by 12:05Z at the latest.**
+**READY FOR REVIEW**
 
-**Phase:** review 1
-**UTC:** 2026-11-06 11:16
+**Phase:** review 1 answered
+**UTC:** 2026-11-06 11:42
 
 ## Verdict
 - **The gap is real on current main, and larger than the site's:** pie's best is 474.8 tok/s (c256) against vLLM 0.32.0's 656.5 (c128), -27.7% (site: -18.1%).
@@ -28,14 +28,19 @@
 - **Cross-model:** Gemma-4-26B c512 +10.7%, c1024 +2.1%; gpt-oss-120b +0.6 / +1.8 / +9.1% (c256/c512/c1024); Qwen3-0.6B unchanged.
 - **Costs:**
   - ITL p99 at Gemma-4-31B c1024: 49 -> 481 ms (vLLM 649).
-  - Gemma-4-26B: 670-1040 ms p99 on 4 of 8 uncapped runs (base 45-190, vLLM 137). Not traced.
+  - **Gemma-4-26B c512 (Review 1 item 1, traced): the fix suspends lanes in 3 of 5 runs** (ITL p99 430-680 ms; the 2 clean runs 89-90; main 177-360 over 3 runs).
+    - Uncapped admission seats all 512 before any process finishes, and seat_to_end's gate has no footprint until one does. 512 × 19 pages > the 5,887-page pool (it carries 309 to the end).
+    - In stalled runs 17-18 processes are paused (KV copied to host and back, no replay), page allocations queue, and lanes stall in cohorts for 0.6-2.7 s.
+    - Main's stalls (~360 ms, fire length) have 0 pauses.
+    - Throughput (4793-5162 against 4677-4868) and TTFT p50 (2.3-3.1 s against 6.6-7.1 s) stay better in every run.
+    - Proposed remedy, not done: bound the first wave until a footprint is learned. This decides whether it ships; report.md §7.
   - TTFT falls everywhere on the target cell.
 - **Tokens:** identical base vs fix where the cap does not bind (raw, c8, c16, pf4-pf512; 1 of 8 c4 requests differs). Above it the lanes a step differ; agreement with vLLM's own ids is base 25.9-26.2%, fix 25.2-25.5%.
 - **Tests on 54385f76:**
   - runtime 101, pie-profile+worker+engine 78, engine-cuda chip 13, metal/vulkan check: all pass.
   - engine-cuda lib 69/69.
   - GPU integration 58 passed, 1 ignored, 1 failed; ep 5 of 6. Both failures are identical on base e4bb499 (pre-existing).
-  - 8 integration tests failed while the disk was full and passed on rerun.
+  - 8 integration tests failed while the disk was full and passed on rerun. a_joined_projection panics at :245/:309 on both builds; the EP test at :358 on both.
 
 ## Notes and slips (all in report.md)
 - The disk filled twice: gpt-oss-120b's extra copies, then the engine-cuda tests' /tmp checkpoints. Freed both times; 126 GB is free now.

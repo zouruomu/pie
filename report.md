@@ -22,7 +22,7 @@
   - With 1,024 tokens out at c128: 148 -> 217 tok/s. The base thrashes there; the fix does not.
 - **Costs:** tail latency rises where admission grows.
   - Gemma-4-31B c1024 ITL p99: 49 -> 481 ms (vLLM 649 ms).
-  - Gemma-4-26B: p99 670-1,040 ms on 4 of 8 uncapped runs (base 45-190, vLLM 137).
+  - Gemma-4-26B c512: 3 of 5 runs of 54385f76 suspend lanes, ITL p99 430-680 ms against main's 177-360. With uncapped admission nothing bounds the first wave before a footprint is learned, so 512 are seated where the pool carries 309 to the end; 17-18 processes are paused to host and restored by copy (no replay). Throughput and TTFT stay better than main's (§7).
   - TTFT falls at every target point.
 - **Tokens:** identical base vs fix where the cap does not bind (raw, c8, c16, prefill batches; 1 of 8 c4 requests differs). Where it binds, the lanes a step differ, and so do the outputs. Agreement with vLLM's own ids: base 25.9-26.2%, fix 25.2-25.5% of tokens (§6).
 - **Remaining gap (-8.8% best against best):** lanes only. vLLM's pool seats 39-43 of these sequences (blocks of 16), pie's 38. pie's step is 3-5% shorter.
@@ -272,7 +272,46 @@ Prompts are 128 + the 16-token header + each model's chat frame: Gemma 169, gpt-
   - v2: 266, 92, 684 (c512); 1,040 (c1024).
   - v3: 672, 89, 90 (c512); 919 (c1024).
   - vLLM: 137 (c512); 136 (c1024).
-  - The uncapped runs admit more prompts at once. I did not trace what stalls the decodes; v3 c1024's ITL p50 of 7.2 ms says its tokens arrive bunched.
+  - **Attributed (Review 1, 11:15-11:40Z):** see "Gemma-4-26B tails" below.
+
+**Gemma-4-26B tails: lanes suspended because the first wave overcommits the pool** (`results/x26b`; scripts `tails.py` to `tails4.py`; runs `rv1-*` and `rv1trace-*`).
+
+*Two kinds of gap over 300 ms* (`tails.py`, `tails2.py`, every 26B run):
+- **Token 1 to 2: in every pie run, base and fix alike (750-890 per c512 run).** A request's first token comes out of its prefill, and its second waits while the rest of its admission wave is prefilled; each such gap spans 24-173 other requests' first tokens (median). This is the bounded admission-wave cost. On its own it leaves ITL p99 at 45-92 ms (base r3, every clean fix run).
+- **Mid-request (after token 10): these make the p99.** They come in cohorts: 100-260 lanes stop at the same token position (81, 97, 115...) while the other lanes keep decoding at ~1,300-1,800 tok/s.
+  - On main, a cohort stalls 353-365 ms (worst 547), once per fire of that length. Main's traced run stalls 36 requests with **0 pauses**, so main's stalls are fire length, not suspension.
+  - On the fix, a cohort stalls 0.6-2.7 s.
+
+*Main a6547509 vs 54385f76, alternating, c512* (`rv1-*`; the `rv1trace-*` runs add debug logging and are otherwise identical):
+
+| run | tok/s | TTFT p50 / p99 ms | ITL p50 / p99 ms | latency p99 ms | requests with a mid stall | worst gap ms |
+|---|---|---|---|---|---|---|
+| main r1 | 4677 | 7112 / 11733 | 30.8 / 360 | 17135 | 858 (83.8%) | 365 |
+| main r2 | 4868 | 6552 / 11638 | 30.0 / 177 | 16835 | 134 (13.1%) | 377 |
+| main traced | 4682 | 6815 / 12359 | 30.2 / 190 | 17756 | 36 (3.5%) | 547 |
+| fix r1 | 5162 | 2263 / 8515 | 27.6 / 89 | 14160 | 0 | 94 |
+| fix r2 | 4793 | 3129 / 9707 | 17.0 / 680 | 19285 | 941 (91.9%) | 2687 |
+| fix traced r1 | 5155 | 2285 / 8780 | 27.4 / 90 | 14182 | 0 | 95 |
+| fix traced r2 | 5073 | 2979 / 8887 | 23.0 / 430 | 17522 | 789 (77.1%) | 2497 |
+| fix traced r3 | 5044 | 2843 / 10208 | 18.4 / 456 | 16396 | 937 (91.5%) | 1657 |
+
+- Main's ITL p99 across its 3 runs is 177-360 ms here (earlier e4bb499 runs: 49, 190, 190).
+- The fix is bimodal: 2 runs clean (p99 89-90 ms), 3 stalled (430-680 ms). The earlier v2/v3 runs split the same way, 3 clean and 3 stalled.
+- With or without the stall, the fix has the higher throughput (4793-5162 against main's 4677-4868) and TTFT p50 2.3-3.1 s against 6.6-7.1 s. Latency p99 is lower on clean fix runs (14.2 s against 16.8-17.8 s), but up to 19.3 s on a stalled one.
+
+*Mechanism* (`tails4.py` on the pie::kv / planner debug logs):
+- Main's traced run: pool low point 1,756 free pages of 5,887, no pauses, nothing queued. The cap (229 seated) stays under what the pool carries to the end (5,887 / 19 = 309).
+- Clean fix run: low point 325 free, no pauses, nothing queued.
+- Stalled fix runs: low point 45 and 6 free pages.
+  - 18 and 17 processes are **paused**: KV and window state copied to pinned host memory (`residency copy ... to HostPinned`) and copied back ~0.1-0.5 s later. That is a copy, not a recompute, so no replay of tokens.
+  - 61 and 459 report lines show page allocations queued: lanes crossing a page boundary while the pool is empty wait, which is why whole cohorts stop at the same token.
+  - Each paused process's own worst gap is 0.5-2.5 s.
+  - 4-5 prefill fires walk eagerly (`sealed map holds no body for b8192`), lengthening the stall.
+- **Why the fix overcommits:** with `uncapped_admission`, nothing bounds the first wave. seat_to_end's gate only bounds admission once a process has finished and given it a footprint (section 5, the 1,024-token run), so all 512 requests are seated while 512 × 19 = 9,728 end-of-request pages exceed the pool's 5,887.
+  - Whether it thrashes depends on how far the first wave's prefills are staggered (earlier finishers free pages for later lanes in time), hence the bimodality.
+  - Gemma-4-31B's pool (735 pages) has the same exposure; its ITL p99 at c1024, 49 -> 481 ms (section 5), is probably the same thing. I didn't trace it.
+- **So this is the worse case, not only a prefill-burst trade-off:** on Gemma-4-26B c512 the fix suspends lanes in about half its runs. It is bounded (KV copied to host and back, no replay, every request completes, throughput and TTFT still better than main), but ITL p99 reaches 430-680 ms against main's 177-360.
+- **A likely remedy, not implemented or measured:** bound the first wave until a footprint is learned. Keep the cap, or seed the gate's footprint from prompt + max_tokens, so admission never exceeds pool / footprint (309 here).
 
 **gpt-oss-120b mxfp4** (`results/xoss120`, 1 round):
 
@@ -329,10 +368,10 @@ Every log names the tree it ran on in its first line, or comes from the times be
   - I then ran the binaries directly (`scripts/suite.sh`): the lib unit tests on the CPU beside the GPU integration binaries, each `--test-threads=1`. Nothing else ran on the GPU.
   - **lib unit tests: 69 passed, 0 failed** (`suite-lib.log`).
   - **integration binary: 50 passed, 9 failed, 1 ignored** (`suite-integration.log`, 3,442 s).
-    - `a_joined_projection_answers_what_its_legs_answer` fails identically on base. The base binary was built from e4bb499 on 11-05 and rerun alone (`rerun-base-a_joined_projection_answers_what_its_legs_answer.log`): qwen35-d0.8b-bf16-kv-bf16 has worst gap 0.22070313 over a spread of 13.1875 on both builds, at the same assertion. Pre-existing.
+    - `a_joined_projection_answers_what_its_legs_answer` fails identically on base. The base binary was built from e4bb499 on 11-05 and rerun alone (`rerun-base-a_joined_projection_answers_what_its_legs_answer.log`): qwen35-d0.8b-bf16-kv-bf16 has worst gap 0.22070313 over a spread of 13.1875 on both builds, and both panic at lines 245:5 and 309:5. Pre-existing.
     - The other 8 failed while the pod's disk was full (~10:40Z; two print `No space left on device`, all within one window of thread ids). Rerun on the fix binary once space was freed (the ep binary ran beside the first minute of it): **8 passed, 0 failed** (`rerun8-fix.log`).
     - So the integration binary on 54385f76: 58 passed, 1 ignored, 1 failed, pre-existing.
-  - **ep binary: 5 passed, 1 failed** (`suite-ep.log`). `an_expert_parallel_pair_answers_what_one_rank_answers` panics at its line 358, "the last layer's experts are two selects", a check of the test model's trace. The base e4bb499 binary fails it identically, 5 passed and 1 failed (`rerun-base-ep.log`). Pre-existing.
+  - **ep binary: 5 passed, 1 failed** (`suite-ep.log`). `an_expert_parallel_pair_answers_what_one_rank_answers` panics at its line 358:9 on both builds, "the last layer's experts are two selects", a check of the test model's trace. The base e4bb499 binary fails it identically, 5 passed and 1 failed (`rerun-base-ep.log`). Pre-existing.
   - **In sum, nothing fails on the fix that passes on base.**
   - The disk filled because these tests write test checkpoints to /tmp (9.8 GB for one) beside 216 GB of HF blobs. I freed 109 GB of HF blobs no kept model references.
 - **Earlier trees, superseded:**
@@ -387,7 +426,7 @@ Nothing changes on another card unless its profile sets `uncapped_admission = tr
   - Deciding the reshape at the reach (`live - programs`, which the code already computes for it) should recover it wherever the steps are coarse (not tested). I did not change it: it is engine-wide, and finer units mean more mapping handles while the pool grows on demand. Worth a look by whoever owns the elastic pool.
 - **A run slotted into another queue left its engine behind.** The fit-trace runs (q10) ran between q8's points and left `exp-fit.so` (a20a45ac) in the shared engine path. sweep.sh copies its engine only when a round starts, so fix v3's round 2 at c128-c1024 ran on it. The sha256 in each JSON caught it; those files are in `results/bad/`.
 - **Eager prefill walks:** "the sealed map holds no body for b… — this shape walks eagerly" appears in 1-4 fires of some runs. It shows on Gemma-4-26B uncapped runs (v2, v3) and on Qwen3-0.6B base and fix, so it predates this change.
-- **Gemma-4-26B ITL tails with uncapped admission** (§7): p99 670-1,040 ms on 4 of 8 v2/v3 runs, against 45-190 ms on base. Not traced.
+- **Gemma-4-26B ITL tails with uncapped admission** (§7): traced to first-wave overcommit and suspension (pause to host, restore by copy) in about half the runs. Remedy proposed (bound the first wave until a footprint is learned), not implemented.
 - **`PIE_TO_END_OVER`:** an environment knob in `crates/runtime/src/planner/to_end.rs:101-104` on main. The shell otherwise reads no environment (`no_shell_reads_the_environment.rs`); this is in the runtime, so it is outside that test.
 - **Harness:** pie's JSON records the engine sha256 and the GPU clocks at start and end; vLLM's streaming JSON records neither, so the `.clk` files cover them. vLLM's streaming client stores no token ids; its offline path does.
 - **The A100 gpt-oss-120b batching cell (site -18.0%, measured on ee9098f60 before #1368) is green on current main:** base 3,679.9 at c256 against vLLM's best here, 2,430.8.
