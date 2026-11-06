@@ -1,7 +1,7 @@
 # Status: 20261105-2035-a100-sxm-x1-gemma-4-31b-batching
 
 **Phase:** fix pushed (r2g branch = 54385f76); engine-cuda GPU suite running on it; report and pr.md final except the suite
-**UTC:** 2026-11-06 09:36
+**UTC:** 2026-11-06 09:42
 
 ## Preliminary verdict (1 round so far; rounds 2-3 running)
 
@@ -63,6 +63,8 @@ The pool-size half of the remaining gap. At c512 (fix v1 + user layer, 1 round):
 - Tests on the fix tree so far: runtime 101 passed; pie-profile 41 passed; engine-cuda chip 13 passed.
 
 ## Latest
+- Second review pass: the bootstrap logic was confirmed. 7 wording/number fixes were made in report.md and pr.md (26B tails 4 of 8 runs; long-run base cap 28; pbatch against the site's vLLM 3793 is within noise, so not called green; clock ranges; vision-tower claim dropped; v1 diff saved as exp-src/fix-v1.diff; footprint 3.9 GiB). fix.patch = 54385f76.
+- GPU suite on 54385f76: lib unit tests running, 60 passed and 0 failed so far. Hand-over ETA ~11:15Z, after the suite. The deadline is 12:37Z.
 - **Pushed:** origin `r2g/20261105-2035-a100-sxm-x1-gemma-4-31b-batching` = `54385f76`, on upstream main dc6282d7.
 - **Final A/B** (results/final): main a6547509 c128 457.7 / c512 454.1; 54385f76 592.5 / 597.2.
 - **CPU tests on 54385f76** all pass: runtime 101, pie-profile + worker + engine 78, engine-cuda chip 13, engine-metal/vulkan check.
