@@ -1,0 +1,11 @@
+source configs: MiniMaxAI/MiniMax-M3.1-Flash (A) vs MiniMaxAI/MiniMax-M3-MXFP8 (B); keys that differ:
+  quantization_config.group_size: A=16  B=<absent>
+  quantization_config.ignored_layers: A=list[62]  B=list[62]
+  quantization_config.moe_quant_algo: A=NVFP4  B=<absent>
+  quantization_config.moe_quant_format: A=nvfp4-pack-quantized  B=<absent>
+  text_config.dtype: A=<absent>  B=bfloat16
+  text_config.num_mtp_modules: A=<absent>  B=1
+  text_config.rope_theta: A=10000000  B=5000000
+  text_config.sparse_attention_config.sparse_attention_freq: A=list[60] sum=60  B=list[60] sum=57
+  text_config.sparse_attention_config.sparse_disable_index_value: A=list[60] sum=60  B=list[60] sum=57
+  vision_config.image_size: A=672  B=2016

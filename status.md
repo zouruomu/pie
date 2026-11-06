@@ -46,4 +46,9 @@ The attention and q/k-norm causes are the same on cut A (the site's checkpoint):
 
 Blocker: none, but the cell's baseline is ambiguous; I will report both cuts.
 ETA early verdict: ~03:30Z. Hand-over target: ~11:15Z.
+Orchestrator note 2 (03:12Z): acknowledged.
+1. Mode: pie in the same streaming tput c1 mode on cut B gives ITL 9.66 ms (results/raw/pie-m3-tput-r1) against 9.62 in latency mode; SM clock 1965 MHz in-run. SGLang's TTFT is queueing (its client submits all 8 at t=0); its ITL is one sequence at a time. I'll quote TTFT only from c1 runs where requests don't queue.
+2. Config diff M3-MXFP8 vs M3.1-Flash (results/analysis/config-diff-m3-vs-m31.txt): same shapes; differences are the experts' format (NVFP4 vs MXFP8), rope_theta 1e7 vs 5e6, MTP module, and M3.1 indexing all 60 layers (M3: 57). At 768 tokens top-16 blocks of 128 cover every key, so indexed and dense attention read the same keys. The two causes I'm fixing (selected attention 4 CTAs; single-CTA q/k norm + RoPE) are identical code paths on both cuts.
+3. Cut B is slower than cut A because its experts are MXFP8 (8 bits) where A's are NVFP4: twice the expert bytes. The attribution table sums to the 2.80 ms delta (9.64 - 6.85 profiled). The MXFP8 GEMMs themselves are close to vLLM's at one row (experts gate-up 33 vs 31 us, down 18 vs 13, qkv 15 vs 13); the bigger shares are attention, q/k norm and the glue around the experts.
+4. Identify bug: will write up separately with file:line and a minimal repro, not in the perf diff.
 Orchestrator note 1: acknowledged. Disk after the first cut: df -h / = 95G used / 156G free of 250G; one copy of each cut, shared by all engines.

@@ -11,10 +11,11 @@ so=/root/r2g/pie/packages/python/server/python/pie/_engine.abi3.so
   nvidia-smi --query-gpu=clocks.sm,clocks.max.sm,clocks.mem,power.draw,temperature.gpu --format=csv,noheader; } > $R/$label.meta
 nvidia-smi --query-gpu=clocks.sm,utilization.gpu,power.draw --format=csv,noheader,nounits -lms 1000 > $R/$label.clocks &
 smi=$!
+if [ "$PIEMODE" = tput ]; then piemode="tput --concurrency 1 --num-requests ${REQ:-8}"; else piemode="latency --requests ${REQ:-8}"; fi
 if [ $eng = pie ]; then
   env -u CLAUDE_CODE_MESSAGING_TOKEN RUST_LOG=warn,runtime::engine::load=info PYTHONPATH=/root/r2g/pie/packages/python/client/src:/root/r2g/pie/packages/python/server/python \
     PIE_BENCH_INFERLET_DIR=/root/r2g/pie/examples/text-completion-bench \
-    /root/venv-pie/bin/python pie_bench.py latency --model $M --requests ${REQ:-8} --warmup 2 --max-tokens 256 \
+    /root/venv-pie/bin/python pie_bench.py $piemode --model $M --warmup 2 --max-tokens 256 \
     --prompts-file $P --report-timing --dump-all-token-ids --json-out $R/$label.json "$@" > $R/$label.log 2>&1
 else
   env -u CLAUDE_CODE_MESSAGING_TOKEN ${VENV:-/root/venv-$eng}/bin/python ${eng}_bench.py tput --concurrency 1 --num-requests ${REQ:-8} --model $M --warmup 2 \
