@@ -1,7 +1,7 @@
 # Status: 20261106-0130-b200-x1-minimax-m3-1-flash-decode
 
-UTC: 2026-11-06 03:25Z
-Phase: attribution done (first pass); building the first fix (selected attention split over a cluster).
+UTC: 2026-11-06 03:50Z
+Phase: fix 1 built and measured (1 round); deciding on fix 2 (q/k norm + RoPE).
 
 ## Early verdict (B200, main e2e9d1e, SM 1965 MHz)
 The gap is real, but not as the site states it.
@@ -14,6 +14,12 @@ The gap is real, but not as the site states it.
 | B | SGLang 0.5.22 | 7.59 / 7.52 / 7.52 | 133.0 | 3 |
 On cut B pie trails vLLM by 28.5% and SGLang by 21.8% (decode tok/s = 1000/ITL p50, medians). vLLM/SGLang ITL from the streaming c1 client (tput --concurrency 1 --report-timing); pie from its latency client. Site: pie 8.99, vLLM 5.73, SGLang 7.80.
 Whatever the site's vLLM ran (most likely a dev build or a different cut), cut B is the fair same-weights comparison I can reproduce, so I attribute and fix on it and check every change on cut A too.
+
+## Fix 1 (in progress, not committed): selected attention over a cluster of 8 blocks a kv head
+- `crates/kernels-cuda/kernels/attn/selected.cuh`: `sdpa_paged_selected_mma_kernel` gains `kRanks`: a cluster of that many blocks reads a (row, kv head), each a slice of the 16-key chunks, folding the slices' normalized outputs by their log-sum-exps through distributed shared memory (the fold `decode_gqa_sm80.cu` already uses). `selected.rs`: where the fire's (row, kv head) blocks are too few to fill a quarter of the SMs (where it already widened to 16 warps), 8 warps a block over `kernel.sdpa.selected_cluster` ranks; `tuning.rs` the decision (default 0); B200 profile 8.
+- Sweep on cut A (ranks x warps, 4 requests): 1x16 8.98, 8x4 8.77, **8x8 8.63**, 4x8 8.81, 8x16 8.80, 4x16 8.77 ms.
+- Cut A, 8 requests: ITL p50 8.98 -> **8.62 ms** (111.4 -> 116.0 tok/s, +4.2%). nsys: the attention's critical path 18.4 -> 11.8 us a layer.
+- Numerics: token 0 identical on every request (prefill untouched); later tokens diverge from token 1-8 on 6/8 requests (a reduction-order change on a near-tie miniature; the bf16-GEMV experiment flipped token 1 the same way, outputs stay coherent). Kernel test `attn::selected` extended with the cluster walk against the scalar walk: passes (results/tests/kernels-selected-fix1.log); a deliberate fold error fails it at the cluster walk, so the test reaches the new path.
 
 ## Per-step attribution, cut B (nsys node traces; results/analysis/components-*.tsv, scripts/components.py)
 Exposed time per component (each kernel charged end minus the latest earlier end on any stream), us a step:
