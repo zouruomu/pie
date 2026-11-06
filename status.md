@@ -1,7 +1,7 @@
 # Status: 20261105-2035-a100-sxm-x1-gemma-4-31b-batching
 
 **Phase:** fix v3 built; verification queue q7 running (~6 h GPU)
-**UTC:** 2026-11-06 02:12
+**UTC:** 2026-11-06 02:22
 
 ## Preliminary verdict (1 round so far; rounds 2-3 running)
 
@@ -63,6 +63,8 @@ The pool-size half of the remaining gap. At c512 (fix v1 + user layer, 1 round):
 - Tests on the fix tree so far: runtime 101 passed; pie-profile 41 passed; engine-cuda chip 13 passed.
 
 ## Latest
+- **A slip, caught by the sha256 check:** my fit-trace runs (q10), slotted between q8's points, left the exp-fit engine in the tree. fix v3's round 2 at c128/c256/c512/c1024 then ran on it (sha a20a45ac, not 8cd1ffd7). Those files are in results/bad/ and are queued again after q8 (q11). Every other JSON's sha matches its label.
+- Hand-over ETA: ~09:30-10:00Z (benchmarks until ~08:30Z, then the GPU suite alone on the card). The deadline is 12:37Z.
 - **Why working_set_percent 40 adds 64 pages** (`results/exp/fit-trace-*.log`, exp engine printing the pool fit's inputs):
   - At 50%, the kv planes keep the coarse map unit they were reserved with (for the 9,593-page initial ceiling). `declared(671) = 9,280 MiB`, but `declared(672) = 9,880 MiB`: 600 MiB a step, since all ~120 planes cross a unit at the same page. The final fit strands 561 MiB of its 9,841 MiB room.
   - At 40%, the first fit's finer-unit test passes (fine 639 > fit 623). The planes are re-reserved for reach 799 in fine units, steps are 200 MiB, and the final fit leaves 43 MiB.
