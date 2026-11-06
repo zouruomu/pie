@@ -2,8 +2,8 @@
 # usage: trt.sh <q36|q38> <label> [extra trtllm_tput.py args...]
 m=$1; label=$2; shift 2
 case $m in
-  q36) M=$(ls -d /root/.cache/huggingface/hub/models--Qwen--Qwen3.6-27B/snapshots/*); PF=/root/prompts/q36-c167.json ;;
-  q38) M=$(ls -d /root/.cache/huggingface/hub/models--Qwen--Qwen3.8-27B/snapshots/*); PF=/root/prompts/q38-c205.json ;;
+  q36) M=$(ls -d /root/.cache/huggingface/hub/models--Qwen--Qwen3.6-27B/snapshots/*); PF=${PF:-/root/prompts/site-c128.json} ;;
+  q38) M=$(ls -d /root/.cache/huggingface/hub/models--Qwen--Qwen3.8-27B/snapshots/*); PF=${PF:-/root/prompts/site-c128.json} ;;
 esac
 OUT=${OUT:-/root/r2g/evidence/results/trt}
 mkdir -p $OUT

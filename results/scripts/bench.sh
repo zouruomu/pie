@@ -1,13 +1,13 @@
 #!/bin/bash
 # usage: bench.sh pie|vllm <q36|q38> <shape> <label> [extra args...]
-#   shape: cN  (throughput: 2N requests, concurrency N, 128-token prompt + header + chat frame, 128 out)
-#          pfN (prefill_batch: N requests at once, 512 + header + frame, 1 out)
+#   shape: cN  (throughput: 2N requests, concurrency N, the site prompt (128 words + " (Request #i)", chat-wrapped), 128 out)
+#          pfN (prefill_batch: N requests at once, 512-word site prompt, 1 out)
 #          raw (8 requests one at a time, pf prompts, 256 out)
 # PIE_PY selects the pie engine's python dir (default the main checkout's).
 eng=$1; m=$2; shape=$3; label=$4; shift 4
 case $m in
-  q36) MODEL=Qwen/Qwen3.6-27B; PC=/root/prompts/q36-c167.json; PP=/root/prompts/q36-pf551.json ;;
-  q38) MODEL=Qwen/Qwen3.8-27B; PC=/root/prompts/q38-c205.json; PP=/root/prompts/q38-pf589.json ;;
+  q36) MODEL=Qwen/Qwen3.6-27B; PC=/root/prompts/site-c128.json; PP=/root/prompts/site-pf512.json ;;
+  q38) MODEL=Qwen/Qwen3.8-27B; PC=/root/prompts/site-c128.json; PP=/root/prompts/site-pf512.json ;;
   *) MODEL=$m; PC=${PC:?}; PP=${PP:?} ;;
 esac
 RES=${RES:-/root/r2g/evidence/results/runs}

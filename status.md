@@ -1,6 +1,15 @@
 # status: 20261106-1706-h100-sxm-x1-qwen3-6-27b-batching
 
-## Early verdict (Qwen3.6-27B, 1 round; Qwen3.8-27B and more rounds pending) — 18:50Z
+## Update 19:20Z (site-style prompts, per note 1)
+
+- **Note 1 acknowledged.** (1) All runs from here use the site's prompt construction (anton-mel/stats `synthetic.py` prompt_words_for_tokens(128) + common.py's " (Request #i)", chat-wrapped: 156-159 tokens on Qwen3.6, 194-197 on Qwen3.8), one prompts file for every engine (`results/scripts/site_prompts.py`). The 167-token runs below are kept as exploratory. (2) TRT-LLM settings recorded and grid-searched for its best working config (below). (3) vLLM: see below.
+- **TRT-LLM best working config on this card:** max_batch_size 128, max_seq_len 2048, KV block reuse off; defaults otherwise (free_gpu_memory_fraction 0.9, capacity scheduler GUARANTEED_NO_EVICT, max_num_tokens 8192, CUDA graphs on, bf16 GDN state). Qwen3.6 c128 2867, c256 2893, c512 **2897** tok/s, ITL p50 30.1 ms. Grid (results/trt/grid): its defaults do not start (max_batch_size 2048 needs 160 GB of state slots; with max_seq_len at its 65,536 default the warmup OOMs at every batch cap tried); batch caps 160/192/224 give the same c128 (2860-2870) and collapse at c256+ (1550-2190, ITL ~70 ms: the slots leave too few kv pages); 256 admits a couple of requests at a time (89 tok/s).
+- **pie main on the same prompts:** c64 1990, c128 2207, c256 **2211**, c512 2092 → **−23.7% best to best** (Qwen3.6, round 1). ~72 lanes a fire against TRT-LLM's 128.
+- **vLLM 0.32 with the same max_model_len (2048):** one block pool shared by mamba states and attention pages, attention blocks taken on demand and preempted when short; max_model_len only has to fit one request (`vllm/v1/core/kv_cache_utils.py:1395-1430`, `config/compilation.py:1503-1525`). So neither vLLM nor TRT-LLM reserve the declared context per running sequence; pie's load fit does, for hybrids.
+- **Site commit ee9098f60 vs main** (2 rounds, 167-token prompts): c128 2171-2177 vs 2175-2180; c256 2004-2015 vs 2191-2208. No regression on main.
+- Running: slot-multiplier experiment engine (how many slots a sequence-at-declared-context the pool may seat; results/exp-seats), then TRT-LLM best config on Qwen3.8 + Qwen3.6 full curve, then Qwen3.8 pie/vLLM baselines.
+
+## Early verdict (Qwen3.6-27B, 1 round; Qwen3.8-27B and more rounds pending) — 18:46Z
 
 **Red on main, and the cause is pie's state-slot sizing, not decode speed.** Same prompts (167-token chat-rendered, 2c requests at concurrency c, 128 out, greedy, ignore_eos), SM 1920-1980 MHz:
 
