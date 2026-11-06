@@ -93,8 +93,18 @@ DRAFT. Numbers marked `pending` are still running.
 ### 3.2 A fire's working set takes half of what is past the weights
 
 - **Where:** `crates/engine-cuda/src/chip.rs:72` (default 50), applied at `crates/engine-cuda/src/serve/load.rs:284` (bake: max_forward_tokens 8192 → 3,757 at c512) and `:542` (refit).
-- **What 40% changes:** fires are cut to 2,436 tokens, about vLLM's 2,496-token chunk. The arena, inputs and scratch shrink 0.24 GB, and the fit's unused room falls from 525 to 43 MiB.
-  - I did not trace why the default leaves 525 MiB of its room unfitted (side finding).
+- **What 40% changes:** fires are cut to 2,436 tokens, about vLLM's 2,496-token chunk.
+  - The arena, inputs and scratch shrink 0.24 GB.
+  - Most of the 64 pages come from the pool fit, `Pools::fit_the_card` (`crates/engine-cuda/src/store.rs:1069-1212`). An exp engine printing its inputs (`results/exp/fit-trace-*.log`) shows how:
+
+| fit pass | 50% (base) | 40% |
+|---|---|---|
+| 1st (before arming, bodies' allowance held) | live 10,975, room 8,673 MiB → 623 pages; the finer-unit test fails (fine = fit), the planes keep their unit | live 11,145, room 8,801 → 623 pages; fine 639 > 623, so the planes are re-reserved for reach 799 pages in finer units |
+| 2nd (after arming) | room 9,841 → **671** pages; declared(671) = 9,280, declared(672) = **9,880** MiB | room 10,163 → **735** pages; declared(735) = 10,120, declared(736) = 10,320 |
+
+  - At 50% the ~120 kv planes keep the map unit they were reserved with, for the 9,593-page initial ceiling. All of them cross a unit at the same page, so one more page costs 600 MiB, and the fit strands 561 MiB.
+  - At 40% the first pass re-reserves them in finer units: 200 MiB steps, and 43 MiB left.
+  - So about 480 MiB of the line's 840 MiB is the reshape firing. The underlying issue is §12's first side finding.
 
 | c512, fix v1 + user layer | fire tokens | pool pages | tok/s |
 |---|---|---|---|
@@ -160,7 +170,10 @@ pending.
 
 ## 12. Side findings
 
-- **The fit's unused room:** at working_set_percent 50 the pool fit leaves 525 MiB of the room it was handed unused (671 pages in 9,805 MiB); at 40 it leaves 43 MiB. Not traced.
+- **The pool fit can strand ~0.5 GiB** (`crates/engine-cuda/src/store.rs`, `Pools::fit_the_card`).
+  - The first pass re-reserves the kv planes in the finer unit only when that gains pages at its own limit, with the bodies' allowance held. The second pass, after arming, has more room, but the planes keep the coarse unit.
+  - Gemma-4-31B on this A100 at the default working set: 600 MiB a page step, 561 MiB of 9,841 stranded.
+  - Deciding the reshape at the reach (`live - programs`, which the code already computes for it) would recover it on every card. I did not change it: it is engine-wide, and finer units mean more mapping handles while the pool grows on demand. Worth a look by whoever owns the elastic pool.
 - **`PIE_TO_END_OVER`:** an environment knob in `crates/runtime/src/planner/to_end.rs:101-104` on main. The shell otherwise reads no environment (`no_shell_reads_the_environment.rs`); this is in the runtime, so it is outside that test.
 - **pie_bench `--engine-option`:** `build_config` reads it and `common.py` defines it. It works.
 - **Harness:** pie's JSON records the engine sha256; vLLM's doesn't record its clocks, so the `.clk` files cover them.
