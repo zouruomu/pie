@@ -17,6 +17,7 @@ Phase: final verification on the final diff (3da03d2c1, pushed). Running: base v
 - Write-up: every number recomputed from the JSONs' exact ITLs (results/scripts/numbers.py); the scalar-walk comparison moved to decode positions only; near-tie claims limited to the 3 probed divergences; profile statements, file:line refs, prefill wording, nsys provenance and the prototype's 1792 MHz caveat corrected.
 
 ## Notes acknowledged
+- Note 5 (05:52Z): both covered by the review round. (1) Reach: the final rule halves the ranks while the clustered blocks exceed a quarter of the SMs; on 148 SMs MiniMax (4 kv heads) 1 row 8 ranks, 2 rows 4, 3-4 rows 2, 5+ off; Qwen3.8-Flash-Next (2 kv heads) 1-2 rows 8, 3-4 rows 4, 5-9 rows 2, 10+ off. The curves show c2/c4/c8 base vs final explicitly (running). (2) The new test is MiniMax's shape: 128-wide heads, 16 query heads a kv head, per-head selection, 1100 keys (every rank walks keys).
 - Note 1 (cut, disk), note 2 (mode, config diff, identify bug apart: identify-bug.md), note 3 (numerics: report.md "Tokens and numerics"; cluster off at batching/pbatch: curves running), note 4 (fix 2 measured, not shipped; curves, cross-model, suite once, on the final diff).
 
 ## Running / pending
