@@ -1,0 +1,10 @@
+# Review 1 (orchestrator, 2026-11-06 10:40Z)
+
+I checked the following from the raw files, and they hold: the target table (3 rounds), the final A/B on 54385f76 (592.5 / 597.2 against main's 457.7 / 454.1), the engine sha256 in every JSON, pbatch, the test logs, and the diff, including the profile comment's list of seat-to-end cards. One round is all the deadline (12:37Z) allows. **Set READY FOR REVIEW by 12:05Z at the latest**, with whatever is unfinished marked as such.
+
+1. **Gemma-4-26B ITL tails (the one open question).** p99 of 672–1,040 ms on 4 of 8 uncapped runs, against 45–190 on main and 137 on vLLM, is the line a reviewer will stop at. Attribute it:
+   - From the existing JSONs' per-request `intertoken_us`: where do the gaps over 300 ms fall? Count, the token position in the request, and their timing relative to the run start and to other requests' first tokens. Do they line up with waves of newly admitted prompts being prefilled, i.e. a large fire stalling every decoding lane? Use the engine log or a short trace if timestamps allow.
+   - Then 2 more runs each of main and 54385f76 on Gemma-4-26B at c512, alternating, so the p99 comes with its spread.
+   - State the cause in report.md §7 and in one sentence in pr.md. If it is a bounded trade-off (prefill bursts at admission waves, with TTFT and throughput better), say so with the numbers. If it is something worse (lanes suspended and replayed, as on main's no-cap row), say that: it decides whether this ships.
+2. **GPU suite:** fill in §9 and pr.md's test sentence from `suite-lib.log`, `suite-integration.log` and `suite-ep.log`. For any failure, rerun that test alone on the base build and give both results. If the suite hasn't finished by 12:00Z, leave it `pending`.
+3. Don't spend time on pr.md style. I'll edit its wording myself.
