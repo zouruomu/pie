@@ -1,0 +1,38 @@
+[transformers] PyTorch was not found. Models won't be available and only tokenizers, configuration and file/data utilities can be used.
+engine-cuda: [engine] max_forward_tokens 8192 is served at 6317: at 8192 the activation arena, attention workspaces and one fire's windowed kv rows take 7937 MiB of the 13035 MiB this card has after the weight tier under [model] device_memory_share, and the cache rows, graph bodies and guest programs need the other half. State a smaller max_forward_tokens to choose it, or a larger device_memory_share.
+engine-cuda: [engine] bodies_mem 4096 MiB is held down to 2469 MiB on this card: with the weights, activations and inputs resident, one sequence at the declared context and the guests' programs seated, 9877 MiB is left for the graph bodies and the cache rows together, and the bodies take at most a quarter of it. State a smaller bodies_mem to choose it.
+engine-cuda: bodies armed 154 of 154 compositions at load (decode 10/10, prefill 53/53, mixed 52/52, tower 0/0, wide 39/39; 0 segmented; 692 MiB of 2469 MiB, 115 of 1024 seats) (pool declared 9280 MiB, high water 6160 MiB, committed 6160 MiB, spare under the ceiling 1391 MiB) [15 key(s) never fired — this deployment cannot synthesize them, or their present set was already refused admission; e.g. mixed c2+c0 at bucket 1 (256 seat(s) x 2048 context, 32 lane(s))] [sealed: every key attempted]
+╭─ Pie Engine ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╮
+│ Host         127.0.0.1:37621                                                                                                          │
+│ Model        default (/root/.cache/huggingface/hub/models--google--gemma-4-31B-it/snapshots/842da3794eaa0b77d5f08bae87a17459d91ff475) │
+│ Backend      cuda                                                                                                                     │
+│ Device       cuda:0                                                                                                                   │
+╰───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╯
+[pie-bench] measured-start
+[pie-bench] measured-end
+[2m2026-11-06T05:29:41.642016Z[0m [33m WARN[0m [2mtarpc::client[0m[2m:[0m Connection broken: could not ready the transport for writes: an error occurred readying to send into the channel: the channel is closed and cannot accept new items for sending
+[2m2026-11-06T05:29:41.642026Z[0m [33m WARN[0m [2mtarpc::server[0m[2m:[0m Requests stream errored out: could not ready the transport for writes: an error occurred readying to send into the channel: the channel is closed and cannot accept new items for sending
+
+----------------------------------------------------
+mode:              tput
+engine:            pie
+model:             google/gemma-4-31B-it
+completed:         32/32  failed=0
+wall:              4.699 s
+requests/sec:      6.81
+output tokens:     32
+prompt tokens:     17696
+output tok/sec:    6.81
+lat mean/p50:      3132.0 / 3081.0 ms
+lat p95/p99:       4694.9 / 4695.1 ms
+ttft mean/p50:     3131.1 / 3079.6 ms
+ttft p95/p99:      4694.3 / 4694.5 ms
+total batches:     3
+avg batch latency us: 2580151.6666666665
+last batch latency us: 3058045
+total requests:    32
+max forward requests: 11
+batch size hist:   [0, 0, 0, 3, 0, 0, 0, 0]
+----------------------------------------------------
+EXIT=0
+1410 MHz, 1410 MHz, 38, 96.69 W

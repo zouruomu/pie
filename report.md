@@ -128,7 +128,21 @@ pending: final diff and commit.
 
 ## 5. Before / after
 
-pending (3 alternating rounds of base, fix v3 and vLLM over c64-c1024; c4-c32, pf4-pf1024 and raw for 1 round).
+**Target cell.** Alternating rounds (fix, base, vLLM within each round), medians with min-max (`results/base`, `scripts/table.py base c64,c128,c256,c512,c1024 pie-base-e4bb499 pie-fix-v3 vllm`).
+
+| tok/s | c64 | c128 | c256 | c512 | c1024 |
+|---|---|---|---|---|---|
+| base e4bb499 (n=3) | 456.7 (456.4-457.2) | 457.9 (457.9-458.5) | 474.8 (474.6-474.8) | 453.8 (453.8-453.9) | 470.6 (470.6-470.7) |
+| fix v3 (n=3 at c64, 2 elsewhere) | 541.3 (540.5-541.5) | 592.3 (591.4-593.3) | 588.1 (587.5-588.6) | 596.6 (596.5-596.6) | 598.6 (596.5-600.8) |
+| vLLM 0.32.0 (n=3) | 601.8 (601.2-603.0) | 656.5 (656.0-656.9) | 625.0 (623.0-625.6) | 628.3 (626.5-628.6) | 595.4 (595.3-596.8) |
+| fix / base | +18.5% | +29.3% | +23.9% | +31.4% | +27.2% |
+| base / vLLM | -24.1% | -30.2% | -24.0% | -27.8% | -21.0% |
+| fix / vLLM | -10.1% | -9.8% | -5.9% | -5.1% | +0.5% |
+
+- **Best point against best point:** base 474.8 (c256) vs vLLM 656.5 (c128) is -27.7%; fix 598.6 (c1024) vs 656.5 is **-8.8%**.
+- **Missing fix round 2 at c128-c1024:** those runs ran on the wrong engine (`results/bad/`, sha a20a45ac, see §12), and their rerun was dropped for time. The final A/B on the rebased build (§5.3) is a third fix measurement at c128, c512 and c1024.
+
+pending: pbatch, c4-c32, raw, final A/B.
 
 ## 6. Token equality
 
