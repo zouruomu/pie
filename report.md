@@ -93,3 +93,100 @@ Of these, three are each worth 0.6-0.7 ms a step: the q/k norm + RoPE, the selec
 - `crates/kernels-cuda/tests/kernels_cuda/attn/selected.rs`: the tensor-core walk is checked against the scalar walk a third time with `selected_cluster = 8`; the lone-row decode and prefill cases take the cluster.
 
 Why 8 ranks and 8 warps: sweep on cut A (4 requests each, `results/raw/sweep-a-*`): ranks x warps 1x16 (base) 8.98, 8x4 8.77, **8x8 8.63**, 4x8 8.81, 8x16 8.80, 4x16 8.77 ms. 8 is the portable cluster limit.
+
+## Before / after (3 alternating rounds, `results/raw/ab-*`; each `.meta` holds the engine sha256 and the in-run SM clock, 1965 MHz throughout)
+
+Engines: base `b0ca94bb…` (main e2e9d1e), fix `2245691c…` (98dccdc21). `results/engines.sha256`.
+
+| cut | base ITL p50 (ms) | fix ITL p50 (ms) | decode tok/s | vLLM 0.32.0 ITL p50 (ms) |
+|---|---|---|---|---|
+| A, M3.1-Flash (the site's checkpoint) | 8.97 / 8.97 / 8.97 | **8.62 / 8.62 / 8.62** | 111.5 -> 116.0 (+4.1%) | can't load |
+| B, M3-MXFP8 | 9.62 / 9.63 / 9.63 | **9.28 / 9.29 / 9.30** | 103.8 -> 107.6 (+3.6%) | 6.92 / 6.87 / 6.97 |
+
+- On cut B the fix takes the gap to vLLM from 28.5% to 25.5% (decode tok/s 107.6 vs 144.5). Against the site's vLLM number (174.43), cut A goes from -36.1% to -33.5%, but that number isn't this checkpoint at 0.32.0 (see above).
+- nsys on the fix (cut A): the selected attention's critical path 18.4 -> 11.8 us a layer, `sdpa_paged_selected_mma_kernel<128, 8, 8>` on a grid of 8 x 4 blocks (`results/analysis`, trace `sel-r8w8-node` kept on the pod).
+- TTFT p50 (pie, c1): cut A base 28.4 / 28.0 / 27.9 ms, fix 27.8 / 28.2 / 28.2; cut B base 31.5, fix 31.7 (round 1). Prefill doesn't take the cluster.
+
+## Tokens and numerics
+
+- Greedy token ids are deterministic run to run in both builds (base r1 vs r2, fix r1 vs r2: 8/8 identical, both cuts).
+- Cut B: base vs fix **identical**, 8/8 requests x 256 tokens.
+- Cut A: token 0 identical on every request (prefill untouched); first divergence at token 1 on 5/8, 8 and 247 on two more, one identical.
+- Teacher-forced logits (note 3): a throwaway inferlet (`results/scripts/logit-probe/`, client `logit_probe.py`, comparison `logit_cmp.py`) feeds each request's prompt as text-completion-bench renders it, then 32 tokens of base's own greedy output one decode step at a time (the clustered path), and returns all 200 064 logits at each of the 33 positions. Base's teacher-forced argmax reproduces its own greedy tokens at 33/33 positions on every request. Reference for an accepted reduction-order change: base under `sdpa.selected_mma = false` (the scalar walk: the fallback wherever a profile doesn't set `selected_mma`, which most CUDA profiles do, and the reference `attn::selected`'s test holds the MMA walk to), set in a user profile layer and removed after.
+
+| cut, request | fix: max abs dlogit / KL mean / KL max / tf top-1 of 33 | scalar walk: same |
+|---|---|---|
+| A 0 | 4.34 / 0.024 / 0.172 / 33 | 5.39 / 0.093 / 1.005 / 33 |
+| A 1 | 4.22 / 0.036 / 0.406 / 32 | 4.62 / 0.068 / 0.763 / 32 |
+| A 2 | 5.26 / 0.056 / 0.741 / 31 | 5.67 / 0.078 / 0.844 / 31 |
+| A 3 | 6.16 / 0.149 / 1.092 / 25 | 6.94 / 0.253 / 1.416 / 24 |
+| B 0 | 2.16 / 0.0037 / 0.044 / 33 | 2.88 / 0.0154 / 0.182 / 33 |
+| B 1 | 3.19 / 0.0140 / 0.297 / 33 | 3.88 / 0.0170 / 0.194 / 33 |
+| B 2 | 2.52 / 0.0137 / 0.138 / 33 | 3.44 / 0.0210 / 0.182 / 33 |
+| B 3 | 4.69 / 0.0063 / 0.061 / 33 | 3.75 / 0.0189 / 0.164 / 32 |
+
+- The fix's mean KL against base is below the scalar walk's on all 8 request-cut pairs.
+- At cut A's greedy first divergences, base's top-2 logit margin is 0.0625 (request 2, position 1), 0.6875 (request 3, position 1) and 1.0 (request 1, position 8), against per-request medians of 0.9-6.4. The logits land in bf16 (margins come in steps of 1/16), so near ties are common, and the scalar walk flips the same two position-1 tokens at the same margins.
+- Several logit units of movement under either order are this miniature's sensitivity (16 of 128 experts with top-4: a small change in a layer's input can swap one of its experts), not the kernel's error: at the kernel level the cluster walk is within the existing test's bf16 tolerance of the scalar walk.
+
+## Cross-model (B200, base vs fix, 2 rounds each, raw workload, `results/raw/x-*`)
+
+| model | path | base ITL p50 (ms) | fix ITL p50 (ms) | tokens base vs fix |
+|---|---|---|---|---|
+| Qwen3.8-Flash-Next mini (4 layers, 16 experts, bf16; cut with shrink_checkpoint `--experts 16`) | takes the selected kernel (2 kv heads of 256, a shared selection): cluster on at decode | 0.85 / 0.85 | 0.82 / 0.82 (+3.7%) | diverge at 38-229 on 7/8, one identical; deterministic within each build |
+| Qwen3-0.6B bf16 | dense tensor-core decode with clusters (`gqa_cluster = 8`), whose two helpers moved to `prim/device.cuh` | 1.03 / 1.03 | 1.03 / 1.03 | identical 8/8 |
+
+- Only GQA models with selected attention take the changed kernel: MiniMax-M3 and Qwen3.8-Flash-Next (`qwen_4.poem`). The MLA models with selections (GLM-5.x, DeepSeek-V4, Kimi-K3) go through `attn/mla` kernels, untouched. Every other model sees only the helper move, a byte-for-byte move of two device functions, which Qwen3-0.6B's identical tokens and speed confirm on the cluster path that uses them. So no block-FP8 MoE beyond the two cuts was rerun; GLM-5.3's cut (MLA) doesn't reach the change.
+- Memory: the fix adds 8256 bytes of shared memory to a clustered block (`mma_fold_bytes`) and no device or host allocation; nothing starts or stops fitting.
+
+## Other loads (pending)
+
+Base vs fix on both cuts, one round, `results/raw/curve/`: batching c4, c8, c16, c32, c64 (256-token prompts, 128 out; the chat template alone renders past 128 tokens), prefill batch pf4-pf32 (512 in, 1 out). The cluster applies where a fire's (row, kv head) blocks are fewer than a quarter of the SMs: at 4 kv heads, 9 rows or fewer, so c4 and c8 take it, c16 and up and every prefill don't. PENDING.
+
+## Tests (pending)
+
+- `kernels-cuda` `attn::selected` (extended with the cluster walk) and `attn::fa2*`: pass on the fix build (`results/tests/kernels-selected-fa2-fix1b.log`); a deliberate error in the cluster fold fails `attn::selected` at walk 2, so the test reaches the new path.
+- `engine-cuda` unit tests: 68/69 on the first fix build, the failure being `chip::tests::the_b200_runs_its_family_measured_with_the_skinny_gemm_off`, which lists the B200's own settings and now lists `selected_cluster` (`results/tests/engine-cuda-lib-fix1b.log`, then `engine-cuda-lib-chip-fix1c.log`: 12/12 chip tests).
+- GPU suite (engine-cuda and kernels-cuda, `--test-threads=1`, `CARGO_PROFILE_DEV_OPT_LEVEL=2`) on the final diff: PENDING.
+
+## Fix 2, measured but not shipped: the q/k norm + RoPE + KV append
+
+- Mechanism: MiniMax's q/k per-head norms (plus-one weights), partial RoPE and KV append are folded as an anchored epilogue of the packed q|k|v MXFP8 product (`Fused::Epilogue`). The W8A8 tcgen05 GEMM doesn't run it in-kernel (`crates/engine-cuda/src/dispatch/linear.rs:349`, `anchored`, takes dense bf16 banks), so it fires detached (`dispatch/linear.rs:394` -> `crates/kernels-cuda/src/linear/gemm.rs:136` -> `RowLeg::fire`, `linear/skeleton.rs:1263`). `Epilogue::leg` (`skeleton.rs:718`) cuts the 9216-wide row into 2 slices of 4608 (each no wider than the skeleton holds); the results are windowed and paged, so the slices aren't uniform and each is its own launch of one block a row: two 1-CTA kernels, ~12.7 us a layer on the critical path. vLLM: one `fusedMiniMaxM3QNormRopeKVInsertKernel` of 10 CTAs, 2.3-2.9 us (`vllm/models/minimax_m3/nvidia/model.py:625`, `vllm/_custom_ops.py:2566`).
+- The hand kernel for this shape exists (`fused.qkv_fused_qknorm_rope_vnorm_write`, `crates/kernels-cuda/kernels/attn/qkv_append.cu`; its launcher takes MiniMax's span 32 / rotary 64 at 128-wide heads) but lacks plus-one weights, and CUDA retired that rule on purpose (`crates/engine-cuda/src/lib.rs:110-127`: "every site one forms folds into a generated row kernel or an anchored region instead").
+- Prototype, to size it (reverted, never committed): the retired rule plus a plus-one MiniMax pattern registered on CUDA, plus-one in the warp and row kernels. On top of fix 1: cut A 8.62 -> **8.27 ms** (-4.0%), cut B 9.29 -> **8.88 ms** (-4.4%) (`results/raw/proto2-*`, 4 requests). Its logits move further from base than fix 1's: KL mean 0.10-0.19 on cut A (inside the scalar walk's 0.07-0.25) but 0.018-0.040 on cut B, twice the scalar walk's 0.015-0.021 (`results/analysis/logit-cmp-proto2.txt`), since the hand kernel rounds once where the generated region rounds at the program's points. Prefill changes too (token 0 differs).
+- In the maintainers' direction the fix is one of: (a) the anchored epilogue inside the block-scaled tcgen05 GEMM; (b) a detached leg that spreads a row's non-uniform slices over many blocks in one launch (the slice offset a runtime value, not baked into each piece's kernel). I'd put either past this run's verification budget; the prototype bounds the win at ~4%.
+
+## Remaining gap (cut B, after the fix: pie 9.29 ms vs vLLM 6.92 ms, +2.37 ms)
+
+From the per-layer table with the attention's measured gain taken out (us a layer x 57, approximate; vLLM's profiled gaps of ~1.2 ms a step don't all appear unprofiled, which is why the pieces sum past 2.37):
+
+| piece | delta a layer (us) | a step (ms) |
+|---|---|---|
+| q/k norm + RoPE + KV append (two 1-CTA epilogue slices) | +12.1 | +0.69 |
+| expert glue between gate-up and down (MXFP8 experts: gather, SwiGLU, layout, quantize as separate launches; vLLM's down bmm takes the activation) | +11.2 | +0.64 |
+| selected attention, still (11.8 vs 6.9 us: a chain of dependent metadata loads before the K/V reads) | +4.9 | +0.28 |
+| qkv projection (quantize + tcgen05 GEMM at one row) | +5.9 | +0.34 |
+| experts down GEMM | +5.5 | +0.31 |
+| routing layout + quantize | +4.3 | +0.25 |
+| o_proj, experts gate-up, norms | +5.3 | +0.30 |
+| index, finalize | -3.6 | -0.21 |
+
+On cut A (the site's checkpoint, NVFP4 experts) the expert path differs: the W4A4 gate-up runs at ~2.3 TB/s (33 us for ~75 MB; swapped plan, `splits: 1`, 192 tiles on 148 SMs, `crates/kernels-cuda/src/linear/moe/experts.rs:566-572`) and `route_lay_out_quant_nvfp4` (6 CTAs) costs ~10 us a layer exposed. Each is kernel work past ~3 h (note 4's bar), so it's handed over as attribution.
+
+The cause is general rather than sm_100-specific in part: the selected walk reads a kv head on one block on every GPU that sets `selected_mma` (the H200 and A100 cells are red too), and clusters exist from sm_90; only B200's profile turns the cluster on here, since it's the only GPU I measured.
+
+## Side findings
+
+1. **No released vLLM or SGLang loads MiniMax-M3.1-Flash** (`results/raw/vllm-r1.log`, `vllm033-r1.log`, `sglang-r1.log`); the site's vLLM 0.32.0 / SGLang 0.5.22 numbers on this cell can't be this checkpoint at those versions.
+2. **Pie identifies both cuts as bf16** and OOMs widening them on a 264 GiB host (`identify-bug.md`, with `file:line` and a repro; kept out of this PR per note 2).
+3. **Pie reads M3.1-Flash's first three layers as dense attention** although its config indexes all 60 (`sparse_attention_freq` sums to 60; layers 0-2 carry indexer weights the poem doesn't read). Identical at this length (top-16 x 128 >= every key), different past 2048 tokens.
+4. The site's 124.25 B parameter count doesn't follow from a 16-expert cut (64.67 B; see the first section).
+5. `make_prompts.py` can't build the site's 128-token batching prompts for MiniMax: its chat template with the bench's system prompt alone renders past 200 tokens.
+
+## Playbook notes
+
+- When a site cell names a competitor version, check that version can load the checkpoint before profiling against the number: here neither released competitor could.
+- `pgrep -f` inside a wait loop matches the loop's own shell: wait on log contents or PIDs.
+- zsh doesn't word-split `$var` (`set -- $cfg` silently runs one config): use `${=cfg}`.
+- A seeded package under `~/.pie/models/` can be edited to steer identification without a rebuild; pie keeps the edit (and reports it as edited). Restore it after.
+- An inferlet can return full logits through `session::send` in pieces of 32 K values (a ~1 MB message closes the socket); `results/scripts/logit-probe` is a reusable teacher-forced logit probe.

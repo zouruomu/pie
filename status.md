@@ -1,7 +1,7 @@
 # Status: 20261106-0130-b200-x1-minimax-m3-1-flash-decode
 
-UTC: 2026-11-06 05:13Z
-Phase: fix 2 investigation (note 4). Curves/suite deferred to the final diff, as note 4 asks.
+UTC: 2026-11-06 05:25Z
+Phase: final verification of fix 1 (the final diff; 98dccdc21 pushed to origin). Running: base vs fix curves both cuts (~06:30Z), then the GPU suite (~1.5 h), then self-review and final rebase A/B. report.md and pr.md drafted (pending: curves, suite). ETA hand-over ~09:30Z.
 
 ## Early verdict (B200, main e2e9d1e, SM 1965 MHz)
 The gap is real, but not as the site states it.
@@ -24,7 +24,7 @@ Tokens: deterministic run to run on both builds. Cut B base vs fix identical, 8/
 Remaining on cut B after the fix: 9.29 vs 6.92 ms (pie 25.5% behind vLLM).
 
 ## Note 3 (04:02Z), acknowledged
-1. Numerics, done (results/analysis/logit-cmp.txt; inferlet results/scripts/logit-probe, client logit_probe.py, comparison logit_cmp.py): teacher-forced on base's own greedy tokens (prompt + 32 forced decode steps = 33 positions, 4 requests a cut, full 200064-wide logits; base's teacher-forced argmax reproduces its greedy tokens 33/33 on every request). Reference: base with `sdpa.selected_mma = false` (the scalar walk, an existing path the unit test holds equal to the MMA walk), via a user profile layer, removed after.
+1. Numerics, done (results/analysis/logit-cmp.txt; inferlet results/scripts/logit-probe, client logit_probe.py, comparison logit_cmp.py): teacher-forced on base's own greedy tokens (prompt + 32 forced decode steps = 33 positions, 4 requests a cut, full 200064-wide logits; base's teacher-forced argmax reproduces its greedy tokens 33/33 on every request). Reference: base with `sdpa.selected_mma = false` (the scalar walk: the fallback where a profile doesn't set `selected_mma`, and the reference the unit test holds the MMA walk to), via a user profile layer, removed after.
 | cut, req | fix: max abs dlogit / KL mean / tf top-1 | scalar walk: max abs dlogit / KL mean / tf top-1 |
 |---|---|---|
 | A 0 | 4.34 / 0.024 / 33 | 5.39 / 0.093 / 33 |
@@ -43,7 +43,8 @@ The fix's KL is below the scalar walk's on all 8. At cut A's greedy first diverg
 - Mechanism (from a temporary dump of the folded load trace): MiniMax's q/k per-head norms, partial RoPE and KV append are already folded as an anchored *epilogue* of the packed q|k|v MXFP8 product (`Fused::Epilogue`, key 6392060777819382797). The W8A8 tcgen05 GEMM can't run it in-kernel (`linear.rs:349` `anchored` takes dense bf16 banks only), so it fires detached (`dispatch/linear.rs:394` -> `kernels-cuda/src/linear/gemm.rs:136` -> `RowLeg::fire`, `linear/skeleton.rs:1263`). `Epilogue::leg` (`skeleton.rs:718`) cuts the 9216-wide row into 2 slices of 4608 (each no wider than the skeleton holds); its results are windowed and paged, so the slices are not uniform and each is its own launch of one block a row: two 1-CTA kernels, ~12.7 us a layer on the critical path.
 - The hand-written kernel for this exact shape exists (`qkv_fused_qknorm_rope_vnorm_write`, `attn/qkv_append.cu`; its launcher takes MiniMax's span 32 / rotary 64 at 128-wide heads), but CUDA *retired* that rule on purpose (`engine-cuda/src/lib.rs:110-127`: "every site one forms folds into a generated row kernel or an anchored region instead"), and it lacks plus-one weights.
 - So the fixes in the maintainers' direction are (a) the anchored epilogue run inside the block-scaled tcgen05 GEMM, or (b) a detached leg that spreads a row's non-uniform slices over many blocks in one launch (the slice offset a runtime value rather than baked into each piece's kernel). Both are skeleton/compiler work I'd put at more than this run's remaining verification budget.
-- Now: a throwaway prototype (not for the PR) of the retired rule plus a plus-one MiniMax pattern on CUDA, only to measure what fix 2 buys. Timebox ~1.5 h, then I hand the attribution over with that number, unless you want the hand rule shipped anyway.
+- Prototype result (reverted, never committed; results/raw/proto2-*, analysis/logit-cmp-proto2.txt): the retired rule + a plus-one MiniMax pattern on CUDA, on top of fix 1: cut A 8.62 -> 8.27 ms (-4.0%), cut B 9.29 -> 8.88 ms (-4.4%). Its logits drift further than fix 1's: cut B KL mean 0.018-0.040, twice the scalar walk's 0.015-0.021 (cut A 0.10-0.19, inside the scalar's 0.07-0.25); prefill changes too. So fix 2 is worth ~4%, but the shippable form is (a) or (b) above, more than this run's budget: handed over as attribution in report.md, not shipped. Say if you want the hand rule anyway.
+- Expert glue (note 4.2): on cut A (the site's NVFP4 path) the glue is `route_lay_out_quant_nvfp4` (6 CTAs, ~10 us a layer exposed) and the W4A4 gate-up GEMM itself runs at ~2.3 TB/s (33 us for ~75 MB: swapped plan, splits 1, 192 tiles on 148 SMs, experts.rs:566-572); on cut B the MXFP8 experts have no fused decode path (gather, SwiGLU, layout, quantize as 4 launches, +11 us a layer). Each is kernel work past ~3 h: handed over as attribution. So the final diff is fix 1 alone; the cross-model checks above were already on it.
 
 ## Cross-model (B200, base vs fix, 2 rounds each, results/raw/x-*)
 - Qwen3.8-Flash-Next mini (4 layers, 16 experts, bf16; takes the selected kernel, 2 kv heads of 256): ITL 0.85 / 0.85 -> 0.82 / 0.82 ms (+3.7%); tokens deterministic per build, base vs fix diverge at 38-229 on 7/8 (one identical).
