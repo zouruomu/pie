@@ -75,7 +75,7 @@ Of these, three are each worth 0.6-0.7 ms a step: the q/k norm + RoPE, the selec
 ## Root cause fixed here: the selected attention reads a kv head on one block
 
 - pie: `crates/kernels-cuda/src/attn/selected.rs:210-227` (at e2e9d1e) launches `sdpa_paged_selected_mma_kernel` (`crates/kernels-cuda/kernels/attn/selected.cuh:43`) on a grid of (rows, kv heads): a decode's lone row of MiniMax's four kv heads is four blocks on a 148-SM GPU. Each block's warps walk 16-key chunks of the selected keys (498-753 a row over this run, ~625 on average; up to ~390 KB of K and V a kv head), so the walk is bound by what one SM can pull and by each chunk's load latency. The 16-warp widening (`mma_warps`, `selected.rs:44`) already acknowledges the lone-row case but keeps one block.
-- vLLM 0.32.0: `vllm/models/minimax_m3/common/ops/sparse_attn.py:240` (`_gqa_sparse_decode_kernel`) splits the selected blocks into shape-constant chunks, grid `(total_q * num_topk_chunks, num_kv_heads)` (`sparse_attn.py:662-673`), 16 splits a kv head here, and `_merge_topk_attn_out_kernel` (`sparse_attn.py:434`) folds the partials: 5.0 + 2.2 us.
+- vLLM 0.32.0: `vllm/models/minimax_m3/common/ops/sparse_attn.py:240` (`_gqa_sparse_decode_kernel`) splits the selected blocks into shape-constant chunks, grid `(total_q * num_topk_chunks, num_kv_heads)` (`sparse_attn.py:662-673`), 16 splits a kv head here, and `_merge_topk_attn_out_kernel` (`sparse_attn.py:434`) folds the partials: kernel medians 4.93 + 2.24 us.
 
 ## The fix, line by line (commit `3da03d2c1` on `r2g/20261106-0130-b200-x1-minimax-m3-1-flash-decode`, 8 files, +233 / -47)
 
@@ -108,7 +108,7 @@ Engines (`results/engines.sha256`): base `b0ca94bb…` (main e2e9d1e), final `ff
 - Cut B against vLLM's same-session rounds (median 6.925 ms, 144.4 tok/s): pie behind by 28.0% before, 25.4% after. Against the site's vLLM number (174.43) cut A goes from -36.1% to -33.5%, but that number isn't this checkpoint at 0.32.0 (see above).
 - The first fix build (`2245691c…`, commit 98dccdc21, before the review round) measured the same at c1 (`results/raw/ab-*`: A 8.62 x3, B 9.28 / 9.29 / 9.30) with identical tokens to the final build on both cuts: at one row both take 8 ranks, so the c1 decode path is the same kernel.
 - nsys (cut A, the sweep build at the same 8 ranks x 8 warps, trace `sel-r8w8-node` on the pod): `sdpa_paged_selected_mma_kernel<128, 8, 8>` on a grid of 8 x 4 blocks in clusters of 8, kernel median 11.71 us against the base's `<128, 16>` on 1 x 4 blocks, 18.37 us; on the critical path 18.4 -> 11.8 us a layer.
-- TTFT p50 (pie, c1): cut A base 28.4 / 28.0 / 27.9 ms (`ab-a-base-*`), fix 27.8 / 28.2 / 28.2 (`ab-a-fix-*`); cut B 31.5 -> 31.7 (round 1). This workload's ~500-token prefill doesn't take the cluster (a fire of more than 9 rows at 4 kv heads doesn't); a prefill of a few rows would.
+- TTFT p50 (pie, c1): cut A base 28.4 / 28.0 / 27.9 ms (`ab-a-base-*`), fix 27.8 / 28.2 / 28.2 (`ab-a-fix-*`); cut B 31.5 -> 31.7 (round 1). This workload's ~500-token prefill doesn't take the cluster (at 4 kv heads a fire of 5 rows or more doesn't); a prefill of a few rows would.
 
 ## Tokens and numerics
 
@@ -162,11 +162,14 @@ Batching: 256-token prompts (the chat template alone renders past 128), 128 out,
 - Where the cluster is off (c8 and up, every pf point) the points sit within +-0.7% of base but cut B's pf8, which can't take the cluster; its 3-round rerun is pending. The first build's curve (any fire under a quarter of the SMs took 8 ranks; `results/raw/curve-fix1/`) had cut A c4 9.72 -> 9.73 and c8 10.11 -> 10.21 ms, which is what the halving rule fixes.
 - nsys at c32 on the final build (that the kernel is the base's): PENDING.
 
-## Tests (pending)
+## Tests (final commit 3da03d2c1 unless said; logs in `results/tests/`)
 
-- `kernels-cuda` `attn::selected` (extended with the cluster walk) and `attn::fa2*`: pass on the fix build (`results/tests/kernels-selected-fa2-fix1b.log`); a deliberate error in the cluster fold fails `attn::selected` at walk 2, so the test reaches the new path.
-- `engine-cuda` unit tests: 68/69 on the first fix build, the failure being `chip::tests::the_b200_runs_its_family_measured_with_the_skinny_gemm_off`, which lists the B200's own settings and now lists `selected_cluster` (`results/tests/engine-cuda-lib-fix1b.log`, then `engine-cuda-lib-chip-fix1c.log`: 12/12 chip tests).
-- GPU suite (engine-cuda and kernels-cuda, `--test-threads=1`, `CARGO_PROFILE_DEV_OPT_LEVEL=2`) on the final diff: PENDING.
+- `kernels-cuda` `attn::selected` (the extended case and the new MiniMax-shaped one): 2/2 pass (`kernels-selected-final.log`, run on the final source before the amend; the GPU suite reruns them). With the fold's weights removed (`v += out[r] / kRanks`), both fail, the new test at walk 2, head 0 (`kernels-selected-mutation-unweighted-fold.log`).
+- `cargo fmt --all --check` (CI's step): clean.
+- `engine-cuda` unit tests: on the first fix build 68/69, the failure being `chip::tests::the_b200_runs_its_family_measured_with_the_skinny_gemm_off`, which lists the B200's own settings and now lists `selected_cluster` too (`engine-cuda-lib-fix1b.log`, `engine-cuda-lib-chip-fix1c.log`: 12/12 chip tests after it).
+- GPU suite, single-threaded at `CARGO_PROFILE_DEV_OPT_LEVEL=2` (`gpu-suite-*.log`, commit in `gpu-suite-commit.txt`):
+  - `kernels-cuda`: the lib unit tests ran 34/35, `jit::nvrtc::tests::every_unit_lowers` failing in ptxas ("Instruction 'mma with block scale' not supported on .target 'sm_100a'"); cargo then skipped the integration tests (no `--no-fail-fast`), rerun separately: PENDING. Same test on base e2e9d1e: PENDING.
+  - `engine-cuda`: PENDING.
 
 ## Fix 2, measured but not shipped: the q/k norm + RoPE + KV append
 

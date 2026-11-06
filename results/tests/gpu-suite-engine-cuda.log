@@ -1,2 +1,104 @@
    Compiling pie-poem-compiler v0.6.0 (/root/r2g/pie/crates/poem-compiler)
    Compiling kernels-cuda v0.6.0 (/root/r2g/pie/crates/kernels-cuda)
+   Compiling pie-poem-exec v0.6.0 (/root/r2g/pie/crates/poem-exec)
+   Compiling engine-cuda v0.6.0 (/root/r2g/pie/crates/engine-cuda)
+    Finished `test` profile [optimized + debuginfo] target(s) in 5.07s
+     Running unittests src/lib.rs (target/debug/deps/engine_cuda-0c6fd18c94ae260b)
+
+running 69 tests
+test adapter::tests::adapter_every_case ... ok
+test api::serving_stamp_tests::an_artifact_for_another_shell_is_refused_before_anything_is_opened ... ok
+test api::tests::api_every_case ... ok
+test arena::tests::the_carve_fits_the_allocation_it_asks_for ... ok
+test boot::tests::the_device_spelling_is_read_in_every_form_a_deployment_writes ... ok
+test checkpoint_serving::tests::checkpoint_serving_every_case ... ok
+test chip::device::the_probe_reads_the_gpu_it_names ... ok
+test chip::tests::a_capability_with_no_family_runs_the_defaults_untuned ... ok
+test chip::tests::each_capability_takes_its_family_and_from_10_0_the_blackwell_kernels ... ok
+test chip::tests::every_a100_runs_the_a100_file_and_another_ampere_its_family_alone ... ok
+test chip::tests::every_checked_in_profile_dumps_to_a_file_that_reads_back_strictly ... ok
+test chip::tests::only_a_b200_runs_the_tcgen05_selects ... ok
+test chip::tests::the_b200_moe_decisions_are_what_the_kernel_tests_run ... ok
+test chip::tests::the_b200_runs_its_family_measured_with_the_skinny_gemm_off ... ok
+test chip::tests::the_checked_in_profiles_hold_together_and_each_family_names_its_tier ... ok
+test chip::tests::the_defaults_are_what_cuda_ran_before_profiles ... ok
+test chip::tests::the_gated_delta_scan_runs_where_its_family_measured_it ... ok
+test chip::tests::the_l40s_runs_its_family_measured_and_another_ada_the_same_unmeasured ... ok
+test chip::tests::the_registry_holds_together ... ok
+test device::elastic::tests::elastic_every_case ... ok
+test device::guard::tests::a_revision_or_a_per_thread_form_reads_as_its_base_call ... ok
+test device::guard::tests::a_watched_fire_notes_what_waits_for_the_device ... ok
+test device::held::heap::tests::a_size_is_carved_in_the_least_power_of_two_that_holds_it ... ok
+test ep::rebalance::tests::the_first_boundary_drops_what_arming_left_and_every_period_rebalances_after ... ok
+test ep::tests::a_landing_read_past_the_next_dispatch_is_refused ... ok
+test ep::tests::every_dispatch_and_combine_output_is_seated ... ok
+test experts::tests::experts_every_case ... ok
+test exports::tests::a_class_attending_both_ways_under_one_mask_is_refused ... ok
+test exports::tests::every_switch_a_request_carries_lands_in_its_class ... ok
+test group::tests::a_poison_whose_abort_never_returns_still_answers ... ok
+test grouped_decode::tests::a_group_the_decode_kernel_is_not_stamped_at_takes_the_prefill ... ok
+test grouped_decode::tests::a_sinked_decode_without_a_window_takes_the_prefill_where_the_profile_says ... ok
+test lockstep::tests::a_busy_rank_that_stops_holds_one_step_to_its_deadline ... ok
+test lockstep::tests::a_lone_frame_fires_without_waiting_for_idle_ranks ... ok
+test lockstep::tests::a_poisoned_group_answers_every_waiting_rank ... ok
+test lockstep::tests::a_rank_busy_in_the_last_step_is_waited_for_in_the_next ... ok
+test lockstep::tests::a_rank_that_announces_and_never_comes_holds_the_step_to_its_deadline ... ok
+test lockstep::tests::announced_ranks_share_a_step_at_the_largest_bucket ... ok
+test lockstep::tests::every_frame_fires_once_across_many_steps ... ok
+test lockstep::tests::no_two_steps_fire_at_once ... ok
+test mask::tests::mask_every_case ... ok
+test program::compile::tests::compile_every_case ... ok
+test program::launch::tests::a_region_lays_its_scratch_out_in_the_order_it_runs ... ok
+test program::launch::tests::only_bool_is_packed_and_the_round_trip_is_lossless ... ok
+test program::session::tests::a_launching_stage_paired_with_the_wrong_plan_is_refused ... ok
+test program::wave::tests::each_lane_names_its_own_window_of_the_wave_s_ticket_table ... ok
+test record::tests::a_key_carries_which_regions_are_islands ... ok
+test record::tests::record_every_case ... ok
+test replay::tests::a_long_prompt_fires_its_encoder_rows_first_and_its_last_window_after ... ok
+test replay::tests::a_prompt_reading_rows_its_decoder_skips_is_left_whole ... ok
+test rotate::tests::a_ceiling_under_the_shallowest_legal_ring_declines_by_name ... ok
+test serve::diag::tests::diag_every_case ... ok
+test serve::enqueue::tests::a_pass_that_does_not_commit_on_an_admitted_fire_errors_by_name ... ok
+test serve::prepare::tests::a_readout_as_tall_as_the_fire_holds_the_bucket ... ok
+test store::kv::tests::a_rows_heads_are_read_off_the_ops_that_restate_them ... ok
+test store::rs::tests::a_kda_recurrence_buffers_its_conv_rows_beside_its_two_projections ... ok
+test store::rs::tests::a_kda_recurrence_without_its_conv_is_refused_by_name ... ok
+test store::tests::store_every_case ... ok
+test tests::every_fused_op_its_rules_form_is_one_dispatch_fires ... ok
+test tests::every_name_keyed_entry_names_an_op ... ok
+test tests::every_site_a_retired_rule_fused_folds_into_a_region ... ok
+test tests::no_region_of_a_catalog_deployment_lands_over_its_inputs ... ok
+test tests::what_fuse_chains_off_keeps_is_a_rule_held ... ok
+test tune::tests::every_search_candidate_reads_against_the_registry ... ok
+test weights::tests::a_block_fp8_plane_is_read_by_the_block_its_exponents_count ... ok
+test weights::tests::a_v1_cgroup_limit_caps_the_headroom_below_the_hosts ... ok
+test weights::tests::the_headroom_nets_the_cgroups_page_cache_out_of_its_usage ... ok
+test weights::tests::the_store_is_laid_out_aligned_disjoint_and_in_plan_order ... ok
+test window::tests::window_every_case ... ok
+
+test result: ok. 69 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1297.68s
+
+     Running tests/engine_cuda/main.rs (target/debug/deps/engine_cuda-13d98812d365c373)
+
+running 60 tests
+test a_bank_says_which_site_it_corrects::a_bank_says_which_site_it_corrects_every_case ... ok
+test a_beam_reads_up_to_its_slot_what_its_mask_admits::a_beam_reads_up_to_its_slot_what_its_mask_admits ... ok
+test a_bidirectional_attention_adds_its_relative_bias_through_the_engine::a_bidirectional_attention_adds_its_relative_bias_through_the_engine_every_case ... ok
+test a_buffer_frees_after_another_context_closes::a_buffer_frees_after_another_context_closes ... ok
+test a_capture_survives_a_load_on_another_thread::a_capture_survives_a_load_on_another_thread ... ok
+test a_cell_table_reads_each_rows_patch_and_group::a_cell_table_reads_each_rows_patch_and_group ... ok
+test a_channel_fed_voxel_input_lands_the_committed_cell::the_cell_the_channel_holds_is_the_clip_the_convolution_reads ... ok
+test a_context_input_merged_into_the_stream_lands_its_rows::the_merged_context_rows_and_the_f32_lane_chain_land_the_reference ... ok
+test a_conv_decoder_fires_over_a_voxel_input::a_conv_decoder_fires_over_a_voxel_input_every_case ... ok
+test a_declined_mega_moe_answers_what_its_legs_answer::a_declined_mega_moe_answers_what_its_legs_answer ... ok
+test a_decode_envelope_packs_its_device_mask_into_each_lane::a_decode_envelope_packs_its_device_mask_into_each_lane ... ok
+test a_dit_plan_loads_at_a_sixty_four_k_row_ceiling::the_plan_loads_at_the_ceiling_and_fires_below_the_first_rung ... ok
+test a_double_block_fires_two_streams_through_the_engine::the_double_block_lands_the_host_reference_on_four_lanes ... ok
+test a_fired_router_and_mega_moe_answer_what_their_legs_answer::a_fired_router_and_mega_moe_answer_what_their_legs_answer ... ok
+test a_four_rank_group_fires_a_sharded_plan::four_ranks_land_what_one_rank_lands ... ok
+test a_fragmented_window_gets_a_view_per_run::a_window_p4_promised_whole_is_still_a_bake_integrity_refusal ... ok
+test a_fused_geglu_reads_its_affine_bank_as_planes::a_fused_geglu_reads_its_affine_bank_as_planes ... ok
+test a_fused_router_answers_what_its_product_and_pick_answer::a_fused_router_answers_what_its_product_and_pick_answer ... ok
+test a_fused_swiglu_sizes_the_decoded_tile_to_its_packed_plane::a_fused_swiglu_sizes_the_decoded_tile_to_its_packed_plane ... ok
+test a_grouped_window_is_one_window_and_a_segment_list::the_segment_lists_are_staged_beside_the_boundaries_in_the_one_copy ... ok
+test a_joined_projection_answers_what_its_legs_answer::a_joined_projection_answers_what_its_legs_answer ... 

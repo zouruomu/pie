@@ -1,7 +1,7 @@
 # Status: 20261106-0130-b200-x1-minimax-m3-1-flash-decode
 
-UTC: 2026-11-06 06:50Z
-Phase: GPU suite running on 3da03d2c1 (started 06:50Z, ~1.5 h). Done on the final build: c1 A/B (3 rounds), curves both cuts, cross-model. After the suite: pf32 (prompt file was 2 short), pf8 x3 on cut B, nsys at c32, rebase onto upstream main + one A/B round. ETA hand-over ~09:15Z.
+UTC: 2026-11-06 07:21Z
+Phase: GPU suite on 3da03d2c1: engine-cuda lib 69/69 pass; engine-cuda integration tests running. kernels-cuda: lib 34/35 (every_unit_lowers fails in ptxas on an sm_100a block-scale mma, not this change's code; base rerun after the suite), its integration tests rerun after. Then pf32, pf8 x3, nsys c32, rebase + A/B. ETA hand-over ~09:30Z.
 
 ## Verdict
 - The gap is real on B200, but the site's competitor numbers can't be this checkpoint: no released vLLM (0.32.0, 0.33.0) or SGLang (0.5.22) loads MiniMax-M3.1-Flash's NVFP4 experts. Fair same-weights comparison: the same 60-layer, 16-expert cut of MiniMax-M3-MXFP8 (cut B), which they do load.
