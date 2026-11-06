@@ -1,0 +1,36 @@
+[2m2026-11-06T06:49:48.427026Z[0m [32m INFO[0m [2mruntime::engine::load[0m[2m:[0m serving [3mdeployment[0m[2m=[0m"qwen3-0.6b-bf16-kv-bf16" [3midentified[0m[2m=[0m"qwen3-0.6b-bf16-kv-bf16" [3mcheckpoint[0m[2m=[0m"/root/.cache/huggingface/hub/models--Qwen--Qwen3-0.6B/snapshots/c1899de289a04d12100db370d81485cdf75e47ca"
+engine-cuda: bodies armed 102 of 102 compositions at load (decode 18/18, prefill 32/32, mixed 31/31, tower 0/0, wide 21/21; 0 segmented; 59 MiB of 4096 MiB, 81 of 1024 seats) (pool declared 155904 MiB, high water 2088 MiB, committed 2088 MiB, spare under the ceiling 4109 MiB) [12 key(s) never fired — this deployment cannot synthesize them, or their present set was already refused admission; e.g. mixed c2+c0 at bucket 1 (1024 seat(s) x 2048 context, 512 lane(s))] [sealed: every key attempted]
+╭─ Pie Engine ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╮
+│ Host         127.0.0.1:36081                                                                                                    │
+│ Model        default (/root/.cache/huggingface/hub/models--Qwen--Qwen3-0.6B/snapshots/c1899de289a04d12100db370d81485cdf75e47ca) │
+│ Backend      cuda                                                                                                               │
+│ Device       cuda:0                                                                                                             │
+╰─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╯
+[pie-bench] measured-start
+[pie-bench] measured-end
+[2m2026-11-06T06:49:55.919498Z[0m [33m WARN[0m [2mtarpc::client[0m[2m:[0m Connection broken: could not ready the transport for writes: an error occurred readying to send into the channel: the channel is closed and cannot accept new items for sending
+[2m2026-11-06T06:49:55.919498Z[0m [33m WARN[0m [2mtarpc::server[0m[2m:[0m Requests stream errored out: could not ready the transport for writes: an error occurred readying to send into the channel: the channel is closed and cannot accept new items for sending
+
+----------------------------------------------------
+mode:              latency
+engine:            pie
+model:             Qwen/Qwen3-0.6B
+completed:         8/8  failed=0
+wall:              2.139 s
+requests/sec:      3.74
+output tokens:     2048
+prompt tokens:     4096
+output tok/sec:    957.45
+lat mean/p50:      267.3 / 266.7 ms
+lat p95/p99:       269.7 / 270.5 ms
+ttft mean/p50:     4.1 / 4.0 ms
+ttft p95/p99:      4.6 / 4.8 ms
+intertoken p50/p99/max: 1.03 / 1.05 / 5.94 ms
+total batches:     1032
+avg batch latency us: 4078.3391472868216
+last batch latency us: 3089
+total requests:    2048
+max forward requests: 2
+batch size hist:   [16, 1016, 0, 0, 0, 0, 0, 0]
+----------------------------------------------------
+EXIT=0

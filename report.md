@@ -132,19 +132,35 @@ Engines (`results/engines.sha256`): base `b0ca94bb…` (main e2e9d1e), final `ff
 - At the three cut A greedy divergences the probe covers, base's top-2 logit margin is 0.0625 (request 2, position 1), 0.6875 (request 3, position 1) and 1.0 (request 1, position 8), against per-request medians of 0.875-6.4 (request 3's own median is 0.875, so its 0.6875 isn't far below it). Requests 4-6 also diverge at token 1 and weren't probed. The logits land in bf16 (margins come in steps of 1/16), and the scalar walk flips the same two position-1 tokens at the same margins.
 - Several logit units of movement under either order are this miniature's sensitivity (16 of 128 experts with top-4: a small change in a layer's input can swap one of its experts), not the kernel's error: at the kernel level the cluster walk is within the existing test's bf16 tolerance of the scalar walk, on a row whose slices all hold keys (the new test).
 
-## Cross-model (B200, base vs fix, 2 rounds each, raw workload, `results/raw/x-*`)
+## Cross-model (B200, base vs final, 2 rounds each, raw workload, `results/raw/x-*`; busy SM 1965 MHz)
 
-| model | path | base ITL p50 (ms) | fix ITL p50 (ms) | tokens base vs fix |
+| model | path | base ITL p50 (ms) | final ITL p50 (ms) | tokens base vs final |
 |---|---|---|---|---|
-| Qwen3.8-Flash-Next mini (4 layers, 16 experts, bf16; cut with shrink_checkpoint `--experts 16`) | takes the selected kernel (2 kv heads of 256, a shared selection): cluster on at decode | 0.85 / 0.85 | 0.82 / 0.82 (+3.7%) | diverge at 38-229 on 7/8, one identical; deterministic within each build |
-| Qwen3-0.6B bf16 | dense tensor-core decode with clusters (`gqa_cluster = 8`), whose two helpers moved to `prim/device.cuh` | 1.03 / 1.03 | 1.03 / 1.03 | identical 8/8 |
+| Qwen3.8-Flash-Next mini (4 layers, 16 experts, bf16; cut with shrink_checkpoint `--experts 16`) | takes the selected kernel (2 kv heads of 256, a shared selection): 8 ranks at one row | 0.852 / 0.848 | 0.822 / 0.822 (+3.4%) | diverge at 38-229 on 7/8, one identical; deterministic within each build, and identical to the first fix build's |
+| Qwen3-0.6B bf16 | dense tensor-core decode with clusters (`gqa_cluster = 8` in `sm100.toml`), whose two helpers moved to `prim/device.cuh` | 1.029 / 1.029 | 1.028 / 1.028 | identical 8/8 |
 
-- Only GQA models with selected attention take the changed kernel: MiniMax-M3 and Qwen3.8-Flash-Next (`qwen_4.poem`). The MLA models with selections (GLM-5.x, DeepSeek-V4, Kimi-K3) go through `attn/mla` kernels, untouched. Every other model sees only the helper move, a byte-for-byte move of two device functions, which Qwen3-0.6B's identical tokens and speed confirm on the cluster path that uses them. So no block-FP8 MoE beyond the two cuts was rerun; GLM-5.3's cut (MLA) doesn't reach the change.
+- Only GQA models with selected attention take the changed kernel: MiniMax-M3 and Qwen3.8-Flash-Next (`qwen_4.poem`). The MLA models with selections (GLM-5.x, DeepSeek-V4, Kimi-K3) go through `attn/mla` kernels, untouched. Every other model sees only the helper move, a byte-for-byte move of two device functions; Qwen3-0.6B's identical tokens and speed are consistent with that (I didn't trace that its decode took the clustered kernel). So no block-FP8 MoE beyond the two cuts was rerun; GLM-5.3's cut (MLA) doesn't reach the change.
 - Memory: the fix adds 8256 bytes of shared memory to a clustered block (`mma_fold_bytes`) and no device or host allocation; nothing starts or stops fitting.
 
-## Other loads (pending)
+## Other loads (final build vs base, one round a point, `results/raw/curve/`, table `results/analysis/curve-table.txt`)
 
-Base vs fix on both cuts, one round, `results/raw/curve/`: batching c4, c8, c16, c32, c64 (256-token prompts, 128 out; the chat template alone renders past 128 tokens), prefill batch pf4-pf32 (512 in, 1 out). The cluster applies where a fire's (row, kv head) blocks are fewer than a quarter of the SMs: at 4 kv heads, 9 rows or fewer, so c4 and c8 take it, c16 and up and every prefill don't. PENDING.
+Batching: 256-token prompts (the chat template alone renders past 128), 128 out, 4 requests per slot of concurrency. Prefill batch: 512-token prompts, 1 out (a pf fire takes no decode step, so it can't reach the change). The cluster's reach on B200 (rows in a fire): MiniMax 1 row 8 ranks, 2 rows 4, 3-4 rows 2, 5+ off.
+
+| point | cut A base -> final | cut B base -> final |
+|---|---|---|
+| c2 (4 ranks) | 211.7 -> 215.4 tok/s, ITL 9.35 -> 9.20 ms (+1.8%) | 196.2 -> 201.1, ITL 10.19 -> 9.83 (+2.5%) |
+| c4 (2 ranks) | 405.7 -> 405.1, ITL 9.75 -> 9.74 (-0.1%) | 366.5 -> 372.8, ITL 10.97 -> 10.66 (+1.7%) |
+| c8 (off) | 774.0 -> 774.7, ITL 10.17 -> 10.16 | 677.7 -> 679.3, ITL 11.91 -> 11.88 |
+| c16 (off) | 1454.8 -> 1462.9, ITL 10.72 -> 10.70 | 1222.0 -> 1224.9, ITL 12.88 -> 12.95 |
+| c32 (off) | 2582.0 -> 2595.1, ITL 11.72 -> 11.69 | 2096.0 -> 2101.8, ITL 14.47 -> 14.42 |
+| c64 (off) | 4403.1 -> 4390.3, ITL 13.15 -> 13.17 | 3635.5 -> 3626.7, ITL 15.94 -> 15.97 |
+| pf4 | 34166 -> 34302 prefill tok/s | 28249 -> 28439 |
+| pf8 | 39439 -> 39147 (-0.7%) | 31601 -> 30613 (-3.1%; 3 rounds PENDING) |
+| pf16 | 41352 -> 41596 | 32696 -> 32563 |
+| pf32 | PENDING (the curve's prompt file was 2 short) | PENDING |
+
+- Where the cluster is off (c8 and up, every pf point) the points sit within +-0.7% of base but cut B's pf8, which can't take the cluster; its 3-round rerun is pending. The first build's curve (any fire under a quarter of the SMs took 8 ranks; `results/raw/curve-fix1/`) had cut A c4 9.72 -> 9.73 and c8 10.11 -> 10.21 ms, which is what the halving rule fixes.
+- nsys at c32 on the final build (that the kernel is the base's): PENDING.
 
 ## Tests (pending)
 
@@ -159,9 +175,9 @@ Base vs fix on both cuts, one round, `results/raw/curve/`: batching c4, c8, c16,
 - Prototype, to size it (reverted, never committed): the retired rule plus a plus-one MiniMax pattern registered on CUDA, plus-one in the warp and row kernels, on top of the first fix build. One round of 4 requests each (`results/raw/proto2-*`): cut A 8.62 -> **8.27 ms** (-4.0%, busy clock 1965 MHz), cut B 9.29 -> **8.88 ms** (-4.4%, but that run's busy clock median was 1792 MHz, so the cut B number is indicative only). Logits (`results/analysis/logit-cmp.txt`, "base vs proto2"): position 0 moves (KL 0.6-1.3 on A, 0.06-0.21 on B: prefill takes the hand kernel too), and over the decode positions its mean KL to base is 0.073-0.178 on cut A (scalar walk 0.046-0.230) and 0.015-0.039 on cut B (scalar walk 0.014-0.017, so 0.9x to 2.4x the scalar's, request by request); greedy tokens identical to base on cut B (4/4), different from token 0-2 on cut A. The hand kernel rounds once where the generated region rounds at the program's points.
 - In the maintainers' direction the fix is one of: (a) the anchored epilogue inside the block-scaled tcgen05 GEMM; (b) a detached leg that spreads a row's non-uniform slices over many blocks in one launch (the slice offset a runtime value, not baked into each piece's kernel). I'd put either past this run's verification budget; the prototype puts the win at ~4%.
 
-## Remaining gap (cut B, after the fix: pie 9.29 ms vs vLLM 6.92 ms, +2.37 ms)
+## Remaining gap (cut B, after the fix: pie 9.286 ms vs vLLM 6.925 ms, +2.36 ms)
 
-From the per-layer table with the attention's measured gain taken out (us a layer x 57, approximate; vLLM's profiled gaps of ~1.2 ms a step don't all appear unprofiled, which is why the pieces sum past 2.37):
+From the per-layer table with the attention's measured gain taken out (us a layer x 57, approximate; vLLM's profiled gaps of ~1.2 ms a step don't all appear unprofiled, which is why the pieces sum past 2.36):
 
 | piece | delta a layer (us) | a step (ms) |
 |---|---|---|

@@ -1,0 +1,51 @@
+[2m2026-11-06T06:48:41.706462Z[0m [32m INFO[0m [2mruntime::engine::load[0m[2m:[0m serving [3mdeployment[0m[2m=[0m"qwen38-flash-next-mini-bf16-kv-bf16" [3midentified[0m[2m=[0m"qwen38-flash-next-mini-bf16-kv-bf16" [3mcheckpoint[0m[2m=[0m"/root/.cache/huggingface/hub/models--Qwen--Qwen3.8-Flash-Next/snapshots/mini-e16"
+engine-cuda: 6.0 GiB of planes the package declares `host` serve from pinned host memory (engine.host_planes)
+[2m2026-11-06T06:48:49.822890Z[0m [33m WARN[0m [2mkernels_cuda::jit::cache[0m[2m:[0m a device instantiation compiled with something to say [3mroot[0m[2m=[0m"attn/selected_sm80" [3minstantiation[0m[2m=[0m"::pie::attn::selected::mma::sdpa_paged_selected_mma_kernel<256, 8, 4>" [3march[0m[2m=[0m"sm_100" [3mlog[0m[2m=[0mattn/selected_sm80(5): warning #177-D: variable "pie::attn::selected::kMaxPer" was declared but never referenced
+  constexpr int kMaxPer = 16;
+                ^
+
+Remark: The warnings can be suppressed with "-diag-suppress <warning-number>"
+
+
+[2m2026-11-06T06:48:50.060065Z[0m [33m WARN[0m [2mkernels_cuda::jit::cache[0m[2m:[0m a device instantiation compiled with something to say [3mroot[0m[2m=[0m"attn/selected_sm80" [3minstantiation[0m[2m=[0m"::pie::attn::selected::mma::sdpa_paged_selected_mma_kernel<256, 8, 2>" [3march[0m[2m=[0m"sm_100" [3mlog[0m[2m=[0mattn/selected_sm80(5): warning #177-D: variable "pie::attn::selected::kMaxPer" was declared but never referenced
+  constexpr int kMaxPer = 16;
+                ^
+
+Remark: The warnings can be suppressed with "-diag-suppress <warning-number>"
+
+
+engine-cuda: bodies armed 102 of 102 compositions at load (decode 18/18, prefill 32/32, mixed 31/31, tower 0/0, wide 21/21; 31 segmented; 24 MiB of 4096 MiB, 81 of 1024 seats) (pool declared 150598 MiB, high water 2622 MiB, committed 2622 MiB, spare under the ceiling 1839 MiB) [12 key(s) never fired — this deployment cannot synthesize them, or their present set was already refused admission; e.g. mixed c1+c0 at bucket 1 (1024 seat(s) x 2048 context, 512 lane(s))] [sealed: every key attempted]
+╭─ Pie Engine ────────────────────────────────────────────────────────────────────────────────────────────╮
+│ Host         127.0.0.1:44049                                                                            │
+│ Model        default (/root/.cache/huggingface/hub/models--Qwen--Qwen3.8-Flash-Next/snapshots/mini-e16) │
+│ Backend      cuda                                                                                       │
+│ Device       cuda:0                                                                                     │
+╰─────────────────────────────────────────────────────────────────────────────────────────────────────────╯
+[pie-bench] measured-start
+[pie-bench] measured-end
+[2m2026-11-06T06:48:55.061447Z[0m [33m WARN[0m [2mtarpc::client[0m[2m:[0m Connection broken: could not ready the transport for writes: an error occurred readying to send into the channel: the channel is closed and cannot accept new items for sending
+[2m2026-11-06T06:48:55.061447Z[0m [33m WARN[0m [2mtarpc::server[0m[2m:[0m Requests stream errored out: could not ready the transport for writes: an error occurred readying to send into the channel: the channel is closed and cannot accept new items for sending
+
+----------------------------------------------------
+mode:              latency
+engine:            pie
+model:             /root/.cache/huggingface/hub/models--Qwen--Qwen3.8-Flash-Next/snapshots/mini-e16
+completed:         8/8  failed=0
+wall:              1.713 s
+requests/sec:      4.67
+output tokens:     2048
+prompt tokens:     3792
+output tok/sec:    1195.63
+lat mean/p50:      214.0 / 214.1 ms
+lat p95/p99:       214.4 / 214.5 ms
+ttft mean/p50:     3.8 / 3.8 ms
+ttft p95/p99:      4.2 / 4.3 ms
+intertoken p50/p99/max: 0.82 / 0.84 / 1.44 ms
+total batches:     1032
+avg batch latency us: 3256.125968992248
+last batch latency us: 2451
+total requests:    2048
+max forward requests: 2
+batch size hist:   [16, 1016, 0, 0, 0, 0, 0, 0]
+----------------------------------------------------
+EXIT=0

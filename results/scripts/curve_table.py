@@ -14,9 +14,9 @@ def get(cut, eng, pt):
         return n / s["wall_s"] if s.get("wall_s") else None, None
     return s.get("output_tok_per_s"), s.get("intertoken_p50_ms")
 for cut in ("a", "b"):
-    print(f"cut {cut}: point | base | fix | fix/base")
+    print(f"cut {cut}: point | base | final | final/base")
     for pt in points:
-        b, f = get(cut, "base", pt), get(cut, "fix", pt)
+        b, f = get(cut, "base", pt), get(cut, "final", pt)
         if b is None or f is None or not b[0] or not f[0]:
             print(f"  {pt}: pending"); continue
         itl = f" (ITL p50 {b[1]:.2f} -> {f[1]:.2f} ms)" if b[1] and f[1] else ""

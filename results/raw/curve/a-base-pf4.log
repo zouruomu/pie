@@ -1,0 +1,35 @@
+[2m2026-11-06T06:11:13.901792Z[0m [32m INFO[0m [2mruntime::engine::load[0m[2m:[0m serving [3mdeployment[0m[2m=[0m"minimax-m3-mini-mxfp8a8g32-nvfp4a4-kv-bf16-l60-e16" [3midentified[0m[2m=[0m"minimax-m3-mini-mxfp8a8g32-nvfp4a4-kv-bf16-l60-e16" [3mcheckpoint[0m[2m=[0m"/root/.cache/huggingface/hub/models--MiniMaxAI--MiniMax-M3.1-Flash/snapshots/mini60-e16"
+engine-cuda: bodies armed 78 of 78 compositions at load (decode 4/4, prefill 28/28, mixed 25/25, tower 0/0, wide 21/21; 0 segmented; 265 MiB of 4096 MiB, 57 of 1024 seats) (pool declared 112290 MiB, high water 1074 MiB, committed 1074 MiB, spare under the ceiling 2835 MiB) [22 key(s) never fired — this deployment cannot synthesize them, or their present set was already refused admission; e.g. prefill c0 at bucket 9742 (8 seat(s) x 2048 context, 4 lane(s))] [sealed: every key attempted]
+╭─ Pie Engine ───────────────────────────────────────────────────────────────────────────────────────────────────╮
+│ Host         127.0.0.1:43977                                                                                   │
+│ Model        default (/root/.cache/huggingface/hub/models--MiniMaxAI--MiniMax-M3.1-Flash/snapshots/mini60-e16) │
+│ Backend      cuda                                                                                              │
+│ Device       cuda:0                                                                                            │
+╰────────────────────────────────────────────────────────────────────────────────────────────────────────────────╯
+[pie-bench] measured-start
+[pie-bench] measured-end
+[2m2026-11-06T06:11:49.738718Z[0m [33m WARN[0m [2mtarpc::client[0m[2m:[0m Connection broken: could not ready the transport for writes: an error occurred readying to send into the channel: the channel is closed and cannot accept new items for sending
+[2m2026-11-06T06:11:49.738718Z[0m [33m WARN[0m [2mtarpc::server[0m[2m:[0m Requests stream errored out: could not ready the transport for writes: an error occurred readying to send into the channel: the channel is closed and cannot accept new items for sending
+
+----------------------------------------------------
+mode:              tput
+engine:            pie
+model:             /root/.cache/huggingface/hub/models--MiniMaxAI--MiniMax-M3.1-Flash/snapshots/mini60-e16
+completed:         8/8  failed=0
+wall:              0.116 s
+requests/sec:      68.74
+output tokens:     8
+prompt tokens:     3976
+output tok/sec:    68.74
+lat mean/p50:      57.9 / 57.9 ms
+lat p95/p99:       58.6 / 58.6 ms
+ttft mean/p50:     57.5 / 57.5 ms
+ttft p95/p99:      58.2 / 58.3 ms
+total batches:     2
+avg batch latency us: 55154.0
+last batch latency us: 54860
+total requests:    8
+max forward requests: 4
+batch size hist:   [0, 0, 2, 0, 0, 0, 0, 0]
+----------------------------------------------------
+EXIT=0 engine_sha256=b0ca94bbbf765c14ab2788be2e00b18a549727255c393d743522fa74e0c51109
