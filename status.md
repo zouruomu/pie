@@ -1,6 +1,6 @@
 # status: 20261106-0910-pro6000-x1-gpt-oss-120b-pbatch
 
-## Early findings (09:45Z, verdict pending the sweep)
+## Early findings (09:34Z, verdict pending the sweep)
 - pf256 smoke on main dc6282d7 (1 round each, cold prompts): 20b pie 46.8k vs TRT-LLM 71.5k tok/s (-35%);
   120b pie 28.9k vs TRT-LLM 43.3k (-33%). pie 120b on main is 2.1x the site's 13.8k: the 120b-specific
   problem the brief suspected is gone on main (120b/20b now 0.62, TRT-LLM's 0.61). The remaining gap is common to both models.
@@ -23,4 +23,10 @@ The gap looks like precision (W4A8 vs W4A16) at large M. Closing it on the site 
 to W4A8 on wide selects (what TRT-LLM does by default), or the site to compare at equal precision. I will quantify both (pie W4A8 vs TRT-LLM,
 pie W4A16 vs vLLM W4A16) before proposing; tell me if a default-precision change is out of scope.
 
-ETA early verdict ~10:45Z; hand-over ~19:00Z.
+ETA early verdict ~10:45Z; hand-over ~19:10Z (10 h in).
+
+## Orchestrator notes
+- note-1 (09:30Z): acknowledged. Times now from `date -u`. #1430 check: the sm_120a W4A8 selects in `select_fp4_sm120.cu` are only
+  reached by releases that quantize rows (ActQuant::E4m3/Nvfp4, `dispatch/linear.rs:2063-2108`) with K % 128 == 0; gpt-oss is W4A16 with
+  K = 2880, so on reading #1430 cannot change its selects. Confirming with an nsys kernel list on main (pending), and looking for what
+  doubled 120b since ee9098f60 (pending).
