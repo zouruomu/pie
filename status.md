@@ -1,6 +1,6 @@
 # status: 20261106-0910-pro6000-x1-gpt-oss-120b-pbatch
 
-**READY FOR REVIEW (12:40Z).** No fix, so no pr.md and no fix branch push (note 4). report.md has the full write-up; results/ has the raw data.
+**12:54Z: review 1 — running ea800efeb vs main, 20b pf32/256/1024, 3 alternating rounds (ETA ~13:30Z).**
 
 ## Verdict
 Both cells red on main dc6282d7. The gap is the MoE expert GEMMs, which TRT-LLM 1.4.0rc2.post1 runs at W4A8 (MXFP4 x MXFP8) on sm_120,
