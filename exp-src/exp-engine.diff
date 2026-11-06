@@ -1,0 +1,70 @@
+diff --git a/crates/engine-cuda/src/store.rs b/crates/engine-cuda/src/store.rs
+index 2153f923..ddfe1e32 100644
+--- a/crates/engine-cuda/src/store.rs
++++ b/crates/engine-cuda/src/store.rs
+@@ -1105,6 +1105,14 @@ impl Pools {
+         }
+         let limit = self.budget.unwrap_or(room);
+         let mut fit = pages_within(self.ceiling, limit, |pages| self.declared_at(pages));
++        let trace = std::env::var("PIE_EXP_TRACE").is_ok();
++        if trace {
++            eprintln!(
++                "[fit] fresh {fresh} live {} claim {} bodies {} programs {} room {} ceiling {} fit {fit} declared(fit) {} declared(fit+1) {}",
++                live >> 20, claim >> 20, bodies >> 20, programs >> 20, room >> 20, self.ceiling,
++                self.declared_at(fit) >> 20, self.declared_at(fit + 1) >> 20
++            );
++        }
+         if fresh && fit < self.ceiling {
+             let slots = self.paging.slots;
+             let fine = pages_within(self.ceiling, limit, |pages| {
+@@ -1123,6 +1131,9 @@ impl Pools {
+                     })
+                     .max(fine),
+                 };
++                if trace {
++                    eprintln!("[fit] fine {fine} reach {reach} (live-programs {})", live.saturating_sub(programs) >> 20);
++                }
+                 self.reshape(reach, slots)?;
+                 fit = pages_within(self.ceiling, limit, |pages| self.declared_at(pages));
+             }
+diff --git a/crates/runtime/src/bootstrap.rs b/crates/runtime/src/bootstrap.rs
+index 8e732145..9991e829 100644
+--- a/crates/runtime/src/bootstrap.rs
++++ b/crates/runtime/src/bootstrap.rs
+@@ -321,10 +321,14 @@ async fn bootstrap_inner(config: Config) -> Result<BootstrapHandle> {
+             // admitted prompts seat lanes the pool then suspends for each
+             // other's growth (Gemma-4-26B on an A100, c512: 2.9k tok/s
+             // admitting all 512, 4.7k at 224; its 5791 pages seat 45 at 2048).
++            let mult: usize = std::env::var("PIE_EXP_CAP_MULT")
++                .ok()
++                .and_then(|v| v.parse().ok())
++                .unwrap_or(5);
+             let seats = engine_configs
+                 .iter()
+-                .filter(|d| d.seated_first && d.limits.max_context > 0)
+-                .map(|d| 5 * d.total_pages * kv_page_size / d.limits.max_context)
++                .filter(|d| mult > 0 && d.seated_first && d.limits.max_context > 0)
++                .map(|d| mult * d.total_pages * kv_page_size / d.limits.max_context)
+                 .min();
+             match seats {
+                 Some(seats) if rs_seat_cap.is_none() && cap > seats.max(1) => {
+diff --git a/crates/runtime/src/planner/to_end.rs b/crates/runtime/src/planner/to_end.rs
+index d1f932b2..3ad01361 100644
+--- a/crates/runtime/src/planner/to_end.rs
++++ b/crates/runtime/src/planner/to_end.rs
+@@ -98,6 +98,15 @@ impl ToEnd {
+             + u64::from(first.1.slots.max(end.1.slots));
+         let kv_most = most_at_once(&mut kv, end.0);
+         let pages_most = most_at_once(&mut pages, end.1.pages);
++        if std::env::var("PIE_EXP_TRACE").is_ok() {
++            eprintln!(
++                "[to-end] end {} first {} live {} kv_most {kv_most} kv_total {kv_total} pass {}",
++                end.0,
++                first.0,
++                live.len(),
++                kv_most <= u64::from(kv_total)
++            );
++        }
+         let over: u64 = std::env::var("PIE_TO_END_OVER")
+             .ok()
+             .and_then(|v| v.parse().ok())

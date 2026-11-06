@@ -1,7 +1,7 @@
 # Status: 20261105-2035-a100-sxm-x1-gemma-4-31b-batching
 
 **Phase:** fix v3 built; verification queue q7 running (~6 h GPU)
-**UTC:** 2026-11-06 01:45
+**UTC:** 2026-11-06 02:12
 
 ## Preliminary verdict (1 round so far; rounds 2-3 running)
 
@@ -63,6 +63,12 @@ The pool-size half of the remaining gap. At c512 (fix v1 + user layer, 1 round):
 - Tests on the fix tree so far: runtime 101 passed; pie-profile 41 passed; engine-cuda chip 13 passed.
 
 ## Latest
+- **Why working_set_percent 40 adds 64 pages** (`results/exp/fit-trace-*.log`, exp engine printing the pool fit's inputs):
+  - At 50%, the kv planes keep the coarse map unit they were reserved with (for the 9,593-page initial ceiling). `declared(671) = 9,280 MiB`, but `declared(672) = 9,880 MiB`: 600 MiB a step, since all ~120 planes cross a unit at the same page. The final fit strands 561 MiB of its 9,841 MiB room.
+  - At 40%, the first fit's finer-unit test passes (fine 639 > fit 623). The planes are re-reserved for reach 799 in fine units, steps are 200 MiB, and the final fit leaves 43 MiB.
+  - So ~480 MiB of the line's gain is this reshape firing, and only ~0.24 GB is the smaller arena.
+  - The underlying issue: `Pools::fit_the_card` (crates/engine-cuda/src/store.rs) decides the reshape at the first pass's limit, with the bodies' allowance held, not at the reach the second fit will have. That is engine-wide, and a trade-off (finer units mean more mapping handles). I'm reporting it as a side finding, not changing it. The profile line stays, since it is measured; its comment will say what it does.
+- Exp engine sources: exp-src/exp-engine.diff (env-set cap multiplier, the gate trace, the fit trace; never part of the fix).
 - **Fix v3, round 1 (target cell):** c64 541.5, c128 593.3, c256 588.6, c512 596.5, c1024 596.5 tok/s (base 456-475; vLLM 601-657). Best against best: 596.5 vs 656.9, **-9.2% (base: -28%)**. Level with vLLM at c1024 (596.8). Rounds 2-3 running.
 - Upstream since base: #1437 (vllm_bench `--max-num-seqs`, default off), #1432 (L4 profile), server-web, wgpu. None touch this; the final rebase will come before hand-over.
 - fix v3 c512 596.5 (v2 559.2, base 453.8, vLLM 628.6).
