@@ -1,0 +1,32 @@
+Skipping import of cpp extensions due to incompatible torch version 2.14.0+cu130 for torchao version 0.15.0             Please see https://github.com/pytorch/ao/issues/2919 for more info
+[TensorRT-LLM] TensorRT LLM version: 1.4.0rc2.post1
+[11/06/2026-10:25:08] [TRT-LLM] [I] [llmapi] Using LLM with PyTorch backend
+[11/06/2026-10:25:08] [TRT-LLM] [W] [llmapi] Using default gpus_per_node: 1
+[11/06/2026-10:25:08] [TRT-LLM] [I] [llmapi] neither checkpoint_format nor checkpoint_loader were provided, checkpoint_format will be set to HF.
+`torch_dtype` is deprecated! Use `dtype` instead!
+[33;20mrank 0 using MpiPoolSession to spawn MPI processes
+[0mSkipping import of cpp extensions due to incompatible torch version 2.14.0+cu130 for torchao version 0.15.0             Please see https://github.com/pytorch/ao/issues/2919 for more info
+[TensorRT-LLM] TensorRT LLM version: 1.4.0rc2.post1
+[TRT-LLM] [I] [runtime][RANK 0] Refreshed the MPI local session
+`torch_dtype` is deprecated! Use `dtype` instead!
+Mapping safetensors weights in parallel:   0%|          | 0/3 [00:00<?, ?it/s]Mapping safetensors weights in parallel: 100%|██████████| 3/3 [00:00<00:00, 28.94it/s]Mapping safetensors weights in parallel: 100%|██████████| 3/3 [00:00<00:00, 28.70it/s]
+Loading weights:   0%|          | 0/464 [00:00<?, ?it/s]Loading weights:   1%|          | 3/464 [00:00<00:31, 14.57it/s]Loading weights:   5%|▍         | 23/464 [00:00<00:09, 44.95it/s]Loading weights:   9%|▉         | 42/464 [00:00<00:08, 48.06it/s]Loading weights:  13%|█▎        | 61/464 [00:01<00:07, 50.60it/s]Loading weights:  17%|█▋        | 80/464 [00:01<00:06, 56.54it/s]Loading weights:  21%|██▏       | 99/464 [00:01<00:06, 59.70it/s]Loading weights:  25%|██▌       | 118/464 [00:02<00:05, 62.49it/s]Loading weights:  30%|██▉       | 137/464 [00:02<00:05, 61.34it/s]Loading weights:  34%|███▎      | 156/464 [00:02<00:05, 60.16it/s]Loading weights:  38%|███▊      | 175/464 [00:03<00:04, 59.92it/s]Loading weights:  42%|████▏     | 194/464 [00:03<00:04, 59.69it/s]Loading weights:  46%|████▌     | 213/464 [00:03<00:04, 59.21it/s]Loading weights:  50%|█████     | 232/464 [00:04<00:03, 59.43it/s]Loading weights:  54%|█████▍    | 251/464 [00:04<00:03, 60.54it/s]Loading weights:  58%|█████▊    | 270/464 [00:04<00:03, 57.11it/s]Loading weights:  62%|██████▏   | 289/464 [00:05<00:03, 55.87it/s]Loading weights:  66%|██████▋   | 308/464 [00:05<00:02, 55.79it/s]Loading weights:  70%|███████   | 327/464 [00:05<00:02, 56.62it/s]Loading weights:  75%|███████▍  | 346/464 [00:06<00:02, 55.79it/s]Loading weights:  79%|███████▊  | 365/464 [00:06<00:01, 58.67it/s]Loading weights:  83%|████████▎ | 384/464 [00:06<00:01, 61.38it/s]Loading weights:  87%|████████▋ | 403/464 [00:06<00:00, 62.72it/s]Loading weights:  91%|█████████ | 422/464 [00:07<00:00, 64.39it/s]Loading weights:  95%|█████████▌| 441/464 [00:07<00:00, 65.21it/s]Loading weights:  99%|█████████▉| 460/464 [00:07<00:00, 65.78it/s]Loading weights: 100%|██████████| 464/464 [00:08<00:00, 57.87it/s]
+[TRT-LLM] [I] [runtime][RANK 0] GPU 0 is on NUMA node 3
+[TRT-LLM] [W] [batchmgr][RANK 0] KVCM2 host tier: mbind to NUMA node 3 failed with errno 1; falling back to first-touch placement by the fill worker, which is bound to that node (in a container this usually means CAP_SYS_NICE is absent). Placement is preserved; no behaviour is lost here.
+[TRT-LLM] [W] [thop][RANK 0] Attention workspace size is not enough, increase the size from 0 bytes to 26193920 bytes
+[TRT-LLM] [W] [thop][RANK 0] Attention workspace size is not enough, increase the size from 26193920 bytes to 33555968 bytes
+[TRT-LLM] [W] [thop][RANK 0] Attention workspace size is not enough, increase the size from 33555968 bytes to 33621248 bytes
+[TRT-LLM] [W] [thop][RANK 0] Attention workspace size is not enough, increase the size from 33621248 bytes to 60899328 bytes
+[TRT-LLM] [W] [thop][RANK 0] Attention workspace size is not enough, increase the size from 60899328 bytes to 88604672 bytes
+[TRT-LLM] [W] [thop][RANK 0] Attention workspace size is not enough, increase the size from 0 bytes to 30494720 bytes
+[TRT-LLM] [W] [batchmgr][RANK 0] KVCM2 host tier: mbind to NUMA node 3 failed with errno 1; falling back to first-touch placement by the fill worker, which is bound to that node (in a container this usually means CAP_SYS_NICE is absent). Placement is preserved; no behaviour is lost here.
+[TRT-LLM] [W] [thop][RANK 0] Attention workspace size is not enough, increase the size from 0 bytes to 26193920 bytes
+[TRT-LLM] [W] [thop][RANK 0] Attention workspace size is not enough, increase the size from 26193920 bytes to 33555968 bytes
+[TRT-LLM] [W] [thop][RANK 0] Attention workspace size is not enough, increase the size from 33555968 bytes to 33621248 bytes
+[TRT-LLM] [W] [thop][RANK 0] Attention workspace size is not enough, increase the size from 33621248 bytes to 60899328 bytes
+[TRT-LLM] [W] [thop][RANK 0] Attention workspace size is not enough, increase the size from 60899328 bytes to 88604672 bytes
+[TRT-LLM] [W] [thop][RANK 0] Attention workspace size is not enough, increase the size from 0 bytes to 30494720 bytes
+{"point": "pf128", "round": 0, "requests": 128, "prompt_tokens": 65536, "wall_s": 0.9329418120905757, "prefill_tok_s": 70246.61040021793, "output_tokens": 128, "ttft_p50_ms": 499.92057762574404, "ttft_max_ms": 932.7236011158675, "clocks_before": "2332 MHz, 12481 MHz, 252.25 W, 50", "clocks_after": "2310 MHz, 12481 MHz, 549.23 W, 53"}
+{"point": "pf256", "round": 0, "requests": 256, "prompt_tokens": 131072, "wall_s": 1.8327095268759876, "prefill_tok_s": 71518.15281029482, "output_tokens": 256, "ttft_p50_ms": 955.1515073981136, "ttft_max_ms": 1831.618676893413, "clocks_before": "2310 MHz, 12481 MHz, 549.23 W, 53", "clocks_after": "2302 MHz, 12481 MHz, 599.60 W, 55"}
+{"point": "pf512", "round": 0, "requests": 512, "prompt_tokens": 262144, "wall_s": 3.6379181079100817, "prefill_tok_s": 72058.7963291447, "output_tokens": 512, "ttft_p50_ms": 1877.9961144318804, "ttft_max_ms": 3637.648575939238, "clocks_before": "2302 MHz, 12481 MHz, 599.60 W, 55", "clocks_after": "2295 MHz, 12481 MHz, 599.44 W, 57"}
+{"point": "pf1024", "round": 0, "requests": 1024, "prompt_tokens": 524288, "wall_s": 7.260954797966406, "prefill_tok_s": 72206.48173527243, "output_tokens": 1024, "ttft_p50_ms": 3723.074372042902, "ttft_max_ms": 7260.536279063672, "clocks_before": "2317 MHz, 12481 MHz, 573.98 W, 57", "clocks_after": "2287 MHz, 12481 MHz, 595.52 W, 61"}

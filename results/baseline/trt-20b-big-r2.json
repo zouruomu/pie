@@ -1,0 +1,76 @@
+{
+ "engine": "tensorrt_llm",
+ "version": "1.4.0rc2.post1",
+ "model": "/root/.cache/huggingface/hub/models--openai--gpt-oss-20b/snapshots/6cee5e81ee83917806bbde320786a8fb61efebee",
+ "config": {
+  "model": "/root/.cache/huggingface/hub/models--openai--gpt-oss-20b/snapshots/6cee5e81ee83917806bbde320786a8fb61efebee",
+  "prompts_file": "/root/prompts-gptoss-512.json",
+  "points": "128,256,512,1024",
+  "warmup": 16,
+  "max_tokens": 1,
+  "reuse": false,
+  "max_num_tokens": null,
+  "max_batch_size": null,
+  "moe_backend": null,
+  "mem_frac": null,
+  "cuda_graphs": true,
+  "rounds": 1,
+  "json_out": "/root/r2g/evidence/results/baseline/trt-20b-big-r2.json",
+  "dump_ids": null
+ },
+ "rows": [
+  {
+   "point": "pf128",
+   "round": 0,
+   "requests": 128,
+   "prompt_tokens": 65536,
+   "wall_s": 0.9329418120905757,
+   "prefill_tok_s": 70246.61040021793,
+   "output_tokens": 128,
+   "ttft_p50_ms": 499.92057762574404,
+   "ttft_max_ms": 932.7236011158675,
+   "clocks_before": "2332 MHz, 12481 MHz, 252.25 W, 50",
+   "clocks_after": "2310 MHz, 12481 MHz, 549.23 W, 53"
+  },
+  {
+   "point": "pf256",
+   "round": 0,
+   "requests": 256,
+   "prompt_tokens": 131072,
+   "wall_s": 1.8327095268759876,
+   "prefill_tok_s": 71518.15281029482,
+   "output_tokens": 256,
+   "ttft_p50_ms": 955.1515073981136,
+   "ttft_max_ms": 1831.618676893413,
+   "clocks_before": "2310 MHz, 12481 MHz, 549.23 W, 53",
+   "clocks_after": "2302 MHz, 12481 MHz, 599.60 W, 55"
+  },
+  {
+   "point": "pf512",
+   "round": 0,
+   "requests": 512,
+   "prompt_tokens": 262144,
+   "wall_s": 3.6379181079100817,
+   "prefill_tok_s": 72058.7963291447,
+   "output_tokens": 512,
+   "ttft_p50_ms": 1877.9961144318804,
+   "ttft_max_ms": 3637.648575939238,
+   "clocks_before": "2302 MHz, 12481 MHz, 599.60 W, 55",
+   "clocks_after": "2295 MHz, 12481 MHz, 599.44 W, 57"
+  },
+  {
+   "point": "pf1024",
+   "round": 0,
+   "requests": 1024,
+   "prompt_tokens": 524288,
+   "wall_s": 7.260954797966406,
+   "prefill_tok_s": 72206.48173527243,
+   "output_tokens": 1024,
+   "ttft_p50_ms": 3723.074372042902,
+   "ttft_max_ms": 7260.536279063672,
+   "clocks_before": "2317 MHz, 12481 MHz, 573.98 W, 57",
+   "clocks_after": "2287 MHz, 12481 MHz, 595.52 W, 61"
+  }
+ ],
+ "prompt_ids_sha256": "cf839c81d4ac14b618a430e574048f7bc3b6e84593f92b3c779867fdb1546cd2"
+}

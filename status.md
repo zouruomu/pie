@@ -46,6 +46,11 @@ win (TRT-LLM's MoE kernel time vs pie's, from nsys next) rather than a half-buil
   quantize rows (`dispatch/linear.rs:2063-2108`) and need K % 128 == 0; gpt-oss runs W4A16 `moe_select_mxfp4_mma_staged` on main (nsys), so #1430
   cannot change its selects. ee9098f60 kernel list: pending (built, measuring after rounds 2-3).
 
+- note-2 (09:42Z), note-3 (10:05Z): acknowledged. Default-precision change out of scope; W4A8 measurement only (<=2 h, hours estimate for the
+  K = 2880 tail; my worktree's W4A8 deployment is refused for the stock checkpoint, so no pie-W4A8 number without an import/kernel). Next: the
+  per-component split pie vs TRT-LLM at pf256 (MoE vs the rest), pie vs vLLM 0.32 over the whole sweep for both models, and equal-token runs
+  (pie at 512 prompt tokens of its own rendering).
+
 ## Running
 - 10:21Z rounds 2-3 (pie/TRT-LLM alternating, pf128-1024, both models). ETA 11:05Z. Then: ee9098f60 120b pf256 + nsys; TRT-LLM nsys for the per-component table.
 - ETA hand-over ~19:10Z (earlier if the decision is attribution-only).

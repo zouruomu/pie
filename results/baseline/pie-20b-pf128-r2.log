@@ -6,3 +6,27 @@ engine-cuda: bodies armed 127 of 127 compositions at load (decode 8/8, prefill 4
 │ Device       cuda:0                                                                                                                │
 ╰────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╯
 [pie-bench] measured-start
+[pie-bench] measured-end
+[2m2026-11-06T10:22:23.241785Z[0m [33m WARN[0m [2mtarpc::client[0m[2m:[0m Connection broken: could not ready the transport for writes: an error occurred readying to send into the channel: the channel is closed and cannot accept new items for sending
+[2m2026-11-06T10:22:23.241794Z[0m [33m WARN[0m [2mtarpc::server[0m[2m:[0m Requests stream errored out: could not ready the transport for writes: an error occurred readying to send into the channel: the channel is closed and cannot accept new items for sending
+
+----------------------------------------------------
+mode:              tput
+engine:            pie
+model:             openai/gpt-oss-20b
+completed:         128/128  failed=0
+wall:              1.249 s
+requests/sec:      102.48
+output tokens:     128
+prompt tokens:     57344
+output tok/sec:    102.48
+lat mean/p50:      685.9 / 684.7 ms
+lat p95/p99:       1198.3 / 1235.4 ms
+total batches:     13
+avg batch latency us: 184407.84615384616
+last batch latency us: 146090
+total requests:    128
+max forward requests: 11
+batch size hist:   [0, 1, 1, 11, 0, 0, 0, 0]
+----------------------------------------------------
+EXIT=0
