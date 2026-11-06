@@ -1,0 +1,62 @@
+/root/venv-sglang/lib/python3.12/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/venv-sglang/lib/python3.12/site-packages/torch/jit/_script.py:1643: FutureWarning: `torch.jit.interface` is deprecated. Please use `torch.compile` instead.
+  warnings.warn(
+/root/venv-sglang/lib/python3.12/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/venv-sglang/lib/python3.12/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/root/venv-sglang/lib/python3.12/site-packages/torch/jit/_script.py:1643: FutureWarning: `torch.jit.interface` is deprecated. Please use `torch.compile` instead.
+  warnings.warn(
+/root/venv-sglang/lib/python3.12/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+Multi-thread loading shards:   0% Completed | 0/12 [00:00<?, ?it/s]Multi-thread loading shards:   8% Completed | 1/12 [00:01<00:14,  1.34s/it]Multi-thread loading shards:  17% Completed | 2/12 [00:01<00:06,  1.46it/s][2026-11-06 01:56:48] Scheduler hit an exception: Traceback (most recent call last):
+  File "/root/venv-sglang/lib/python3.12/site-packages/sglang/srt/managers/scheduler.py", line 6128, in run_scheduler_process
+    scheduler = Scheduler(server_args, port_args)
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/venv-sglang/lib/python3.12/site-packages/sglang/srt/managers/scheduler.py", line 563, in __init__
+    self.init_model_worker()
+  File "/root/venv-sglang/lib/python3.12/site-packages/sglang/srt/managers/scheduler.py", line 1100, in init_model_worker
+    self.init_tp_model_worker()
+  File "/root/venv-sglang/lib/python3.12/site-packages/sglang/srt/managers/scheduler.py", line 1009, in init_tp_model_worker
+    self.tp_worker = TpModelWorker(**worker_kwargs)
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/venv-sglang/lib/python3.12/site-packages/sglang/srt/managers/tp_worker.py", line 318, in __init__
+    self._init_model_runner()
+  File "/root/venv-sglang/lib/python3.12/site-packages/sglang/srt/managers/tp_worker.py", line 480, in _init_model_runner
+    self._model_runner = ModelRunner(
+                         ^^^^^^^^^^^^
+  File "/root/venv-sglang/lib/python3.12/site-packages/sglang/srt/model_executor/model_runner.py", line 488, in __init__
+    self.initialize()
+  File "/root/venv-sglang/lib/python3.12/site-packages/sglang/srt/model_executor/model_runner.py", line 705, in initialize
+    self.load_model()
+  File "/root/venv-sglang/lib/python3.12/site-packages/sglang/srt/model_executor/model_runner.py", line 1293, in load_model
+    loaded = load_model_with_memory_saver(
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/venv-sglang/lib/python3.12/site-packages/sglang/srt/model_executor/model_runner_components/load_model_utils.py", line 346, in load_model_with_memory_saver
+    model = loader.load_model(
+            ^^^^^^^^^^^^^^^^^^
+  File "/root/venv-sglang/lib/python3.12/site-packages/sglang/srt/model_loader/loader.py", line 1018, in load_model
+    self.load_weights_and_postprocess(
+  File "/root/venv-sglang/lib/python3.12/site-packages/sglang/srt/model_loader/loader.py", line 1027, in load_weights_and_postprocess
+    DefaultModelLoader.load_weights_only(model, weights, target_device)
+  File "/root/venv-sglang/lib/python3.12/site-packages/sglang/srt/model_loader/loader.py", line 1075, in load_weights_only
+    model.load_weights(weights)
+  File "/root/venv-sglang/lib/python3.12/site-packages/sglang/srt/models/minimax_m3_vl.py", line 332, in load_weights
+    self._load_llm_weight(
+  File "/root/venv-sglang/lib/python3.12/site-packages/sglang/srt/models/minimax_m3_vl.py", line 405, in _load_llm_weight
+    param.weight_loader(
+  File "/root/venv-sglang/lib/python3.12/site-packages/sglang/srt/layers/moe/fused_moe_triton/layer.py", line 1079, in weight_loader
+    self._weight_loader_physical(
+  File "/root/venv-sglang/lib/python3.12/site-packages/sglang/srt/layers/moe/fused_moe_triton/layer.py", line 1109, in _weight_loader_physical
+    self._weight_loader_impl(
+  File "/root/venv-sglang/lib/python3.12/site-packages/sglang/srt/layers/moe/fused_moe_triton/layer.py", line 1353, in _weight_loader_impl
+    self._load_model_weight_or_group_weight_scale(
+  File "/root/venv-sglang/lib/python3.12/site-packages/sglang/srt/layers/moe/fused_moe_triton/layer.py", line 698, in _load_model_weight_or_group_weight_scale
+    self._load_w13(
+  File "/root/venv-sglang/lib/python3.12/site-packages/sglang/srt/layers/moe/fused_moe_triton/layer.py", line 806, in _load_w13
+    expert_data.copy_(loaded_weight)
+RuntimeError: The size of tensor a (192) must match the size of tensor b (384) at non-singleton dimension 1
+
+[2026-11-06 01:56:48] Received sigquit from a child process. It usually means the child failed.
+EXIT=137

@@ -1,0 +1,165 @@
+[2m2026-11-06T01:51:13.835455Z[0m [33m WARN[0m [2mkernels_cuda::jit::cache[0m[2m:[0m a device instantiation compiled with something to say [3mroot[0m[2m=[0m"linear/act_quant" [3minstantiation[0m[2m=[0m"::pie::linear::scales_to_atoms" [3march[0m[2m=[0m"sm_100a" [3mlog[0m[2m=[0mlinear/act_quant(9): warning #177-D: variable "pie::linear::kQuantCodes" was declared but never referenced
+  constexpr int kQuantCodes = 0;
+                ^
+
+Remark: The warnings can be suppressed with "-diag-suppress <warning-number>"
+
+
+[2m2026-11-06T01:51:15.338305Z[0m [33m WARN[0m [2mkernels_cuda::jit::cache[0m[2m:[0m a device instantiation compiled with something to say [3mroot[0m[2m=[0m"attn/prefill_sm100" [3minstantiation[0m[2m=[0m"::pie::attn::fmha::tc5_fmha_prefill<128, 128, 3, 128, false, false>" [3march[0m[2m=[0m"sm_100a" [3mlog[0m[2m=[0mattn/prefill_sm100(242): warning #128-D: loop is not reachable
+          for (; i < bound * p.kv_heads; i += step) {
+          ^
+          detected during instantiation of "void pie::attn::fmha::tc5_fmha_prefill<D,BKV,ST,DV,IO,PAIR>(pie::tc5::TmaMap, pie::tc5::TmaMap, pie::tc5::TmaMap, pie::tc5::TmaMap, pie::attn::fmha::Params, int) [with D=128, BKV=128, ST=3, DV=128, IO=false, PAIR=false]" 
+
+Remark: The warnings can be suppressed with "-diag-suppress <warning-number>"
+
+
+[2m2026-11-06T01:51:15.411973Z[0m [33m WARN[0m [2mkernels_cuda::jit::cache[0m[2m:[0m a device instantiation compiled with something to say [3mroot[0m[2m=[0m"linear/glu" [3minstantiation[0m[2m=[0m"::pie::linear::swiglu_clamp_alpha<::pie::bf16, true>" [3march[0m[2m=[0m"sm_100" [3mlog[0m[2m=[0mlinear/glu(25): warning #177-D: variable "lane" was declared but never referenced
+      const int lane = static_cast<int>(threadIdx.x % 32);
+                ^
+
+Remark: The warnings can be suppressed with "-diag-suppress <warning-number>"
+
+
+[2m2026-11-06T01:51:16.040770Z[0m [33m WARN[0m [2mkernels_cuda::jit::cache[0m[2m:[0m a device instantiation compiled with something to say [3mroot[0m[2m=[0m"elemwise/rope" [3minstantiation[0m[2m=[0m"::pie::elemwise::rope_partial<::pie::bf16>" [3march[0m[2m=[0m"sm_100" [3mlog[0m[2m=[0melemwise/rope(431): warning #177-D: variable "pie::elemwise::kRopeInterleaved" was declared but never referenced
+  constexpr int kRopeInterleaved = 0;
+                ^
+
+Remark: The warnings can be suppressed with "-diag-suppress <warning-number>"
+
+elemwise/rope(432): warning #177-D: variable "pie::elemwise::kRopeNeox" was declared but never referenced
+  constexpr int kRopeNeox = 1;
+                ^
+
+elemwise/rope(433): warning #177-D: variable "pie::elemwise::kRopeSplit" was declared but never referenced
+  constexpr int kRopeSplit = 2;
+                ^
+
+elemwise/rope(434): warning #177-D: variable "pie::elemwise::kRopeSplitLadder" was declared but never referenced
+  constexpr int kRopeSplitLadder = 3;
+                ^
+
+
+[2m2026-11-06T01:51:16.502971Z[0m [33m WARN[0m [2mkernels_cuda::jit::cache[0m[2m:[0m a device instantiation compiled with something to say [3mroot[0m[2m=[0m"attn/index/index" [3minstantiation[0m[2m=[0m"::pie::attn::index::index_topk_block_max<::pie::bf16>" [3march[0m[2m=[0m"sm_100" [3mlog[0m[2m=[0mattn/index/index(149): warning #177-D: variable "pie::attn::index::kMaxRopeDim" was declared but never referenced
+  constexpr int kMaxRopeDim = 256;
+                ^
+
+Remark: The warnings can be suppressed with "-diag-suppress <warning-number>"
+
+attn/index/index(451): warning #177-D: variable "pie::attn::index::index_mma::kLd" was declared but never referenced
+  constexpr int kLd = kD + 8;
+                ^
+
+attn/index/index(452): warning #177-D: variable "pie::attn::index::index_mma::kWarps" was declared but never referenced
+  constexpr int kWarps = kBlock / 32;
+                ^
+
+attn/index/index(454): warning #177-D: variable "pie::attn::index::index_mma::kNt" was declared but never referenced
+  constexpr int kNt = kKeys / 8;  // a chunk's 8-key mma column tiles
+                ^
+
+
+[2m2026-11-06T01:51:16.630862Z[0m [33m WARN[0m [2mkernels_cuda::jit::cache[0m[2m:[0m a device instantiation compiled with something to say [3mroot[0m[2m=[0m"attn/selected_sm80" [3minstantiation[0m[2m=[0m"::pie::attn::selected::mma::sdpa_paged_selected_mma_kernel<128>" [3march[0m[2m=[0m"sm_100" [3mlog[0m[2m=[0mattn/selected_sm80(5): warning #177-D: variable "pie::attn::selected::kMaxPer" was declared but never referenced
+  constexpr int kMaxPer = 16;
+                ^
+
+Remark: The warnings can be suppressed with "-diag-suppress <warning-number>"
+
+
+[2m2026-11-06T01:51:17.276415Z[0m [33m WARN[0m [2mkernels_cuda::jit::cache[0m[2m:[0m a device instantiation compiled with something to say [3mroot[0m[2m=[0m"linear/moe/route" [3minstantiation[0m[2m=[0m"::pie::linear::moe_topk_ranked<float, false, 1>" [3march[0m[2m=[0m"sm_100" [3mlog[0m[2m=[0mlinear/moe/route(446): warning #177-D: variable "pie::linear::kRouterMaxExperts" was declared but never referenced
+  constexpr int kRouterMaxExperts = 512;
+                ^
+
+Remark: The warnings can be suppressed with "-diag-suppress <warning-number>"
+
+
+[2m2026-11-06T01:51:17.838773Z[0m [33m WARN[0m [2mkernels_cuda::jit::cache[0m[2m:[0m a device instantiation compiled with something to say [3mroot[0m[2m=[0m"linear/moe/route" [3minstantiation[0m[2m=[0m"::pie::linear::expert_alpha" [3march[0m[2m=[0m"sm_100" [3mlog[0m[2m=[0mlinear/moe/route(446): warning #177-D: variable "pie::linear::kRouterMaxExperts" was declared but never referenced
+  constexpr int kRouterMaxExperts = 512;
+                ^
+
+Remark: The warnings can be suppressed with "-diag-suppress <warning-number>"
+
+
+[2m2026-11-06T01:51:17.861251Z[0m [33m WARN[0m [2mkernels_cuda::jit::cache[0m[2m:[0m a device instantiation compiled with something to say [3mroot[0m[2m=[0m"linear/moe/route" [3minstantiation[0m[2m=[0m"::pie::linear::route_count_tally" [3march[0m[2m=[0m"sm_100" [3mlog[0m[2m=[0mlinear/moe/route(446): warning #177-D: variable "pie::linear::kRouterMaxExperts" was declared but never referenced
+  constexpr int kRouterMaxExperts = 512;
+                ^
+
+Remark: The warnings can be suppressed with "-diag-suppress <warning-number>"
+
+
+[2m2026-11-06T01:51:17.882427Z[0m [33m WARN[0m [2mkernels_cuda::jit::cache[0m[2m:[0m a device instantiation compiled with something to say [3mroot[0m[2m=[0m"linear/moe/route" [3minstantiation[0m[2m=[0m"::pie::linear::route_offsets_scan" [3march[0m[2m=[0m"sm_100" [3mlog[0m[2m=[0mlinear/moe/route(446): warning #177-D: variable "pie::linear::kRouterMaxExperts" was declared but never referenced
+  constexpr int kRouterMaxExperts = 512;
+                ^
+
+Remark: The warnings can be suppressed with "-diag-suppress <warning-number>"
+
+
+[2m2026-11-06T01:51:17.903492Z[0m [33m WARN[0m [2mkernels_cuda::jit::cache[0m[2m:[0m a device instantiation compiled with something to say [3mroot[0m[2m=[0m"linear/moe/route" [3minstantiation[0m[2m=[0m"::pie::linear::route_place_tally" [3march[0m[2m=[0m"sm_100" [3mlog[0m[2m=[0mlinear/moe/route(446): warning #177-D: variable "pie::linear::kRouterMaxExperts" was declared but never referenced
+  constexpr int kRouterMaxExperts = 512;
+                ^
+
+Remark: The warnings can be suppressed with "-diag-suppress <warning-number>"
+
+
+[2m2026-11-06T01:51:23.861448Z[0m [33m WARN[0m [2mkernels_cuda::jit::cache[0m[2m:[0m a device instantiation compiled with something to say [3mroot[0m[2m=[0m"attn/selected_sm80" [3minstantiation[0m[2m=[0m"::pie::attn::selected::mma::sdpa_paged_selected_mma_kernel<128, 16>" [3march[0m[2m=[0m"sm_100" [3mlog[0m[2m=[0mattn/selected_sm80(5): warning #177-D: variable "pie::attn::selected::kMaxPer" was declared but never referenced
+  constexpr int kMaxPer = 16;
+                ^
+
+Remark: The warnings can be suppressed with "-diag-suppress <warning-number>"
+
+
+[2m2026-11-06T01:51:24.005672Z[0m [33m WARN[0m [2mkernels_cuda::jit::cache[0m[2m:[0m a device instantiation compiled with something to say [3mroot[0m[2m=[0m"linear/moe/route" [3minstantiation[0m[2m=[0m"::pie::linear::route_lay_out_quant_nvfp4" [3march[0m[2m=[0m"sm_100" [3mlog[0m[2m=[0mlinear/moe/route(446): warning #177-D: variable "pie::linear::kRouterMaxExperts" was declared but never referenced
+  constexpr int kRouterMaxExperts = 512;
+                ^
+
+Remark: The warnings can be suppressed with "-diag-suppress <warning-number>"
+
+
+[2m2026-11-06T01:51:28.025505Z[0m [33m WARN[0m [2mkernels_cuda::jit::cache[0m[2m:[0m a device instantiation compiled with something to say [3mroot[0m[2m=[0m"linear/gemm_sm100" [3minstantiation[0m[2m=[0m"::pie::linear::tc5_finalize" [3march[0m[2m=[0m"sm_100a" [3mlog[0m[2m=[0mlinear/gemm_sm100(81): warning #177-D: variable "pie::linear::tc5k::kXGroupsMax" was declared but never referenced
+  constexpr unsigned kXGroupsMax = 2;
+                     ^
+
+Remark: The warnings can be suppressed with "-diag-suppress <warning-number>"
+
+
+[2m2026-11-06T01:51:31.446626Z[0m [33m WARN[0m [2mkernels_cuda::jit::cache[0m[2m:[0m a device instantiation compiled with something to say [3mroot[0m[2m=[0m"linear/moe/route" [3minstantiation[0m[2m=[0m"::pie::linear::route_lay_out_small" [3march[0m[2m=[0m"sm_100" [3mlog[0m[2m=[0mlinear/moe/route(446): warning #177-D: variable "pie::linear::kRouterMaxExperts" was declared but never referenced
+  constexpr int kRouterMaxExperts = 512;
+                ^
+
+Remark: The warnings can be suppressed with "-diag-suppress <warning-number>"
+
+
+engine-cuda: bodies armed 102 of 102 compositions at load (decode 18/18, prefill 32/32, mixed 31/31, tower 0/0, wide 21/21; 0 segmented; 370 MiB of 4096 MiB, 81 of 1024 seats) (pool declared 112050 MiB, high water 2502 MiB, committed 2502 MiB, spare under the ceiling 1829 MiB) [12 key(s) never fired — this deployment cannot synthesize them, or their present set was already refused admission; e.g. mixed c2+c0 at bucket 1 (1024 seat(s) x 2048 context, 512 lane(s))] [sealed: every key attempted]
+╭─ Pie Engine ───────────────────────────────────────────────────────────────────────────────────────────────────╮
+│ Host         127.0.0.1:38207                                                                                   │
+│ Model        default (/root/.cache/huggingface/hub/models--MiniMaxAI--MiniMax-M3.1-Flash/snapshots/mini60-e16) │
+│ Backend      cuda                                                                                              │
+│ Device       cuda:0                                                                                            │
+╰────────────────────────────────────────────────────────────────────────────────────────────────────────────────╯
+[pie-bench] measured-start
+[pie-bench] measured-end
+[2m2026-11-06T01:52:14.277968Z[0m [33m WARN[0m [2mtarpc::server[0m[2m:[0m Requests stream errored out: could not ready the transport for writes: an error occurred readying to send into the channel: the channel is closed and cannot accept new items for sending
+[2m2026-11-06T01:52:14.277968Z[0m [33m WARN[0m [2mtarpc::client[0m[2m:[0m Connection broken: could not ready the transport for writes: an error occurred readying to send into the channel: the channel is closed and cannot accept new items for sending
+
+----------------------------------------------------
+mode:              latency
+engine:            pie
+model:             /root/.cache/huggingface/hub/models--MiniMaxAI--MiniMax-M3.1-Flash/snapshots/mini60-e16
+completed:         8/8  failed=0
+wall:              18.612 s
+requests/sec:      0.43
+output tokens:     2048
+prompt tokens:     3976
+output tok/sec:    110.04
+lat mean/p50:      2326.4 / 2326.3 ms
+lat p95/p99:       2327.1 / 2327.1 ms
+ttft mean/p50:     28.1 / 27.9 ms
+ttft p95/p99:      28.6 / 28.7 ms
+intertoken p50/p99/max: 9.01 / 9.08 / 13.48 ms
+total batches:     1032
+avg batch latency us: 35743.624031007756
+last batch latency us: 27176
+total requests:    2048
+max forward requests: 2
+batch size hist:   [16, 1016, 0, 0, 0, 0, 0, 0]
+----------------------------------------------------
+EXIT=0

@@ -1,0 +1,221 @@
+(MainProcess pid=51392) INFO 11-06 01:52:33 [api_utils.py:286] non-default args: {'trust_remote_code': True, 'max_model_len': 2048, 'enable_prefix_caching': False, 'gpu_memory_utilization': 0.9, 'max_num_seqs': 1, 'model': '/root/.cache/huggingface/hub/models--MiniMaxAI--MiniMax-M3.1-Flash/snapshots/mini60-e16'}
+(MainProcess pid=51392) INFO 11-06 01:52:43 [model.py:733] Resolved architecture: MiniMaxM3SparseForConditionalGeneration
+(MainProcess pid=51392) INFO 11-06 01:52:43 [model.py:2152] Using max model len 2048
+(MainProcess pid=51392) WARNING 11-06 01:52:43 [model.py:1103] Model does not support mm_device_do_normalize, forcing mm_device_do_normalize = False.
+(MainProcess pid=51392) INFO 11-06 01:52:46 [scheduler.py:307] Chunked prefill is enabled with max_num_batched_tokens=2048.
+(MainProcess pid=51392) INFO 11-06 01:52:46 [vllm.py:818] Auto-enabling VLLM_USE_BREAKABLE_CUDAGRAPH=1. Set VLLM_USE_BREAKABLE_CUDAGRAPH=0 to opt out.
+(MainProcess pid=51392) INFO 11-06 01:52:46 [kernel.py:467] Final IR op priority after setting platform defaults: IrOpPriorityConfig(rms_norm=['vllm_c', 'native'], fused_add_rms_norm=['vllm_c', 'native'], gelu_and_mul_sparse=['triton', 'native'])
+(MainProcess pid=51392) INFO 11-06 01:52:46 [compilation.py:317] Enabled custom fusions: norm_quant, act_quant
+(MainProcess pid=51392) WARNING 11-06 01:52:48 [system_utils.py:153] We must use the `spawn` multiprocessing start method. Overriding VLLM_WORKER_MULTIPROC_METHOD to 'spawn'. See https://docs.vllm.ai/en/latest/usage/troubleshooting.html#python-multiprocessing for more information. Reasons: CUDA is initialized
+(MainProcess pid=51392) INFO 11-06 01:52:48 [base.py:280] Multi-modal warmup completed in 0.065s
+(EngineCore pid=51946) INFO 11-06 01:52:52 [core.py:133] Initializing a V1 LLM engine (v0.32.0) with config: model='/root/.cache/huggingface/hub/models--MiniMaxAI--MiniMax-M3.1-Flash/snapshots/mini60-e16', speculative_config=None, tokenizer='/root/.cache/huggingface/hub/models--MiniMaxAI--MiniMax-M3.1-Flash/snapshots/mini60-e16', skip_tokenizer_init=False, tokenizer_mode=auto, revision=None, tokenizer_revision=None, trust_remote_code=True, dtype=torch.bfloat16, max_seq_len=2048, download_dir=None, load_format=auto, tensor_parallel_size=1, pipeline_parallel_size=1, data_parallel_size=1, decode_context_parallel_size=1, dcp_comm_backend=ag_rs, disable_custom_all_reduce=False, quantization=mxfp8, quantization_config=None, enforce_eager=False, aux_output_config=AuxOutputConfig(enable_return_routed_experts=False, max_bytes=None), kv_cache_dtype=auto, device_config=cuda, structured_outputs_config=StructuredOutputsConfig(backend='auto', disable_any_whitespace=False, disable_additional_properties=False, reasoning_parser='', reasoning_parser_plugin='', enable_in_reasoning=False), observability_config=ObservabilityConfig(show_hidden_metrics_for_version=None, otlp_traces_endpoint=None, collect_detailed_traces=None, per_request_spec_decode_metrics='none', kv_cache_metrics=False, kv_cache_metrics_sample=0.01, custom_histogram_buckets=None, cudagraph_metrics=False, enable_layerwise_nvtx_tracing=False, enable_mfu_metrics=False, enable_mm_processor_stats=False, enable_logging_iteration_details=False, jit_monitor_mode='warn', jit_monitor_verbose=False), seed=0, served_model_name=/root/.cache/huggingface/hub/models--MiniMaxAI--MiniMax-M3.1-Flash/snapshots/mini60-e16, enable_prefix_caching=False, enable_chunked_prefill=True, pooler_config=None, compilation_config={'mode': <CompilationMode.NONE: 0>, 'debug_dump_path': None, 'cache_dir': '', 'compile_cache_save_format': 'binary', 'backend': 'inductor', 'custom_ops': ['all'], 'ir_enable_torch_wrap': False, 'splitting_ops': [], 'compile_mm_encoder': False, 'cudagraph_mm_encoder': False, 'encoder_cudagraph_token_budgets': [], 'encoder_cudagraph_max_vision_items_per_batch': 0, 'encoder_cudagraph_max_frames_per_batch': None, 'cudagraph_decoder_replay': True, 'decoder_replay_cudagraph_capture_sizes': [], 'decoder_replay_trim_threshold': 768, 'compile_sizes': [], 'compile_ranges_endpoints': [2048], 'inductor_compile_config': {'enable_auto_functionalized_v2': False, 'combo_kernels': True, 'benchmark_combo_kernel': True}, 'inductor_passes': {}, 'cudagraph_mode': <CUDAGraphMode.FULL_AND_PIECEWISE: (2, 1)>, 'cudagraph_num_of_warmups': 1, 'cudagraph_capture_sizes': [1, 2], 'cudagraph_copy_inputs': False, 'cudagraph_specialize_lora': True, 'use_inductor_graph_partition': False, 'pass_config': {'fuse_norm_quant': True, 'fuse_act_quant': True, 'fuse_attn_quant': False, 'fuse_allreduce_rms': False, 'enable_qk_norm_rope_fusion': False, 'fuse_rope_kvcache_cat_mla': False, 'fuse_act_padding': False, 'fuse_qk_norm_rope_kvcache': False}, 'max_cudagraph_capture_size': 2, 'dynamic_shapes_config': {'type': <DynamicShapesType.BACKED: 'backed'>, 'evaluate_guards': False, 'assume_32_bit_indexing': False}, 'local_cache_dir': None, 'fast_moe_cold_start': False, 'static_all_moe_layers': []}, kernel_config=KernelConfig(ir_op_priority=IrOpPriorityConfig(rms_norm=['vllm_c', 'native'], fused_add_rms_norm=['vllm_c', 'native'], gelu_and_mul_sparse=['triton', 'native']), enable_flashinfer_autotune=True, enable_rocm_segmented_attn_autotune=False, enable_cutedsl_warmup=True, enable_jit_warmup=True, moe_backend='auto', sparse_indexer_topk_backend='auto', linear_backend='auto', linear_backend_per_quant=None)
+(EngineCore pid=51946) INFO 11-06 01:52:53 [parallel_state.py:1906] world_size=1 rank=0 local_rank=0 distributed_init_method=file:///tmp/vllm_dist_426d0aff919e49a89617b4af8e972095 backend=nccl
+(EngineCore pid=51946) INFO 11-06 01:52:53 [parallel_state.py:2350] rank 0 in world size 1 is assigned as DP rank 0, PP rank 0, PCP rank 0, TP rank 0, ETP rank 0, EP rank 0, EPLB rank N/A
+(EngineCore pid=51946) INFO 11-06 01:52:53 [gpu_worker.py:518] Using V2 Model Runner
+(EngineCore pid=51946) WARNING 11-06 01:52:53 [flashinfer.py:143] FlashInfer's precompiled kernels are missing or do not match flashinfer-python 0.7.0.post1 (flashinfer-cubin not installed, flashinfer-jit-cache not installed). FlashInfer then downloads and compiles kernels at startup, which can take several minutes, or fails to import mismatched ones. Run `vllm download-kernels` in this Python environment to install them.
+(EngineCore pid=51946) INFO 11-06 01:52:54 [model_runner.py:392] Loading model from scratch...
+(EngineCore pid=51946) INFO 11-06 01:52:54 [cuda.py:565] Using backend AttentionBackendEnum.FLASH_ATTN for vit attention
+(EngineCore pid=51946) INFO 11-06 01:52:59 [mm_encoder_attention.py:372] Using AttentionBackendEnum.FLASH_ATTN for MMEncoderAttention.
+(EngineCore pid=51946) INFO 11-06 01:52:59 [__init__.py:982] Using FlashInferCutedslMxfp8LinearKernel for MXFP8 GEMM
+(EngineCore pid=51946) INFO 11-06 01:53:00 [sparse_attention.py:564] MiniMax M3 sparse attention selected MSA (kv_cache_dtype=auto, topk_blocks=16)
+(EngineCore pid=51946) INFO 11-06 01:53:00 [sparse_attention_msa.py:224] MiniMax M3 MSA sparse decode selected Triton
+(EngineCore pid=51946) INFO 11-06 01:53:00 [indexer.py:531] MiniMax M3 indexer: selected MSA (fmha_sm100 score + top-k) [topk_blocks=16, indexer_kv_dtype=bf16]
+(EngineCore pid=51946) INFO 11-06 01:53:00 [mxfp8.py:139] Using 'FLASHINFER_TRTLLM' MxFp8 MoE backend.
+(EngineCore pid=51946) INFO 11-06 01:53:00 [base_loader.py:82] Initializing model took 5.757594 seconds
+(EngineCore pid=51946) INFO 11-06 01:53:00 [weight_utils.py:1108] Filesystem type for checkpoints: OVERLAY. Checkpoint size: 43.41 GiB. Available RAM: 213.96 GiB.
+(EngineCore pid=51946) INFO 11-06 01:53:00 [weight_utils.py:1131] Auto-prefetch is disabled because the filesystem (OVERLAY) is not a recognized network FS (NFS/Lustre). If you want to force prefetching, start vLLM with --safetensors-load-strategy=prefetch.
+Loading safetensors checkpoint shards:   0% Completed | 0/12 [00:00<?, ?it/s]
+Loading safetensors checkpoint shards:   8% Completed | 1/12 [00:00<00:01,  8.44it/s]
+Loading safetensors checkpoint shards:  17% Completed | 2/12 [00:00<00:02,  3.74it/s]
+(EngineCore pid=51946) ERROR 11-06 01:53:02 [core.py:1510] EngineCore failed to start.
+(EngineCore pid=51946) ERROR 11-06 01:53:02 [core.py:1510] Traceback (most recent call last):
+(EngineCore pid=51946) ERROR 11-06 01:53:02 [core.py:1510]   File "/root/venv-vllm/lib/python3.12/site-packages/vllm/v1/engine/core.py", line 1482, in run_engine_core
+(EngineCore pid=51946) ERROR 11-06 01:53:02 [core.py:1510]     engine_core = EngineCoreProc(*args, engine_index=dp_rank, **kwargs)
+(EngineCore pid=51946) ERROR 11-06 01:53:02 [core.py:1510]                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+(EngineCore pid=51946) ERROR 11-06 01:53:02 [core.py:1510]   File "/root/venv-vllm/lib/python3.12/site-packages/vllm/tracing/otel.py", line 175, in sync_wrapper
+(EngineCore pid=51946) ERROR 11-06 01:53:02 [core.py:1510]     return func(*args, **kwargs)
+(EngineCore pid=51946) ERROR 11-06 01:53:02 [core.py:1510]            ^^^^^^^^^^^^^^^^^^^^^
+(EngineCore pid=51946) ERROR 11-06 01:53:02 [core.py:1510]   File "/root/venv-vllm/lib/python3.12/site-packages/vllm/v1/engine/core.py", line 1194, in __init__
+(EngineCore pid=51946) ERROR 11-06 01:53:02 [core.py:1510]     super().__init__(
+(EngineCore pid=51946) ERROR 11-06 01:53:02 [core.py:1510]   File "/root/venv-vllm/lib/python3.12/site-packages/vllm/v1/engine/core.py", line 144, in __init__
+(EngineCore pid=51946) ERROR 11-06 01:53:02 [core.py:1510]     self.model_executor = executor_class(vllm_config)
+(EngineCore pid=51946) ERROR 11-06 01:53:02 [core.py:1510]                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+(EngineCore pid=51946) ERROR 11-06 01:53:02 [core.py:1510]   File "/root/venv-vllm/lib/python3.12/site-packages/vllm/tracing/otel.py", line 175, in sync_wrapper
+(EngineCore pid=51946) ERROR 11-06 01:53:02 [core.py:1510]     return func(*args, **kwargs)
+(EngineCore pid=51946) ERROR 11-06 01:53:02 [core.py:1510]            ^^^^^^^^^^^^^^^^^^^^^
+(EngineCore pid=51946) ERROR 11-06 01:53:02 [core.py:1510]   File "/root/venv-vllm/lib/python3.12/site-packages/vllm/v1/executor/abstract.py", line 126, in __init__
+(EngineCore pid=51946) ERROR 11-06 01:53:02 [core.py:1510]     self._init_executor()
+(EngineCore pid=51946) ERROR 11-06 01:53:02 [core.py:1510]   File "/root/venv-vllm/lib/python3.12/site-packages/vllm/v1/executor/uniproc_executor.py", line 74, in _init_executor
+(EngineCore pid=51946) ERROR 11-06 01:53:02 [core.py:1510]     self.driver_worker.load_model()
+(EngineCore pid=51946) ERROR 11-06 01:53:02 [core.py:1510]   File "/root/venv-vllm/lib/python3.12/site-packages/vllm/v1/worker/gpu_worker.py", line 594, in load_model
+(EngineCore pid=51946) ERROR 11-06 01:53:02 [core.py:1510]     self.model_runner.load_model(load_dummy_weights=load_dummy_weights)
+(EngineCore pid=51946) ERROR 11-06 01:53:02 [core.py:1510]   File "/root/venv-vllm/lib/python3.12/site-packages/vllm/v1/worker/gpu/model_runner.py", line 396, in load_model
+(EngineCore pid=51946) ERROR 11-06 01:53:02 [core.py:1510]     self.model = model or model_loader.load_model(
+(EngineCore pid=51946) ERROR 11-06 01:53:02 [core.py:1510]                           ^^^^^^^^^^^^^^^^^^^^^^^^
+(EngineCore pid=51946) ERROR 11-06 01:53:02 [core.py:1510]   File "/root/venv-vllm/lib/python3.12/site-packages/vllm/tracing/otel.py", line 175, in sync_wrapper
+(EngineCore pid=51946) ERROR 11-06 01:53:02 [core.py:1510]     return func(*args, **kwargs)
+(EngineCore pid=51946) ERROR 11-06 01:53:02 [core.py:1510]            ^^^^^^^^^^^^^^^^^^^^^
+(EngineCore pid=51946) ERROR 11-06 01:53:02 [core.py:1510]   File "/root/venv-vllm/lib/python3.12/site-packages/vllm/model_executor/model_loader/base_loader.py", line 88, in load_model
+(EngineCore pid=51946) ERROR 11-06 01:53:02 [core.py:1510]     self.load_weights(model, model_config)
+(EngineCore pid=51946) ERROR 11-06 01:53:02 [core.py:1510]   File "/root/venv-vllm/lib/python3.12/site-packages/vllm/tracing/otel.py", line 175, in sync_wrapper
+(EngineCore pid=51946) ERROR 11-06 01:53:02 [core.py:1510]     return func(*args, **kwargs)
+(EngineCore pid=51946) ERROR 11-06 01:53:02 [core.py:1510]            ^^^^^^^^^^^^^^^^^^^^^
+(EngineCore pid=51946) ERROR 11-06 01:53:02 [core.py:1510]   File "/root/venv-vllm/lib/python3.12/site-packages/vllm/model_executor/model_loader/default_loader.py", line 498, in load_weights
+(EngineCore pid=51946) ERROR 11-06 01:53:02 [core.py:1510]     loaded_weights = model.load_weights(self.get_all_weights(model_config, model))
+(EngineCore pid=51946) ERROR 11-06 01:53:02 [core.py:1510]                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+(EngineCore pid=51946) ERROR 11-06 01:53:02 [core.py:1510]   File "/root/venv-vllm/lib/python3.12/site-packages/vllm/models/minimax_m3/nvidia/model.py", line 1317, in load_weights
+(EngineCore pid=51946) ERROR 11-06 01:53:02 [core.py:1510]     return loader.load_weights(weights, mapper=self.hf_to_vllm_mapper)
+(EngineCore pid=51946) ERROR 11-06 01:53:02 [core.py:1510]            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+(EngineCore pid=51946) ERROR 11-06 01:53:02 [core.py:1510]   File "/root/venv-vllm/lib/python3.12/site-packages/vllm/model_executor/model_loader/reload/torchao_decorator.py", line 52, in patched_model_load_weights
+(EngineCore pid=51946) ERROR 11-06 01:53:02 [core.py:1510]     return original_load_weights(self, *args, **kwargs)
+(EngineCore pid=51946) ERROR 11-06 01:53:02 [core.py:1510]            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+(EngineCore pid=51946) ERROR 11-06 01:53:02 [core.py:1510]   File "/root/venv-vllm/lib/python3.12/site-packages/vllm/model_executor/models/utils.py", line 476, in load_weights
+(EngineCore pid=51946) ERROR 11-06 01:53:02 [core.py:1510]     autoloaded_weights = set(self._load_module("", self.module, weights))
+(EngineCore pid=51946) ERROR 11-06 01:53:02 [core.py:1510]                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+(EngineCore pid=51946) ERROR 11-06 01:53:02 [core.py:1510]   File "/root/venv-vllm/lib/python3.12/site-packages/vllm/model_executor/models/utils.py", line 413, in _load_module
+(EngineCore pid=51946) ERROR 11-06 01:53:02 [core.py:1510]     yield from self._load_module(
+(EngineCore pid=51946) ERROR 11-06 01:53:02 [core.py:1510]   File "/root/venv-vllm/lib/python3.12/site-packages/vllm/model_executor/models/utils.py", line 390, in _load_module
+(EngineCore pid=51946) ERROR 11-06 01:53:02 [core.py:1510]     loaded_params = module_load_weights(weights)
+(EngineCore pid=51946) ERROR 11-06 01:53:02 [core.py:1510]                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+(EngineCore pid=51946) ERROR 11-06 01:53:02 [core.py:1510]   File "/root/venv-vllm/lib/python3.12/site-packages/vllm/models/minimax_m3/nvidia/model.py", line 1097, in load_weights
+(EngineCore pid=51946) ERROR 11-06 01:53:02 [core.py:1510]     return loader.load_weights(weights)
+(EngineCore pid=51946) ERROR 11-06 01:53:02 [core.py:1510]            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+(EngineCore pid=51946) ERROR 11-06 01:53:02 [core.py:1510]   File "/root/venv-vllm/lib/python3.12/site-packages/vllm/model_executor/model_loader/reload/torchao_decorator.py", line 52, in patched_model_load_weights
+(EngineCore pid=51946) ERROR 11-06 01:53:02 [core.py:1510]     return original_load_weights(self, *args, **kwargs)
+(EngineCore pid=51946) ERROR 11-06 01:53:02 [core.py:1510]            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+(EngineCore pid=51946) ERROR 11-06 01:53:02 [core.py:1510]   File "/root/venv-vllm/lib/python3.12/site-packages/vllm/model_executor/models/utils.py", line 476, in load_weights
+(EngineCore pid=51946) ERROR 11-06 01:53:02 [core.py:1510]     autoloaded_weights = set(self._load_module("", self.module, weights))
+(EngineCore pid=51946) ERROR 11-06 01:53:02 [core.py:1510]                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+(EngineCore pid=51946) ERROR 11-06 01:53:02 [core.py:1510]   File "/root/venv-vllm/lib/python3.12/site-packages/vllm/model_executor/models/utils.py", line 413, in _load_module
+(EngineCore pid=51946) ERROR 11-06 01:53:02 [core.py:1510]     yield from self._load_module(
+(EngineCore pid=51946) ERROR 11-06 01:53:02 [core.py:1510]   File "/root/venv-vllm/lib/python3.12/site-packages/vllm/model_executor/models/utils.py", line 390, in _load_module
+(EngineCore pid=51946) ERROR 11-06 01:53:02 [core.py:1510]     loaded_params = module_load_weights(weights)
+(EngineCore pid=51946) ERROR 11-06 01:53:02 [core.py:1510]                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+(EngineCore pid=51946) ERROR 11-06 01:53:02 [core.py:1510]   File "/root/venv-vllm/lib/python3.12/site-packages/vllm/models/minimax_m3/nvidia/model.py", line 1012, in load_weights
+(EngineCore pid=51946) ERROR 11-06 01:53:02 [core.py:1510]     weight_loader(
+(EngineCore pid=51946) ERROR 11-06 01:53:02 [core.py:1510]   File "/root/venv-vllm/lib/python3.12/site-packages/vllm/model_executor/layers/fused_moe/routed_experts.py", line 895, in weight_loader
+(EngineCore pid=51946) ERROR 11-06 01:53:02 [core.py:1510]     self._load_model_weight_or_group_weight_scale(
+(EngineCore pid=51946) ERROR 11-06 01:53:02 [core.py:1510]   File "/root/venv-vllm/lib/python3.12/site-packages/vllm/model_executor/layers/fused_moe/routed_experts.py", line 419, in _load_model_weight_or_group_weight_scale
+(EngineCore pid=51946) ERROR 11-06 01:53:02 [core.py:1510]     self._load_w13(
+(EngineCore pid=51946) ERROR 11-06 01:53:02 [core.py:1510]   File "/root/venv-vllm/lib/python3.12/site-packages/vllm/model_executor/layers/fused_moe/routed_experts.py", line 572, in _load_w13
+(EngineCore pid=51946) ERROR 11-06 01:53:02 [core.py:1510]     expert_data.copy_(loaded_weight)
+(EngineCore pid=51946) ERROR 11-06 01:53:02 [core.py:1510] RuntimeError: The size of tensor a (192) must match the size of tensor b (384) at non-singleton dimension 1
+Process EngineCore:
+Traceback (most recent call last):
+  File "/usr/lib/python3.12/multiprocessing/process.py", line 314, in _bootstrap
+    self.run()
+  File "/usr/lib/python3.12/multiprocessing/process.py", line 108, in run
+    self._target(*self._args, **self._kwargs)
+  File "/root/venv-vllm/lib/python3.12/site-packages/vllm/v1/engine/core.py", line 1514, in run_engine_core
+    raise e
+  File "/root/venv-vllm/lib/python3.12/site-packages/vllm/v1/engine/core.py", line 1482, in run_engine_core
+    engine_core = EngineCoreProc(*args, engine_index=dp_rank, **kwargs)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/venv-vllm/lib/python3.12/site-packages/vllm/tracing/otel.py", line 175, in sync_wrapper
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/root/venv-vllm/lib/python3.12/site-packages/vllm/v1/engine/core.py", line 1194, in __init__
+    super().__init__(
+  File "/root/venv-vllm/lib/python3.12/site-packages/vllm/v1/engine/core.py", line 144, in __init__
+    self.model_executor = executor_class(vllm_config)
+                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/venv-vllm/lib/python3.12/site-packages/vllm/tracing/otel.py", line 175, in sync_wrapper
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/root/venv-vllm/lib/python3.12/site-packages/vllm/v1/executor/abstract.py", line 126, in __init__
+    self._init_executor()
+  File "/root/venv-vllm/lib/python3.12/site-packages/vllm/v1/executor/uniproc_executor.py", line 74, in _init_executor
+    self.driver_worker.load_model()
+  File "/root/venv-vllm/lib/python3.12/site-packages/vllm/v1/worker/gpu_worker.py", line 594, in load_model
+    self.model_runner.load_model(load_dummy_weights=load_dummy_weights)
+  File "/root/venv-vllm/lib/python3.12/site-packages/vllm/v1/worker/gpu/model_runner.py", line 396, in load_model
+    self.model = model or model_loader.load_model(
+                          ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/venv-vllm/lib/python3.12/site-packages/vllm/tracing/otel.py", line 175, in sync_wrapper
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/root/venv-vllm/lib/python3.12/site-packages/vllm/model_executor/model_loader/base_loader.py", line 88, in load_model
+    self.load_weights(model, model_config)
+  File "/root/venv-vllm/lib/python3.12/site-packages/vllm/tracing/otel.py", line 175, in sync_wrapper
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/root/venv-vllm/lib/python3.12/site-packages/vllm/model_executor/model_loader/default_loader.py", line 498, in load_weights
+    loaded_weights = model.load_weights(self.get_all_weights(model_config, model))
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/venv-vllm/lib/python3.12/site-packages/vllm/models/minimax_m3/nvidia/model.py", line 1317, in load_weights
+    return loader.load_weights(weights, mapper=self.hf_to_vllm_mapper)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/venv-vllm/lib/python3.12/site-packages/vllm/model_executor/model_loader/reload/torchao_decorator.py", line 52, in patched_model_load_weights
+    return original_load_weights(self, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/venv-vllm/lib/python3.12/site-packages/vllm/model_executor/models/utils.py", line 476, in load_weights
+    autoloaded_weights = set(self._load_module("", self.module, weights))
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/venv-vllm/lib/python3.12/site-packages/vllm/model_executor/models/utils.py", line 413, in _load_module
+    yield from self._load_module(
+  File "/root/venv-vllm/lib/python3.12/site-packages/vllm/model_executor/models/utils.py", line 390, in _load_module
+    loaded_params = module_load_weights(weights)
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/venv-vllm/lib/python3.12/site-packages/vllm/models/minimax_m3/nvidia/model.py", line 1097, in load_weights
+    return loader.load_weights(weights)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/venv-vllm/lib/python3.12/site-packages/vllm/model_executor/model_loader/reload/torchao_decorator.py", line 52, in patched_model_load_weights
+    return original_load_weights(self, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/venv-vllm/lib/python3.12/site-packages/vllm/model_executor/models/utils.py", line 476, in load_weights
+    autoloaded_weights = set(self._load_module("", self.module, weights))
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/venv-vllm/lib/python3.12/site-packages/vllm/model_executor/models/utils.py", line 413, in _load_module
+    yield from self._load_module(
+  File "/root/venv-vllm/lib/python3.12/site-packages/vllm/model_executor/models/utils.py", line 390, in _load_module
+    loaded_params = module_load_weights(weights)
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/venv-vllm/lib/python3.12/site-packages/vllm/models/minimax_m3/nvidia/model.py", line 1012, in load_weights
+    weight_loader(
+  File "/root/venv-vllm/lib/python3.12/site-packages/vllm/model_executor/layers/fused_moe/routed_experts.py", line 895, in weight_loader
+    self._load_model_weight_or_group_weight_scale(
+  File "/root/venv-vllm/lib/python3.12/site-packages/vllm/model_executor/layers/fused_moe/routed_experts.py", line 419, in _load_model_weight_or_group_weight_scale
+    self._load_w13(
+  File "/root/venv-vllm/lib/python3.12/site-packages/vllm/model_executor/layers/fused_moe/routed_experts.py", line 572, in _load_w13
+    expert_data.copy_(loaded_weight)
+RuntimeError: The size of tensor a (192) must match the size of tensor b (384) at non-singleton dimension 1
+Loading safetensors checkpoint shards:  17% Completed | 2/12 [00:01<00:07,  1.41it/s]
+
+[rank0]:[W1106 01:53:03.617402777 ProcessGroupNCCL.cpp:1624] Warning: WARNING: destroy_process_group() was not called before program exit, which can leak resources. For more info, please see https://pytorch.org/docs/stable/distributed.html#shutdown (function operator())
+(MainProcess pid=51392) INFO 11-06 01:53:03 [utils.py:628] [shutdown] Process manager: send sigterm to process EngineCore
+Traceback (most recent call last):
+  File "/root/r2g/pie/scripts/bench/vllm_bench.py", line 848, in <module>
+    main()
+  File "/root/r2g/pie/scripts/bench/vllm_bench.py", line 763, in main
+    summary, results = run(args)
+                       ^^^^^^^^^
+  File "/root/r2g/pie/scripts/bench/vllm_bench.py", line 222, in run
+    llm = LLM(
+          ^^^^
+  File "/root/venv-vllm/lib/python3.12/site-packages/vllm/entrypoints/llm.py", line 342, in __init__
+    self.llm_engine = LLMEngine.from_engine_args(
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/venv-vllm/lib/python3.12/site-packages/vllm/v1/engine/llm_engine.py", line 191, in from_engine_args
+    return cls(
+           ^^^^
+  File "/root/venv-vllm/lib/python3.12/site-packages/vllm/v1/engine/llm_engine.py", line 116, in __init__
+    self.engine_core = EngineCoreClient.make_client(
+                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/venv-vllm/lib/python3.12/site-packages/vllm/v1/engine/core_client.py", line 126, in make_client
+    return SyncMPClient(
+           ^^^^^^^^^^^^^
+  File "/root/venv-vllm/lib/python3.12/site-packages/vllm/tracing/otel.py", line 175, in sync_wrapper
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/root/venv-vllm/lib/python3.12/site-packages/vllm/v1/engine/core_client.py", line 925, in __init__
+    super().__init__(
+  File "/root/venv-vllm/lib/python3.12/site-packages/vllm/v1/engine/core_client.py", line 682, in __init__
+    with launch_core_engines(
+  File "/usr/lib/python3.12/contextlib.py", line 144, in __exit__
+    next(self.gen)
+  File "/root/venv-vllm/lib/python3.12/site-packages/vllm/v1/engine/utils.py", line 1351, in launch_core_engines
+    wait_for_engine_startup(
+  File "/root/venv-vllm/lib/python3.12/site-packages/vllm/v1/engine/utils.py", line 1431, in wait_for_engine_startup
+    raise RuntimeError(
+RuntimeError: Engine core initialization failed. See root cause above. Failed core proc(s): {}
+EXIT=1
