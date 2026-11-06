@@ -1,0 +1,29 @@
+   Compiling kernels-cuda v0.6.0 (/root/r2g/pie/crates/kernels-cuda)
+    Finished `test` profile [optimized + debuginfo] target(s) in 2.04s
+     Running tests/kernels_cuda/main.rs (target/debug/deps/kernels_cuda-7c0fdcbee88e54a0)
+
+running 2 tests
+test attn::selected::a_clusters_slices_fold_into_what_one_block_walks ... FAILED
+test attn::selected::the_selected_attention_lands_alike_on_the_tensor_cores ... FAILED
+
+failures:
+
+---- attn::selected::a_clusters_slices_fold_into_what_one_block_walks stdout ----
+
+thread 'attn::selected::a_clusters_slices_fold_into_what_one_block_walks' (117050) panicked at crates/kernels-cuda/tests/kernels_cuda/attn/selected.rs:268:13:
+walk 2: head 0 dim 31: the tensor cores land -0.010131836, the scalar walk -0.053955078
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+---- attn::selected::the_selected_attention_lands_alike_on_the_tensor_cores stdout ----
+
+thread 'attn::selected::the_selected_attention_lands_alike_on_the_tensor_cores' (117081) panicked at crates/kernels-cuda/tests/kernels_cuda/attn/selected.rs:178:17:
+[1, 1] decode false walk 2: row 0 head 0 dim 0: the tensor cores land -0.015136719, the scalar walk -0.12060547
+
+
+failures:
+    attn::selected::a_clusters_slices_fold_into_what_one_block_walks
+    attn::selected::the_selected_attention_lands_alike_on_the_tensor_cores
+
+test result: FAILED. 0 passed; 2 failed; 0 ignored; 0 measured; 143 filtered out; finished in 2.03s
+
+error: test failed, to rerun pass `-p kernels-cuda --test kernels_cuda`

@@ -13,5 +13,5 @@ run() { # name prompts max_tokens concurrency num_requests
     --warmup 2 --report-timing --dump-all-token-ids --json-out $R/$label-$1.json > $R/$label-$1.log 2>&1
   echo "EXIT=$? engine_sha256=$(sha256sum $so | cut -c1-64)" >> $R/$label-$1.log
 }
-for c in 4 8 16 32 64; do run c$c ${P256:-/root/prompts-256-a.json} 128 $c $((c * 4)); done
+for c in 2 4 8 16 32 64; do run c$c ${P256:-/root/prompts-256-a.json} 128 $c $((c * 4)); done
 for n in 4 8 16 32; do run pf$n ${P512:-/root/prompts-512x64-a.json} 1 $n $((n * 2)); done

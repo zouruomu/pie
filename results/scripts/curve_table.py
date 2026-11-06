@@ -3,7 +3,7 @@
 import json, sys
 from pathlib import Path
 R = Path("/root/r2g/evidence/results/raw/curve")
-points = ["c4", "c8", "c16", "c32", "c64", "pf4", "pf8", "pf16", "pf32"]
+points = ["c2", "c4", "c8", "c16", "c32", "c64", "pf4", "pf8", "pf16", "pf32"]
 def get(cut, eng, pt):
     f = R / f"{cut}-{eng}-{pt}.json"
     if not f.exists():

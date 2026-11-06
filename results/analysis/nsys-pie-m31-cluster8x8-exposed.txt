@@ -1,0 +1,18 @@
+main-stream span 8567.2 us/step over 59 steps
+  2644.0 us  tc5_gemm 148x1
+  1348.4 us  tc5_gemm 144x1
+  1210.5 us  row_skeleton 1x1
+   887.5 us  tc5_gemm 72x1
+   679.3 us  sdpa_paged_selected_mma_kernel 8x4
+   554.2 us  route_lay_out_quant_nvfp4 6x1
+   348.5 us  nvjet_sm100_tst_128x8_64x12_2x_1... 1564x1
+   239.8 us  moe_gate_tc5 16x1
+   183.5 us  route_weighted_gather_vec8 1x3
+   112.8 us  index_topk_block_max 1x1
+   109.6 us  act_quant_e4m3_v8 4x1
+   100.4 us  act_quant_e4m3_v8 2x1
+    97.2 us  act_quant_e4m3_v8 3x1
+    27.1 us  BatchDecodeWithPagedKVCacheKernel 148x4
+    11.9 us  PersistentVariableLengthMergeStatesKerne 148x1
+     5.8 us  swiglu_clamp_alpha 1x48
+     5.1 us  act_quant_e4m3_v8 6x1
