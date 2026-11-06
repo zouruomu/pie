@@ -1,7 +1,7 @@
 # Status: 20261105-2035-a100-sxm-x1-gemma-4-31b-batching
 
 **Phase:** target A/B done (3 rounds); pbatch, cross-model and curve checks running, then the final A/B and the GPU suite
-**UTC:** 2026-11-06 05:12
+**UTC:** 2026-11-06 06:02
 
 ## Preliminary verdict (1 round so far; rounds 2-3 running)
 
@@ -64,7 +64,16 @@ The pool-size half of the remaining gap. At c512 (fix v1 + user layer, 1 round):
 
 ## Latest
 - Schedule: q11 (fix round-2 rerun at c128-c1024) is dropped to keep review time. fix has 2 rounds there (spread < 0.5%), and q13's final A/B on the rebased build adds a third. Chain now: q8 (pbatch, gpt-oss-120b, Qwen3-0.6B, c4-c32/pf4-16/raw, 1024-out) -> q12b (vLLM token reference) -> q13 (final A/B, GPU suite). Hand-over ETA ~10:15Z.
-- pbatch so far (prefill tok/s): base pf32 3682, pf64 3705, pf128 3611, pf256 3492, pf512 3485, pf1024 3494; fix v3 pf32 3635 (-1.2%). Running.
+- pbatch (prefill tok/s, 1 round):
+
+| | pf32 | pf64 | pf128 | pf256 | pf512 | pf1024 |
+|---|---|---|---|---|---|---|
+| base | 3682 | 3705 | 3611 | 3492 | 3485 | 3494 |
+| v2 | 3766 | 3704 | 3697 | 3623 | 3657 | pending |
+| v3 | 3635 | 3790 | 3785 | 3640 | 3722 | 3573 |
+| vLLM | 3541 | 3678 | 3668 | 3702 | pending | pending |
+
+  Best: v3 3790 > base 3705 > vLLM so far 3702. pf32 is v3's only point below base (-1.2%). pf4-16 are still to run.
 - **Target cell, 3 alternating rounds, medians (results/base, scripts/table.py):**
 
 | tok/s | c64 | c128 | c256 | c512 | c1024 |
