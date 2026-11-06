@@ -1,0 +1,135 @@
+tree 54385f765f642ba2ffa52272cb1a535d681d7d4e
+   Compiling engine v0.6.0 (/root/r2g/pie-fix/crates/engine)
+   Compiling pie-profile v0.6.0 (/root/r2g/pie-fix/crates/profile)
+   Compiling transport v0.6.0 (/root/r2g/pie-fix/crates/transport)
+   Compiling runtime v0.6.0 (/root/r2g/pie-fix/crates/runtime)
+   Compiling engine-cpu v0.6.0 (/root/r2g/pie-fix/crates/engine-cpu)
+   Compiling worker v0.6.0 (/root/r2g/pie-fix/crates/worker)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 22.82s
+     Running unittests src/lib.rs (target/debug/deps/engine-e831d3b801ee6cda)
+
+running 28 tests
+test fit::tests::a_budget_buys_its_pages_and_none_fills_the_room ... ok
+test fire::tests::a_lane_replays_the_buffered_slots_its_mask_admits ... ok
+test fit::tests::a_heavy_slab_gives_slots_back_until_slots_and_pages_seat_alike ... ok
+test fire::tests::kv_less_lanes_take_no_seat ... ok
+test fit::tests::the_pool_fits_the_room_under_its_ceilings ... ok
+test frame::tests::a_frames_demand_is_the_union_and_not_the_sum ... ok
+test fit::tests::a_hybrid_gives_up_slots_before_one_sequence ... ok
+test load::residency_tests::spilled_bytes_with_a_source_are_admitted_and_without_one_are_impossible ... ok
+test placement::tests::a_placement_no_packing_improves_on_is_kept ... ok
+test placement::tests::a_hot_expert_gets_the_replicas_and_spreads_across_ranks ... ok
+test placement::tests::a_trade_reads_the_spare_once ... ok
+test placement::tests::the_load_placement_is_contiguous_and_replicates_the_first ... ok
+test placement::tests::hot_experts_on_one_rank_are_parted ... ok
+test placement::tests::balanced_loads_move_nothing ... ok
+test placement::tests::the_table_lists_each_experts_slots ... ok
+test placement::tests::the_window_forgets_old_steps ... ok
+test placement::tests::the_moves_take_one_placement_to_the_next ... ok
+test ports::tests::ports_every_case ... ok
+test runahead::tests::every_admissible_depth_fits_one_free_word ... ok
+test placement::tests::the_ranks_end_near_even ... ok
+test transfer::tests::a_forked_page_is_one_run_and_not_one_move_per_token_every_case ... ok
+test disk::tests::a_slot_reads_back_what_was_written_and_each_server_has_its_own_file ... ok
+test placement::tests::a_second_rebalance_on_the_same_loads_moves_nothing ... ok
+test placement::tests::a_skewed_load_converges_over_several_rebalances ... ok
+test disk::tests::a_kept_file_holds_its_slots_across_opens_until_its_layout_or_size_changes ... ok
+test disk::tests::rewriting_every_slot_keeps_the_file_within_its_budget_and_it_leaves_no_path ... ok
+test placement::tests::a_rebalance_moves_only_what_lowers_the_peak_past_the_gain ... ok
+test placement::tests::a_rebalance_rewrites_at_most_its_budget_of_slots ... ok
+
+test result: ok. 28 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.02s
+
+     Running tests/engine/main.rs (target/debug/deps/engine-1889c528b160c893)
+
+running 1 test
+test a_forked_page_is_one_run_and_not_one_move_per_token::a_forked_page_is_one_run_and_not_one_move_per_token_every_case ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running unittests src/lib.rs (target/debug/deps/profile-2f238e2bd2508c37)
+
+running 20 tests
+test region::tests::a_region_and_its_complement_cover_the_space ... ok
+test region::tests::a_set_minus_cuts_holes_and_ends ... ok
+test region::tests::a_complement_of_a_complement_is_the_region ... ok
+test region::tests::a_set_unions_adjacent_spans_into_one ... ok
+test region::tests::pinning_a_variable_keeps_only_boxes_that_hold_it ... ok
+test search::tests::a_second_look_tries_halfway_to_the_neighbours ... ok
+test shelf::tests::a_device_name_files_under_its_slug ... ok
+test search::tests::the_search_takes_what_is_faster_and_leaves_what_is_not_read ... ok
+test tune::tests::a_ladder_never_ends_on_a_kernel_that_does_not_run_everywhere ... ok
+test when::tests::a_boolean_fact_reads_bare ... ok
+test when::tests::a_finite_integer_variable_holds_only_its_values ... ok
+test when::tests::and_binds_tighter_than_or ... ok
+test when::tests::comparisons_join_by_and_or_not ... ok
+test tune::tests::a_rung_that_saves_too_little_is_left_out ... ok
+test when::tests::a_rendered_region_compiles_back_to_itself ... ok
+test when::tests::enumerations_compare_by_name_only ... ok
+test when::tests::refusals_point_at_the_offending_column ... ok
+test tune::tests::the_baseline_is_priced_on_the_same_points ... ok
+test tune::tests::the_crossover_lands_where_the_tiled_kernel_starts_to_win ... ok
+test tune::tests::a_crossover_that_moves_with_size_gets_a_size_condition ... ok
+
+test result: ok. 20 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/a_profile_reads_against_its_registry.rs (target/debug/deps/a_profile_reads_against_its_registry-df9464846fab39dd)
+
+running 21 tests
+test a_coupled_alternative_needs_its_partner ... ok
+test a_checked_in_file_reads_and_picks_by_rung ... ok
+test a_flag_cannot_read_a_dynamic_variable_and_a_dynamic_variable_is_an_axis ... ok
+test a_default_reads_no_fact_and_no_variable_shares_a_facts_name ... ok
+test a_rung_that_compares_an_unknown_variable_does_not_hold ... ok
+test a_partial_alternative_falls_through_where_it_does_not_fit ... ok
+test a_dump_reads_back_to_the_same_profile ... ok
+test a_layer_that_measures_a_decision_it_leaves_out_says_the_one_below_held ... ok
+test a_refused_device_file_leaves_its_family ... ok
+test a_checked_in_file_spells_its_constants_and_may_leave_decisions_out ... ok
+test a_ladder_must_be_total_and_every_rung_reachable ... ok
+test the_registry_holds_together ... ok
+test the_schema_names_every_decision_alternative_and_constant ... ok
+test the_census_is_what_a_profile_can_compile ... ok
+test what_an_alternative_requires_the_file_must_assume ... ok
+test measured_names_decisions_and_nothing_else ... ok
+test a_when_may_read_a_fact_and_the_device_settles_it ... ok
+test a_device_runs_its_family_then_its_device_file_then_its_user_file ... ok
+test a_higher_layer_replaces_what_it_spells_and_a_refused_one_leaves_the_rest ... ok
+test an_unknown_name_is_refused_with_the_vocabulary_and_its_place ... ok
+test the_shelf_check_keeps_one_family_and_one_device_file_per_device ... ok
+
+test result: ok. 21 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
+
+     Running unittests src/lib.rs (target/debug/deps/worker-0d56b5a88a1879be)
+
+running 8 tests
+test backend::topology_tests::backend_1_every_case ... ok
+test disk::tests::the_authored_files_are_never_reclaimable ... ok
+test link::topology::tests::distributed_bad_addr_errors ... ok
+test weights::tests::a_config_declares_its_context ... ok
+test backend::tests::backend_every_case ... ok
+test config::tests::config_every_case ... ok
+test config::schema::tests::schema_every_case ... ok
+test weights::tests::weights_every_case ... ok
+
+test result: ok. 8 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 6.56s
+
+   Doc-tests engine
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+   Doc-tests profile
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+   Doc-tests worker
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+EXIT=0

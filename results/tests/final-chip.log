@@ -1,0 +1,24 @@
+tree 54385f765f642ba2ffa52272cb1a535d681d7d4e
+   Compiling engine v0.6.0 (/root/r2g/pie-fix/crates/engine)
+   Compiling engine-cuda v0.6.0 (/root/r2g/pie-fix/crates/engine-cuda)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 4.57s
+     Running unittests src/lib.rs (target/debug/deps/engine_cuda-d2e0e3637800d463)
+
+running 13 tests
+test chip::tests::the_registry_holds_together ... ok
+test chip::tests::the_defaults_are_what_cuda_ran_before_profiles ... ok
+test chip::tests::a_capability_with_no_family_runs_the_defaults_untuned ... ok
+test chip::tests::the_b200_moe_decisions_are_what_the_kernel_tests_run ... ok
+test chip::tests::the_b200_runs_its_family_measured_with_the_skinny_gemm_off ... ok
+test chip::tests::every_a100_runs_the_a100_file_and_another_ampere_its_family_alone ... ok
+test chip::device::the_probe_reads_the_gpu_it_names ... ok
+test chip::tests::the_checked_in_profiles_hold_together_and_each_family_names_its_tier ... ok
+test chip::tests::only_a_b200_runs_the_tcgen05_selects ... ok
+test chip::tests::each_capability_takes_its_family_and_from_10_0_the_blackwell_kernels ... ok
+test chip::tests::the_gated_delta_scan_runs_where_its_family_measured_it ... ok
+test chip::tests::the_l40s_runs_its_family_measured_and_another_ada_the_same_unmeasured ... ok
+test chip::tests::every_checked_in_profile_dumps_to_a_file_that_reads_back_strictly ... ok
+
+test result: ok. 13 passed; 0 failed; 0 ignored; 0 measured; 56 filtered out; finished in 0.19s
+
+EXIT=0

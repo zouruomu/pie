@@ -1,7 +1,7 @@
 # Status: 20261105-2035-a100-sxm-x1-gemma-4-31b-batching
 
-**Phase:** self-review done and acted on; final commit 54385f76 being tested (CPU suites, final A/B, then the GPU suite)
-**UTC:** 2026-11-06 09:25
+**Phase:** fix pushed (r2g branch = 54385f76); engine-cuda GPU suite running on it; report and pr.md final except the suite
+**UTC:** 2026-11-06 09:36
 
 ## Preliminary verdict (1 round so far; rounds 2-3 running)
 
@@ -63,6 +63,10 @@ The pool-size half of the remaining gap. At c512 (fix v1 + user layer, 1 round):
 - Tests on the fix tree so far: runtime 101 passed; pie-profile 41 passed; engine-cuda chip 13 passed.
 
 ## Latest
+- **Pushed:** origin `r2g/20261105-2035-a100-sxm-x1-gemma-4-31b-batching` = `54385f76`, on upstream main dc6282d7.
+- **Final A/B** (results/final): main a6547509 c128 457.7 / c512 454.1; 54385f76 592.5 / 597.2.
+- **CPU tests on 54385f76** all pass: runtime 101, pie-profile + worker + engine 78, engine-cuda chip 13, engine-metal/vulkan check.
+- Running: the engine-cuda GPU suite on 54385f76 (results/tests/engine-cuda-gpu-fix.log).
 - **Self-review (fresh-context subagent)** confirmed every engine sha256 and every number in the target table. What it found, and what I did:
   1. Tests had run on older trees. They are rerunning on the final commit; every log names its tree.
   2. A logic gap: `uncapped_admission` without seat_to_end (or a mix of engines) gave neither the cap nor the gate. Fixed: the filter is now `!(d.uncapped_admission && seat_to_end)`, with the runtime-wide seat_to_end hoisted. No change on the A100.

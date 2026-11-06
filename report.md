@@ -202,9 +202,16 @@ At c32 the cap already binds. It is 5 × pages × 16 / 2048: 29 at c64's 767 pag
 
 **TTFT (target cell, p50, 3-round medians):** c64 8.8 → 1.9 s, c128 23.3 → 17.7 s, c256 60.1 → 42.4 s, c512 131.7 → 99.0 s, c1024 265.3 → 206.9 s (vLLM 7.1 / 21.7 / 43.1 / 101.4 / 213.8 s). pie's client holds the concurrency open, so TTFT includes the wait in pie's admission.
 
-### 5.3 Final pass: the rebased commit against main
+### 5.3 Final pass: the rebased commits against main (`results/final`, 1 run each)
 
-pending (`results/final`, c128 and c512).
+| tok/s | c128 | c512 | engine sha256 |
+|---|---|---|---|
+| main a6547509 (base) | 457.7 | 454.1 | 8f115859 |
+| d678268d (v3 on a6547509) | 592.2 | 595.2 | a3d5d503 |
+| **54385f76 (final, on dc6282d7)** | **592.5** | **597.2** | 1b4c64bf |
+
+- The two commits main moved by since a6547509 (#1482 server-web, #1483 swift) touch neither the engine nor this diff.
+- 54385f76 differs from d678268d by the bootstrap filter's `seat_to_end` term (true on the A100) and profile comment text.
 
 - **Missing fix round 2 at c128-c1024:** those runs ran on the wrong engine (`results/bad/`, sha a20a45ac, §12), and their rerun was dropped for time. The final A/B on the rebased build (§5.3) is a further fix measurement at c128 and c512.
 
@@ -310,7 +317,11 @@ The fix's TTFT is higher: a prompt now waits in the gate for a lane to end, wher
 
 Every log names the tree it ran on in its first line, or comes from the times below.
 
-- **On the final commit 54385f76:** runtime, pie-profile, worker, engine, engine-cuda `chip`, and `cargo check` of engine-metal and engine-vulkan (`results/tests/final-*.log`): pending.
+- **On the final commit 54385f76** (`results/tests/final-*.log`, each opening with `tree 54385f76…`), all with 0 failed:
+  - runtime: 101 passed;
+  - pie-profile + worker + engine: 78 passed;
+  - engine-cuda `chip`: 13 passed;
+  - `cargo check` of engine-metal and engine-vulkan: clean.
 - **engine-cuda GPU suite on 54385f76** (dev build at opt-level 2, `--test-threads=1`, alone on the GPU, `results/tests/engine-cuda-gpu-fix.log`): pending.
 - **Earlier trees, superseded:**
   - runtime 101 passed on v1 (23:34);
