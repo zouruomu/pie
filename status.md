@@ -1,7 +1,19 @@
 # Status: 20261106-0130-b200-x1-minimax-m3-1-flash-decode
 
-UTC: 2026-11-06 02:11Z
-Phase: reproduce. The cell as the site states it does not reproduce as-is; sorting out which checkpoint each engine can load.
+UTC: 2026-11-06 02:57Z
+Phase: reproduce done (rounds 2-3 running), attribution next.
+
+## Early verdict (B200, main e2e9d1e, SM 1965 MHz)
+The gap is real, but not as the site states it.
+| cut | engine | ITL p50 ms | decode tok/s (1000/ITL) | rounds |
+|---|---|---|---|---|
+| A: MiniMax-M3.1-Flash mini60-e16 (MXFP8 proj + NVFP4 experts; the site's base_model) | pie (MX8+NVFP4 deployment) | 9.01 / 8.98 / 8.97 | 111.2 | 3 |
+| A | vLLM 0.32.0, 0.33.0; SGLang 0.5.22 | cannot load (NVFP4 expert scales read as MXFP8) | - | - |
+| B: MiniMax-M3-MXFP8 mini60-e16 (same architecture, MXFP8 everywhere) | pie (MX8 deployment) | 9.62 | 104 | 1 (2 more running) |
+| B | vLLM 0.32.0 | 6.92 | 144.5 | 1 (2 more running) |
+| B | SGLang 0.5.22 | 7.59 | 131.8 | 1 (2 more running) |
+On cut B pie trails vLLM by ~28% and SGLang by ~21%. Site: pie 8.99, vLLM 5.73, SGLang 7.80.
+Whatever the site's vLLM ran (most likely a dev build or a different cut), cut B is the fair same-weights comparison I can reproduce, so I attribute and fix on it and check every change on cut A too.
 
 ## Findings so far (raw logs in results/raw, results/logs)
 1. Cut: MiniMaxAI/MiniMax-M3.1-Flash @ce7f4df8 (weights unchanged since 10-23), layers 0-59, 16 of 128 experts: 43.41 GiB, MXFP8 projections + NVFP4 experts. Site DB row (data/tags/b200-full.json) confirms mini_k 0.125, 60 layers, base_model MiniMaxAI/MiniMax-M3.1-Flash.
