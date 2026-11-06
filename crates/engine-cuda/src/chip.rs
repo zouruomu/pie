@@ -106,6 +106,13 @@ pub struct SeatedFirst;
 #[decision(id = "engine.seat_to_end", flag, default = false, tune = engine)]
 pub struct SeatToEnd;
 
+/// Whether a seated-first pool admits past five sequences a sequence at the
+/// declared context holds (`PoolFacts::uncapped_admission`), for a card
+/// whose pools seat to the end. Off keeps the cap.
+#[derive(Clone, Copy, Debug, PartialEq, Eq, Decision)]
+#[decision(id = "engine.uncapped_admission", flag, default = false, tune = engine)]
+pub struct UncappedAdmission;
+
 /// Whether a windowed pool of short lanes takes a page a lane past its kv
 /// pages (`Paging::spare`), for a card whose ring, not its kv pages, runs
 /// dry first. Off cuts it 1:1.
@@ -175,6 +182,7 @@ static REGISTRY: LazyLock<Registry> = LazyLock::new(|| {
         .add::<OneFrameWhenShort>()
         .add::<SeatedFirst>()
         .add::<SeatToEnd>()
+        .add::<UncappedAdmission>()
         .add::<WindowSpare>()
         .add::<ForwardTokens>()
         .add::<WalkFireRows>()
@@ -271,6 +279,7 @@ pub struct Engine {
     pub one_frame_when_short: bool,
     pub seated_first: bool,
     pub seat_to_end: bool,
+    pub uncapped_admission: bool,
     pub window_spare: bool,
     pub forward_tokens: u32,
     pub walk_fire_rows: u32,
@@ -305,6 +314,7 @@ impl Engine {
             one_frame_when_short: profile.on::<OneFrameWhenShort>(&Anywhere),
             seated_first: profile.on::<SeatedFirst>(&Anywhere),
             seat_to_end: profile.on::<SeatToEnd>(&Anywhere),
+            uncapped_admission: profile.on::<UncappedAdmission>(&Anywhere),
             window_spare: profile.on::<WindowSpare>(&Anywhere),
             forward_tokens: profile.get::<ForwardTokens>().0,
             walk_fire_rows: profile.get::<WalkFireRows>().0,
@@ -786,6 +796,7 @@ mod tests {
                 one_frame_when_short: false,
                 seated_first: false,
                 seat_to_end: false,
+                uncapped_admission: false,
                 window_spare: false,
                 forward_tokens: 0,
                 walk_fire_rows: 0,
@@ -867,6 +878,7 @@ mod tests {
                 one_frame_when_short: false,
                 seated_first: false,
                 seat_to_end: false,
+                uncapped_admission: false,
                 window_spare: false,
                 forward_tokens: 0,
                 walk_fire_rows: 0,

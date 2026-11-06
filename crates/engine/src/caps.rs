@@ -102,6 +102,11 @@ pub struct PoolFacts {
     /// once and evict lanes the pools then run short for.
     #[serde(default)]
     pub seat_to_end: bool,
+    /// The engine would rather its seated-first pools admit past five
+    /// sequences a sequence at the declared context holds, its seat-to-end
+    /// gate holding each process to the pages it reaches instead.
+    #[serde(default)]
+    pub uncapped_admission: bool,
 }
 
 impl PoolFacts {

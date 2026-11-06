@@ -119,6 +119,8 @@ pub struct Shell {
     seated_first: bool,
     /// `engine.seat_to_end`.
     seat_to_end: bool,
+    /// `engine.uncapped_admission`.
+    uncapped_admission: bool,
     /// `engine.prefill_lanes`.
     prefill_lanes: u32,
     pad: bool,
@@ -395,6 +397,13 @@ impl Shell {
     #[must_use]
     pub fn seat_to_end(&self) -> bool {
         self.seat_to_end
+    }
+
+    /// Whether this load asks the runtime not to cap a seated-first pool's
+    /// admission (`engine.uncapped_admission`).
+    #[must_use]
+    pub fn uncapped_admission(&self) -> bool {
+        self.uncapped_admission
     }
 
     /// Host rs rows: a state slot and a buffer page each, parked apart.

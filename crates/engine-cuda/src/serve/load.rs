@@ -1059,6 +1059,7 @@ impl Shell {
             one_frame_when_short: engine.one_frame_when_short,
             seated_first: engine.seated_first,
             seat_to_end: engine.seat_to_end,
+            uncapped_admission: engine.uncapped_admission,
             prefill_lanes: engine.prefill_lanes,
             pad: engine.recording.pad(),
             golden_arm: Golden::Off,

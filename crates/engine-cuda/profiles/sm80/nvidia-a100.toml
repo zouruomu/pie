@@ -69,6 +69,18 @@ lattice_steps = 2
 # 19.5 GiB pool) c512 2.6k -> 4.5k tok/s, c1024 2.5k -> 4.5k; Gemma-4-31B c128
 # 309 -> 465.
 seated_first = true
+# A process starts only while the pools hold the started ones to the end, as
+# the A40, H100, H200, RTX 4090, RTX 5090 and RTX PRO 6000 profiles do, and
+# that gate, not five declared-context sequences, bounds admission:
+# Gemma-4-31B's 671 pages seat 35 of its 297-token sequences, the cap 26; c512
+# 454 -> 559 tok/s (the gate alone under the cap 454, no cap without it 433).
+# Greedy tokens differ as the lanes a step do.
+seat_to_end = true
+uncapped_admission = true
+# A fire's working set held to 40% of the card past the weights: Gemma-4-31B's
+# fires 3757 -> 2436 tokens, and its pool's planes re-reserved in finer map
+# units, 671 -> 735 pages; c512 559 -> 597 tok/s.
+working_set_percent = 40
 
 # Independent chains on side streams: decode latency +5-11% (Gemma 4, Qwen3.6-A3B,
 # DeepSeek-V4, GLM-5.3, Hy4), outputs unchanged; a join's branches on them too.
@@ -114,6 +126,9 @@ measured = [
   "engine.prefill_lattice_from",
   "engine.lattice_steps",
   "engine.seated_first",
+  "engine.seat_to_end",
+  "engine.uncapped_admission",
+  "engine.working_set_percent",
   "compiler.dag_streams",
   "kernel.elemwise.hc_tile",
   "kernel.elemwise.hc_mma",

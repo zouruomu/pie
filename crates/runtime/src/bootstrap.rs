@@ -144,6 +144,9 @@ pub struct EngineConfig {
     /// The engine asks the planner to start a process only while the pools
     /// hold the started ones to the end (`PoolFacts::seat_to_end`).
     pub seat_to_end: bool,
+    /// The engine asks for no cap on a seated-first pool's admission
+    /// (`PoolFacts::uncapped_admission`).
+    pub uncapped_admission: bool,
     pub rs_cache_slot_bytes: u64,
     pub rs_host_slots: usize,
     pub rs_buffer_pages: u32,
@@ -293,6 +296,7 @@ async fn bootstrap_inner(config: Config) -> Result<BootstrapHandle> {
         );
         crate::scheduler::set_dispatch_depth(1);
     }
+    let seat_to_end = !engine_configs.is_empty() && engine_configs.iter().all(|d| d.seat_to_end);
     let admission_cap = config
         .max_concurrent_processes
         .or_else(|| {
@@ -321,9 +325,15 @@ async fn bootstrap_inner(config: Config) -> Result<BootstrapHandle> {
             // admitted prompts seat lanes the pool then suspends for each
             // other's growth (Gemma-4-26B on an A100, c512: 2.9k tok/s
             // admitting all 512, 4.7k at 224; its 5791 pages seat 45 at 2048).
+            // Where the pools seat to the end, an engine may ask that gate
+            // alone to hold admission.
             let seats = engine_configs
                 .iter()
-                .filter(|d| d.seated_first && d.limits.max_context > 0)
+                .filter(|d| {
+                    d.seated_first
+                        && !(d.uncapped_admission && seat_to_end)
+                        && d.limits.max_context > 0
+                })
                 .map(|d| 5 * d.total_pages * kv_page_size / d.limits.max_context)
                 .min();
             match seats {
@@ -441,7 +451,6 @@ async fn bootstrap_inner(config: Config) -> Result<BootstrapHandle> {
         .first()
         .is_some_and(|d| d.cpu_pages > 0 || d.disk_pages > 0);
     let seated_first = !engine_configs.is_empty() && engine_configs.iter().all(|d| d.seated_first);
-    let seat_to_end = !engine_configs.is_empty() && engine_configs.iter().all(|d| d.seat_to_end);
     if let Some(d) = engine_configs.first() {
         if kv_swap_capable {
             tracing::info!(
