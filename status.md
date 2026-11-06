@@ -1,7 +1,7 @@
 # Status: 20261105-2035-a100-sxm-x1-gemma-4-31b-batching
 
 **Phase:** fix v3 built; verification queue q7 running (~6 h GPU)
-**UTC:** 2026-11-06 00:27
+**UTC:** 2026-11-06 00:42
 
 ## Preliminary verdict (1 round so far; rounds 2-3 running)
 
@@ -61,6 +61,12 @@ The pool-size half of the remaining gap. At c512 (fix v1 + user layer, 1 round):
 - Turnover: the token 1 -> 2 gap is p50 488 ms in pie (fix) and 646 ms in vLLM (scripts/gaps.py). Not pie-specific.
 - Engines: base c795a06a, v2 2194798c, v3 8cd1ffd7 (branch fix-wip 47cfd8b1).
 - Tests on the fix tree so far: runtime 101 passed; pie-profile 41 passed; engine-cuda chip 13 passed.
+
+## Latest
+- fix v3 c512 596.5 (v2 559.2, base 453.8, vLLM 628.6).
+- Gemma-4-26B-A4B (note 1's case): base c512 4654 / c1024 4941; v3 4736 / 5044 (+1.8% / +2.1%). v2 and vLLM pending.
+- Token equality at c512: base vs base 133/1024 requests differ, fix vs fix 41, base vs fix 697. The fix decodes 35-38 lanes a step, not 26, so the GEMM row counts differ. c16 and raw, where the cap does not bind, are queued as the control.
+- q8 (scripts/q8.sh) replaced q7: vLLM is trimmed off c4-c32 and raw to fit the time. Draft report.md is up.
 
 ## Fix v2 (results so far with the equivalent exp engine, 1 round)
 | | base | fix | vLLM |

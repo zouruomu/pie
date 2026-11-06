@@ -1,0 +1,116 @@
+[transformers] PyTorch was not found. Models won't be available and only tokenizers, configuration and file/data utilities can be used.
+[2m2026-11-06T00:31:06.966779Z[0m [33m WARN[0m [2mkernels_cuda::jit::cache[0m[2m:[0m a device instantiation compiled with something to say [3mroot[0m[2m=[0m"linear/moe/route" [3minstantiation[0m[2m=[0m"::pie::linear::moe_topk_softmax_lane<::pie::bf16, 4>" [3march[0m[2m=[0m"sm_80" [3mlog[0m[2m=[0mlinear/moe/route(446): warning #177-D: variable "pie::linear::kRouterMaxExperts" was declared but never referenced
+  constexpr int kRouterMaxExperts = 512;
+                ^
+
+Remark: The warnings can be suppressed with "-diag-suppress <warning-number>"
+
+
+[2m2026-11-06T00:31:07.808945Z[0m [33m WARN[0m [2mkernels_cuda::jit::cache[0m[2m:[0m a device instantiation compiled with something to say [3mroot[0m[2m=[0m"linear/moe/route" [3minstantiation[0m[2m=[0m"::pie::linear::moe_route_order_scan" [3march[0m[2m=[0m"sm_80" [3mlog[0m[2m=[0mlinear/moe/route(446): warning #177-D: variable "pie::linear::kRouterMaxExperts" was declared but never referenced
+  constexpr int kRouterMaxExperts = 512;
+                ^
+
+Remark: The warnings can be suppressed with "-diag-suppress <warning-number>"
+
+
+[2m2026-11-06T00:31:08.455492Z[0m [33m WARN[0m [2mkernels_cuda::jit::cache[0m[2m:[0m a device instantiation compiled with something to say [3mroot[0m[2m=[0m"linear/moe/select_sm80" [3minstantiation[0m[2m=[0m"::pie::linear::moe_select_bf16_gemm_wide<0>" [3march[0m[2m=[0m"sm_80" [3mlog[0m[2m=[0mlinear/moe/select_sm80(183): warning #177-D: variable "pie::linear::kBf16MmaBK" was declared but never referenced
+  constexpr int kBf16MmaBK = 64;
+                ^
+
+Remark: The warnings can be suppressed with "-diag-suppress <warning-number>"
+
+linear/moe/select_sm80(185): warning #177-D: variable "pie::linear::kBf16MmaStages" was declared but never referenced
+  constexpr int kBf16MmaStages = 3;
+                ^
+
+linear/moe/select_sm80(1128): warning #177-D: variable "pie::linear::kFp8a8Stages" was declared but never referenced
+  constexpr int kFp8a8Stages = 3;
+                ^
+
+
+[2m2026-11-06T00:31:08.658885Z[0m [33m WARN[0m [2mkernels_cuda::jit::cache[0m[2m:[0m a device instantiation compiled with something to say [3mroot[0m[2m=[0m"linear/glu" [3minstantiation[0m[2m=[0m"::pie::linear::geglu_tanh_packed_vec8<::pie::bf16>" [3march[0m[2m=[0m"sm_80" [3mlog[0m[2m=[0mlinear/glu(25): warning #177-D: variable "lane" was declared but never referenced
+      const int lane = static_cast<int>(threadIdx.x % 32);
+                ^
+
+Remark: The warnings can be suppressed with "-diag-suppress <warning-number>"
+
+
+[2m2026-11-06T00:31:14.005329Z[0m [33m WARN[0m [2mkernels_cuda::jit::cache[0m[2m:[0m a device instantiation compiled with something to say [3mroot[0m[2m=[0m"linear/moe/select" [3minstantiation[0m[2m=[0m"::pie::linear::moe_matmul_select_gemv_by_token<::pie::bf16, 4>" [3march[0m[2m=[0m"sm_80" [3mlog[0m[2m=[0mlinear/moe/select(427): warning #177-D: variable "pie::linear::kBlock" was declared but never referenced
+  constexpr int kBlock = 256;
+                ^
+
+Remark: The warnings can be suppressed with "-diag-suppress <warning-number>"
+
+
+[2m2026-11-06T00:31:14.101152Z[0m [33m WARN[0m [2mkernels_cuda::jit::cache[0m[2m:[0m a device instantiation compiled with something to say [3mroot[0m[2m=[0m"linear/moe/select" [3minstantiation[0m[2m=[0m"::pie::linear::moe_matmul_select_gemv_by_route<::pie::bf16, 4>" [3march[0m[2m=[0m"sm_80" [3mlog[0m[2m=[0mlinear/moe/select(427): warning #177-D: variable "pie::linear::kBlock" was declared but never referenced
+  constexpr int kBlock = 256;
+                ^
+
+Remark: The warnings can be suppressed with "-diag-suppress <warning-number>"
+
+
+[2m2026-11-06T00:31:15.791113Z[0m [33m WARN[0m [2mkernels_cuda::jit::cache[0m[2m:[0m a device instantiation compiled with something to say [3mroot[0m[2m=[0m"linear/moe/select_sm80" [3minstantiation[0m[2m=[0m"::pie::linear::moe_select_bf16_mma<1>" [3march[0m[2m=[0m"sm_80" [3mlog[0m[2m=[0mlinear/moe/select_sm80(1128): warning #177-D: variable "pie::linear::kFp8a8Stages" was declared but never referenced
+  constexpr int kFp8a8Stages = 3;
+                ^
+
+Remark: The warnings can be suppressed with "-diag-suppress <warning-number>"
+
+
+[2m2026-11-06T00:31:27.218020Z[0m [33m WARN[0m [2mkernels_cuda::jit::cache[0m[2m:[0m a device instantiation compiled with something to say [3mroot[0m[2m=[0m"linear/moe/select_sm80" [3minstantiation[0m[2m=[0m"::pie::linear::moe_select_bf16_mma<2>" [3march[0m[2m=[0m"sm_80" [3mlog[0m[2m=[0mlinear/moe/select_sm80(1128): warning #177-D: variable "pie::linear::kFp8a8Stages" was declared but never referenced
+  constexpr int kFp8a8Stages = 3;
+                ^
+
+Remark: The warnings can be suppressed with "-diag-suppress <warning-number>"
+
+
+[2m2026-11-06T00:31:28.852990Z[0m [33m WARN[0m [2mkernels_cuda::jit::cache[0m[2m:[0m a device instantiation compiled with something to say [3mroot[0m[2m=[0m"linear/moe/select_sm80" [3minstantiation[0m[2m=[0m"::pie::linear::moe_select_bf16_gemm<3, 0, 2, 64>" [3march[0m[2m=[0m"sm_80" [3mlog[0m[2m=[0mlinear/moe/select_sm80(183): warning #177-D: variable "pie::linear::kBf16MmaBK" was declared but never referenced
+  constexpr int kBf16MmaBK = 64;
+                ^
+
+Remark: The warnings can be suppressed with "-diag-suppress <warning-number>"
+
+linear/moe/select_sm80(185): warning #177-D: variable "pie::linear::kBf16MmaStages" was declared but never referenced
+  constexpr int kBf16MmaStages = 3;
+                ^
+
+linear/moe/select_sm80(1128): warning #177-D: variable "pie::linear::kFp8a8Stages" was declared but never referenced
+  constexpr int kFp8a8Stages = 3;
+                ^
+
+
+engine-cuda: bodies armed 166 of 166 compositions at load (decode 16/16, prefill 56/56, mixed 55/55, tower 0/0, wide 39/39; 0 segmented; 807 MiB of 4096 MiB, 127 of 1024 seats) (pool declared 17280 MiB, high water 1880 MiB, committed 1880 MiB, spare under the ceiling 3017 MiB) [18 key(s) never fired — this deployment cannot synthesize them, or their present set was already refused admission; e.g. mixed c2+c0 at bucket 1 (256 seat(s) x 2048 context, 512 lane(s))] [sealed: every key attempted]
+╭─ Pie Engine ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╮
+│ Host         127.0.0.1:37549                                                                                                              │
+│ Model        default (/root/.cache/huggingface/hub/models--google--gemma-4-26B-A4B-it/snapshots/4d7ae4984b7db7de8f8457170b3f1a419ee76d52) │
+│ Backend      cuda                                                                                                                         │
+│ Device       cuda:0                                                                                                                       │
+╰───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╯
+[pie-bench] measured-start
+[pie-bench] measured-end
+[2m2026-11-06T00:32:55.351830Z[0m [33m WARN[0m [2mtarpc::server[0m[2m:[0m Requests stream errored out: could not ready the transport for writes: an error occurred readying to send into the channel: the channel is closed and cannot accept new items for sending
+[2m2026-11-06T00:32:55.351837Z[0m [33m WARN[0m [2mtarpc::client[0m[2m:[0m Connection broken: could not ready the transport for writes: an error occurred readying to send into the channel: the channel is closed and cannot accept new items for sending
+
+----------------------------------------------------
+mode:              tput
+engine:            pie
+model:             google/gemma-4-26B-A4B-it
+completed:         1024/1024  failed=0
+wall:              28.161 s
+requests/sec:      36.36
+output tokens:     131072
+prompt tokens:     173056
+output tok/sec:    4654.40
+lat mean/p50:      11303.5 / 11834.0 ms
+lat p95/p99:       17600.0 / 17874.3 ms
+ttft mean/p50:     6491.2 / 6989.5 ms
+ttft p95/p99:      12305.8 / 12518.1 ms
+intertoken p50/p99/max: 30.65 / 190.00 / 1454.42 ms
+total batches:     350
+avg batch latency us: 148507.77142857143
+last batch latency us: 86045
+total requests:    131072
+max forward requests: 456
+batch size hist:   [0, 0, 1, 1, 0, 10, 19, 319]
+----------------------------------------------------
+EXIT=0
+1410 MHz, 1410 MHz, 36, 92.46 W

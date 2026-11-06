@@ -1,0 +1,37 @@
+[transformers] PyTorch was not found. Models won't be available and only tokenizers, configuration and file/data utilities can be used.
+engine-cuda: bodies armed 166 of 166 compositions at load (decode 16/16, prefill 56/56, mixed 55/55, tower 0/0, wide 39/39; 0 segmented; 807 MiB of 4096 MiB, 127 of 1024 seats) (pool declared 16000 MiB, high water 2180 MiB, committed 2180 MiB, spare under the ceiling 3051 MiB) [18 key(s) never fired — this deployment cannot synthesize them, or their present set was already refused admission; e.g. mixed c2+c0 at bucket 1 (256 seat(s) x 2048 context, 1024 lane(s))] [sealed: every key attempted]
+╭─ Pie Engine ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╮
+│ Host         127.0.0.1:32903                                                                                                              │
+│ Model        default (/root/.cache/huggingface/hub/models--google--gemma-4-26B-A4B-it/snapshots/4d7ae4984b7db7de8f8457170b3f1a419ee76d52) │
+│ Backend      cuda                                                                                                                         │
+│ Device       cuda:0                                                                                                                       │
+╰───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╯
+[pie-bench] measured-start
+[pie-bench] measured-end
+[2m2026-11-06T00:35:53.442954Z[0m [33m WARN[0m [2mtarpc::server[0m[2m:[0m Requests stream errored out: could not ready the transport for writes: an error occurred readying to send into the channel: the channel is closed and cannot accept new items for sending
+[2m2026-11-06T00:35:53.442959Z[0m [33m WARN[0m [2mtarpc::client[0m[2m:[0m Connection broken: could not ready the transport for writes: an error occurred readying to send into the channel: the channel is closed and cannot accept new items for sending
+
+----------------------------------------------------
+mode:              tput
+engine:            pie
+model:             google/gemma-4-26B-A4B-it
+completed:         2048/2048  failed=0
+wall:              53.056 s
+requests/sec:      38.60
+output tokens:     262144
+prompt tokens:     346112
+output tok/sec:    4940.91
+lat mean/p50:      20783.1 / 21587.8 ms
+lat p95/p99:       26945.5 / 26953.2 ms
+ttft mean/p50:     16419.5 / 17804.7 ms
+ttft p95/p99:      22964.7 / 23009.7 ms
+intertoken p50/p99/max: 29.63 / 44.91 / 1756.64 ms
+total batches:     706
+avg batch latency us: 142237.7521246459
+last batch latency us: 97487
+total requests:    262144
+max forward requests: 424
+batch size hist:   [18, 0, 0, 0, 9, 39, 0, 640]
+----------------------------------------------------
+EXIT=0
+1410 MHz, 1410 MHz, 36, 92.78 W
