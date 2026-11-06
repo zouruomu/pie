@@ -1,0 +1,32 @@
+engine-cuda: bodies armed 126 of 126 compositions at load (decode 7/7, prefill 44/44, mixed 43/43, tower 0/0, wide 32/32; 0 segmented; 197 MiB of 4096 MiB, 94 of 1024 seats) (pool declared 19008 MiB, high water 432 MiB, committed 432 MiB, spare under the ceiling 3937 MiB) [13 key(s) never fired — this deployment cannot synthesize them, or their present set was already refused admission; e.g. mixed c2+c0 at bucket 1 (128 seat(s) x 2048 context, 64 lane(s))] [sealed: every key attempted]
+╭─ Pie Engine ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╮
+│ Host         127.0.0.1:38379                                                                                                        │
+│ Model        default (/root/.cache/huggingface/hub/models--openai--gpt-oss-120b/snapshots/b5c939de8f754692c1647ca79fbf85e8c1e70f8a) │
+│ Backend      cuda                                                                                                                   │
+│ Device       cuda:0                                                                                                                 │
+╰─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╯
+[pie-bench] measured-start
+[pie-bench] measured-end
+[2m2026-11-06T09:55:28.004712Z[0m [33m WARN[0m [2mtarpc::server[0m[2m:[0m Requests stream errored out: could not ready the transport for writes: an error occurred readying to send into the channel: the channel is closed and cannot accept new items for sending
+[2m2026-11-06T09:55:28.004714Z[0m [33m WARN[0m [2mtarpc::client[0m[2m:[0m Connection broken: could not ready the transport for writes: an error occurred readying to send into the channel: the channel is closed and cannot accept new items for sending
+
+----------------------------------------------------
+mode:              tput
+engine:            pie
+model:             openai/gpt-oss-120b
+completed:         64/64  failed=0
+wall:              1.032 s
+requests/sec:      61.99
+output tokens:     64
+prompt tokens:     28672
+output tok/sec:    61.99
+lat mean/p50:      608.1 / 566.1 ms
+lat p95/p99:       1029.2 / 1029.7 ms
+total batches:     7
+avg batch latency us: 272867.71428571426
+last batch latency us: 296428
+total requests:    64
+max forward requests: 11
+batch size hist:   [1, 0, 0, 6, 0, 0, 0, 0]
+----------------------------------------------------
+EXIT=0

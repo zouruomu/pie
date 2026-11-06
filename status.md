@@ -1,32 +1,51 @@
 # status: 20261106-0910-pro6000-x1-gpt-oss-120b-pbatch
 
-## Early findings (09:34Z, verdict pending the sweep)
-- pf256 smoke on main dc6282d7 (1 round each, cold prompts): 20b pie 46.8k vs TRT-LLM 71.5k tok/s (-35%);
-  120b pie 28.9k vs TRT-LLM 43.3k (-33%). pie 120b on main is 2.1x the site's 13.8k: the 120b-specific
-  problem the brief suspected is gone on main (120b/20b now 0.62, TRT-LLM's 0.61). The remaining gap is common to both models.
-- TRT-LLM's numbers reproduce with KV block reuse OFF (71.5k vs site 71.3k; 43.3k vs 42.4k): not a prefix-reuse artifact.
-- **Precision differs.** TRT-LLM 1.4.0rc2.post1 runs gpt-oss's MoE on sm_120 as W4A8: MXFP4 weights x MXFP8 (e4m3, ue8m0 a 32)
-  activations on a CUTLASS SM120 block-scaled grouped GEMM (`_torch/model_config.py:730-741`, `_torch/moe/fused_moe/cutlass/w4a8_mxfp4_mxfp8.py:36-41`).
-  It has no W4A16 MXFP4 MoE on sm_120 (OVERRIDE_QUANT_ALGO=W4A16_MXFP4 fails: "TrtllmCutlassW4a16Mxfp4Impl supports SM90 only").
-  pie runs W4A16 (bf16 activations). Details: results/fairness/.
-- pie renders 448 tokens a prompt for the same prompt where HF/TRT-LLM render 512 (pie's harmony template drops the 64-token
-  "You are ChatGPT..." system preamble). tok/s is per engine's own count; noted as a harness side finding.
-- pie has an opt-in `mxfp4a8g32` precision (MXFP4 x e4m3 a 32, = TRT-LLM's W4A8) and an sm_120a W4A8 select, but gpt-oss declares no such
-  deployment and the sm_120a W4A8 kernel needs K % 128 == 0 (gpt-oss K = 2880 = 22.5 x 128; `select_fp4.rs:417`, `select_fp4_sm120.cu` chunks = k >> 7).
+## EARLY VERDICT (10:25Z): both cells RED on main dc6282d7, the gap is TRT-LLM's W4A8 MoE precision on sm_120
+Round 1 of the full pf sweep (cold prompts, 1 output token, one engine at a time; rounds 2-3 at pf128-1024 running).
+SM clocks during TRT-LLM's large points 2265-2317 MHz at the 600 W cap; pie's run-time clocks are recorded per run in results/baseline/*.clocks
+(they are sampled before/after the process, not during).
 
-## Running
-- 09:32Z: baseline sweep round 1 (pie then TRT-LLM, 20b then 120b, pf4..pf1024). ETA ~10:30Z.
-- building an engine with an opt-in gpt-oss W4A8 deployment in a worktree (measurement only, not a proposed change yet).
+| pf | 20b pie | 20b TRT-LLM | gap | 120b pie | 120b TRT-LLM | 120b vLLM | gap vs TRT |
+|---|---|---|---|---|---|---|---|
+| 4 | 29.6k | 32.6k | -9% | 20.7k | 17.5k | | +18% |
+| 8 | 41.3k | 44.2k | -7% | 24.6k | 24.7k | | 0% |
+| 16 | 38.1k | 54.7k | -30% | 26.7k | 34.3k | | -22% |
+| 32 | 45.0k | 64.8k | -31% | 27.9k | 39.1k | | -29% |
+| 64 | 45.7k | 67.6k | -32% | 27.8k | 41.3k | | -33% |
+| 128 | 46.2k | 69.0k | -33% | 28.8k | 42.7k | | -33% |
+| 256 | 47.0k | 69.9k | -33% | 29.0k | 43.2k | 28.9k | -33% |
+| 512 | 46.7k | **71.5k** | -35% | 29.0k | **43.4k** | | -33% |
+| 1024 | 46.9k | 71.4k | -34% | (pending r1 file) | 43.4k | | |
 
-## Question for the orchestrator (decision needed before a fix)
-The gap looks like precision (W4A8 vs W4A16) at large M. Closing it on the site needs pie's default gpt-oss MoE precision on sm_120 to change
-to W4A8 on wide selects (what TRT-LLM does by default), or the site to compare at equal precision. I will quantify both (pie W4A8 vs TRT-LLM,
-pie W4A16 vs vLLM W4A16) before proposing; tell me if a default-precision change is out of scope.
+Best points: 20b pie 47.0k vs TRT-LLM 71.5k (-34%); 120b pie 29.0k vs TRT-LLM 43.4k (-33%). The site's TRT-LLM numbers reproduce (71.3k, 42.4k).
+pie 120b on main is 2.1x the site's 13.8k (ee9098f60): the brief's 120b-specific problem is gone on main (checking which commit, ee9098f60 built).
 
-ETA early verdict ~10:45Z; hand-over ~19:10Z (10 h in).
+**Why (attribution so far, pie 120b pf256 nsys):** 76% of pie's GPU time is the MXFP4 expert selects
+(`moe_select_mxfp4_mma_staged`, register-dequant bf16 mma.sync, ~270 TFLOP/s; cuBLAS's bf16 dense GEMMs reach ~400 TFLOP/s on this card).
+TRT-LLM 1.4.0rc2.post1 runs gpt-oss's MoE on sm_120 as **W4A8** (MXFP4 weights x MXFP8 e4m3 activations, CUTLASS SM120 block-scaled
+grouped GEMM, FP8-rate tensor cores, no dequant): `_torch/model_config.py:730-741`. It has no W4A16 MXFP4 MoE on sm_120 (forcing it fails).
+At equal precision pie is level: vLLM 0.32 (MARLIN W4A16) 120b pf256 = 28.9k vs pie 29.0k.
+A W4A16 kernel can't close a 1.5x gap: the 8-warp pipe select with gpt-oss's K tail (prototyped, it ran) is no faster (1198 vs 1196 ms gate-up).
+An 8192-row fire (TRT-LLM's max_num_tokens) instead of the profile's 5120 changes nothing (46.9k vs 47.0k).
+
+**What closing it needs (decision for the orchestrator / Felix):** a W4A8 gpt-oss MoE on sm_120a, i.e. MXFP8 activations, which changes numerics.
+pie's existing sm_120a W4A8 select (`moe_select_mxfp4_w4a8_ws`, used for DeepSeek-V4/MiMo releases that ask for e4m3) does not take gpt-oss:
+K must be whole 128s (gpt-oss K = 2880), no fused GLU/bias/clamped SwiGLU, and pie refuses `weight_precision = bf16+mxfp4a8g32` for the stock
+checkpoint ("import the checkpoint at that precision"). That is new kernel work plus a precision-policy change (pie serves gpt-oss at what the release
+stores; TRT-LLM quantizes activations by default on Blackwell). Per the brief, I plan to hand over the attribution with the measured size of the
+win (TRT-LLM's MoE kernel time vs pie's, from nsys next) rather than a half-built kernel, unless you want a W4A8 gpt-oss path attempted.
+
+## Fairness notes
+- TRT-LLM reproduced with KV block reuse OFF (cold); its default is ON (80 shared harmony tokens = 2 blocks of 32 a prompt would be reused).
+- pie renders 448 tokens a prompt where HF/TRT-LLM/vLLM render 512 (pie's harmony template has no "You are ChatGPT..." system preamble):
+  each engine's tok/s is over its own count. Side finding for the harness.
+- Precision: pie W4A16 (bf16 activations); vLLM 0.32 MARLIN W4A16; TRT-LLM W4A8 MXFP4xMXFP8. Attention/dense in bf16 in all three.
 
 ## Orchestrator notes
-- note-1 (09:30Z): acknowledged. Times now from `date -u`. #1430 check: the sm_120a W4A8 selects in `select_fp4_sm120.cu` are only
-  reached by releases that quantize rows (ActQuant::E4m3/Nvfp4, `dispatch/linear.rs:2063-2108`) with K % 128 == 0; gpt-oss is W4A16 with
-  K = 2880, so on reading #1430 cannot change its selects. Confirming with an nsys kernel list on main (pending), and looking for what
-  doubled 120b since ee9098f60 (pending).
+- note-1 (09:30Z): acknowledged. Times from `date -u`. #1430: the sm_120a W4A8 selects in `select_fp4_sm120.cu` are reached only by releases that
+  quantize rows (`dispatch/linear.rs:2063-2108`) and need K % 128 == 0; gpt-oss runs W4A16 `moe_select_mxfp4_mma_staged` on main (nsys), so #1430
+  cannot change its selects. ee9098f60 kernel list: pending (built, measuring after rounds 2-3).
+
+## Running
+- 10:21Z rounds 2-3 (pie/TRT-LLM alternating, pf128-1024, both models). ETA 11:05Z. Then: ee9098f60 120b pf256 + nsys; TRT-LLM nsys for the per-component table.
+- ETA hand-over ~19:10Z (earlier if the decision is attribution-only).

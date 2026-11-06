@@ -1,0 +1,33 @@
+Traceback (most recent call last):
+  File "/root/r2g/pie/scripts/bench/pie_bench.py", line 1914, in <module>
+    main()
+  File "/root/r2g/pie/scripts/bench/pie_bench.py", line 1909, in main
+    summary, results = asyncio.run(run(args))
+                       ^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/asyncio/runners.py", line 194, in run
+    return runner.run(main)
+           ^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/asyncio/runners.py", line 118, in run
+    return self._loop.run_until_complete(task)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/asyncio/base_events.py", line 687, in run_until_complete
+    return future.result()
+           ^^^^^^^^^^^^^^^
+  File "/root/r2g/pie/scripts/bench/pie_bench.py", line 765, in run
+    async with pie_client(args) as (client, engine_config):
+  File "/usr/lib/python3.12/contextlib.py", line 210, in __aenter__
+    return await anext(self.gen)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/root/r2g/pie/scripts/bench/pie_bench.py", line 574, in python_pie_client
+    async with Server(cfg) as server:
+  File "/root/src/pie-w4a8/packages/python/server/python/pie/server.py", line 69, in __aenter__
+    self._handle = await asyncio.to_thread(
+                   ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/asyncio/threads.py", line 25, in to_thread
+    return await loop.run_in_executor(None, func_call)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/concurrent/futures/thread.py", line 58, in run
+    result = self.fn(*self.args, **self.kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+RuntimeError: start: boot embedded worker: creating engine for model "default" group 0: `gptoss-20b-bf16-mxfp4-kv-bf16` stores its weights at [Precision { dtype: Bf16, act: None }, Precision { dtype: Mxfp4, act: None }] and the config asks for [Precision { dtype: Bf16, act: None }, Precision { dtype: Mxfp4, act: Some(E4m3 { gran: 32 }) }]; import the checkpoint at that precision to serve it
+EXIT=1

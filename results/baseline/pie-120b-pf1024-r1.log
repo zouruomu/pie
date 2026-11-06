@@ -1,0 +1,32 @@
+engine-cuda: bodies armed 144 of 144 compositions at load (decode 25/25, prefill 44/44, mixed 43/43, tower 0/0, wide 32/32; 0 segmented; 239 MiB of 4096 MiB, 112 of 1024 seats) (pool declared 17136 MiB, high water 1152 MiB, committed 1152 MiB, spare under the ceiling 3951 MiB) [13 key(s) never fired — this deployment cannot synthesize them, or their present set was already refused admission; e.g. mixed c2+c0 at bucket 1 (2048 seat(s) x 2048 context, 1024 lane(s))] [sealed: every key attempted]
+╭─ Pie Engine ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╮
+│ Host         127.0.0.1:41621                                                                                                        │
+│ Model        default (/root/.cache/huggingface/hub/models--openai--gpt-oss-120b/snapshots/b5c939de8f754692c1647ca79fbf85e8c1e70f8a) │
+│ Backend      cuda                                                                                                                   │
+│ Device       cuda:0                                                                                                                 │
+╰─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╯
+[pie-bench] measured-start
+[pie-bench] measured-end
+[2m2026-11-06T10:07:31.660398Z[0m [33m WARN[0m [2mtarpc::server[0m[2m:[0m Requests stream errored out: could not ready the transport for writes: an error occurred readying to send into the channel: the channel is closed and cannot accept new items for sending
+[2m2026-11-06T10:07:31.660459Z[0m [33m WARN[0m [2mtarpc::client[0m[2m:[0m Connection broken: could not ready the transport for writes: an error occurred readying to send into the channel: the channel is closed and cannot accept new items for sending
+
+----------------------------------------------------
+mode:              tput
+engine:            pie
+model:             openai/gpt-oss-120b
+completed:         1024/1024  failed=0
+wall:              15.766 s
+requests/sec:      64.95
+output tokens:     1024
+prompt tokens:     458752
+output tok/sec:    64.95
+lat mean/p50:      7957.6 / 7939.6 ms
+lat p95/p99:       15011.0 / 15680.9 ms
+total batches:     94
+avg batch latency us: 333823.5425531915
+last batch latency us: 218135
+total requests:    1024
+max forward requests: 11
+batch size hist:   [1, 0, 0, 93, 0, 0, 0, 0]
+----------------------------------------------------
+EXIT=0
