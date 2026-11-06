@@ -1,6 +1,5 @@
 # Report: A100 SXM 80 GB × Gemma-4-31B (bf16) × batching
 
-Numbers marked `pending` were still running when this was written.
 
 ## Summary
 
@@ -331,8 +330,10 @@ Every log names the tree it ran on in its first line, or comes from the times be
   - **lib unit tests: 69 passed, 0 failed** (`suite-lib.log`).
   - **integration binary: 50 passed, 9 failed, 1 ignored** (`suite-integration.log`, 3,442 s).
     - `a_joined_projection_answers_what_its_legs_answer` fails identically on base. The base binary was built from e4bb499 on 11-05 and rerun alone (`rerun-base-a_joined_projection_answers_what_its_legs_answer.log`): qwen35-d0.8b-bf16-kv-bf16 has worst gap 0.22070313 over a spread of 13.1875 on both builds, at the same assertion. Pre-existing.
-    - The other 8 failed while the pod's disk was full (~10:40Z; two print `No space left on device`, all within one window of thread ids). They are rerun alone on the fix binary, beside the ep binary (`rerun8-fix.log`): pending.
-  - **ep binary:** pending (`suite-ep.log`).
+    - The other 8 failed while the pod's disk was full (~10:40Z; two print `No space left on device`, all within one window of thread ids). Rerun on the fix binary once space was freed (the ep binary ran beside the first minute of it): **8 passed, 0 failed** (`rerun8-fix.log`).
+    - So the integration binary on 54385f76: 58 passed, 1 ignored, 1 failed, pre-existing.
+  - **ep binary: 5 passed, 1 failed** (`suite-ep.log`). `an_expert_parallel_pair_answers_what_one_rank_answers` panics at its line 358, "the last layer's experts are two selects", a check of the test model's trace. The base e4bb499 binary fails it identically, 5 passed and 1 failed (`rerun-base-ep.log`). Pre-existing.
+  - **In sum, nothing fails on the fix that passes on base.**
   - The disk filled because these tests write test checkpoints to /tmp (9.8 GB for one) beside 216 GB of HF blobs. I freed 109 GB of HF blobs no kept model references.
 - **Earlier trees, superseded:**
   - runtime 101 passed on v1 (23:34);
