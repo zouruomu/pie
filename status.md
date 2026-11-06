@@ -1,7 +1,7 @@
 # Status: 20261106-0130-b200-x1-minimax-m3-1-flash-decode
 
-UTC: 2026-11-06 05:05Z
-Phase: verify. Running: base vs fix curves on both cuts (c4-c64, pf4-pf32), GPU suite build. Next: nsys at c32 (note 3.2), GPU suite, write-up. ETA hand-over ~09:30Z.
+UTC: 2026-11-06 05:13Z
+Phase: fix 2 investigation (note 4). Curves/suite deferred to the final diff, as note 4 asks.
 
 ## Early verdict (B200, main e2e9d1e, SM 1965 MHz)
 The gap is real, but not as the site states it.
@@ -37,7 +37,13 @@ Remaining on cut B after the fix: 9.29 vs 6.92 ms (pie 25.5% behind vLLM).
 | B 3 | 4.69 / 0.0063 / 33 | 3.75 / 0.0189 / 32 |
 The fix's KL is below the scalar walk's on all 8. At cut A's greedy first divergences base's top-2 margin is 0.0625 (req 2, pos 1), 0.6875 (req 3, pos 1), 1.0 (req 1, pos 8) against medians of 0.9-6.4; logits land in bf16 (margins come in 1/16 steps), and the scalar walk flips the same two positions 1 with the same margins. The miniature's logits move by several units under either reduction order (a 16-expert cut: a small change in a layer's input can change its top-4 experts).
 2. Running (curves on both cuts; nsys at c32 next).
-3. Fix 2 (q/k norm + RoPE) will be a separate commit if I do it; see below for why it isn't started.
+3. Fix 2 will be a separate commit.
+
+## Note 4 (05:02Z), acknowledged: fix 2 findings so far
+- Mechanism (from a temporary dump of the folded load trace): MiniMax's q/k per-head norms, partial RoPE and KV append are already folded as an anchored *epilogue* of the packed q|k|v MXFP8 product (`Fused::Epilogue`, key 6392060777819382797). The W8A8 tcgen05 GEMM can't run it in-kernel (`linear.rs:349` `anchored` takes dense bf16 banks only), so it fires detached (`dispatch/linear.rs:394` -> `kernels-cuda/src/linear/gemm.rs:136` -> `RowLeg::fire`, `linear/skeleton.rs:1263`). `Epilogue::leg` (`skeleton.rs:718`) cuts the 9216-wide row into 2 slices of 4608 (each no wider than the skeleton holds); its results are windowed and paged, so the slices are not uniform and each is its own launch of one block a row: two 1-CTA kernels, ~12.7 us a layer on the critical path.
+- The hand-written kernel for this exact shape exists (`qkv_fused_qknorm_rope_vnorm_write`, `attn/qkv_append.cu`; its launcher takes MiniMax's span 32 / rotary 64 at 128-wide heads), but CUDA *retired* that rule on purpose (`engine-cuda/src/lib.rs:110-127`: "every site one forms folds into a generated row kernel or an anchored region instead"), and it lacks plus-one weights.
+- So the fixes in the maintainers' direction are (a) the anchored epilogue run inside the block-scaled tcgen05 GEMM, or (b) a detached leg that spreads a row's non-uniform slices over many blocks in one launch (the slice offset a runtime value rather than baked into each piece's kernel). Both are skeleton/compiler work I'd put at more than this run's remaining verification budget.
+- Now: a throwaway prototype (not for the PR) of the retired rule plus a plus-one MiniMax pattern on CUDA, only to measure what fix 2 buys. Timebox ~1.5 h, then I hand the attribution over with that number, unless you want the hand rule shipped anyway.
 
 ## Cross-model (B200, base vs fix, 2 rounds each, results/raw/x-*)
 - Qwen3.8-Flash-Next mini (4 layers, 16 experts, bf16; takes the selected kernel, 2 kv heads of 256): ITL 0.85 / 0.85 -> 0.82 / 0.82 ms (+3.7%); tokens deterministic per build, base vs fix diverge at 38-229 on 7/8 (one identical).

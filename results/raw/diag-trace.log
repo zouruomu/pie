@@ -1,0 +1,196 @@
+[2m2026-11-06T05:08:56.148699Z[0m [32m INFO[0m [2mruntime::engine::load[0m[2m:[0m serving [3mdeployment[0m[2m=[0m"minimax-m3-mini-mxfp8a8g32-nvfp4a4-kv-bf16-l60-e16" [3midentified[0m[2m=[0m"minimax-m3-mini-mxfp8a8g32-nvfp4a4-kv-bf16-l60-e16" [3mcheckpoint[0m[2m=[0m"/root/.cache/huggingface/hub/models--MiniMaxAI--MiniMax-M3.1-Flash/snapshots/mini60-e16"
+DIAGPRE 0 Gather(Embed { ids: ValueId(0), weights: None, table: ValueId(2), scales: None, vocab: 200064, concat: false, y: ValueId(1) })
+DIAGPRE 1 Elemwise(Rmsnorm { x: ValueId(1), weight: PlusOne(ValueId(4)), axis: Row, eps: 1e-6, y: ValueId(3) })
+DIAGPRE 2 Linear(Matmul { act: ValueId(3), w: ValueId(6), input_scales: None, scales: Some(ValueId(7)), quant: Some(E4m3 { gran: 32 }), logits: false, y: ValueId(3234) })
+DIAGPRE 3 Fused(Epilogue { y: ValueId(3234), ins: [ValueId(8), ValueId(9), ValueId(10), ValueId(12), ValueId(13)], key: 6392060777819382797, outs: [ValueId(11)], cache: Some(ValueId(5)) })
+DIAGPRE 4 Attn(PlanPrefill { kv_indptr: ValueId(15), kv_indices: ValueId(16), last_page_len: ValueId(17), kv_len: ValueId(18), q_heads: 64, kv_heads: 4, head_dim: 128, window: None, plan: ValueId(19) })
+DIAGPRE 5 Attn(Prefill { q: ValueId(11), plan: ValueId(19), cache: ValueId(5), mask: Some(ValueId(14)), selection: None, bias: None, floor: None, window: None, head_dim: 128, kv_heads: 4, causal: true, sm_scale: 0.088388346, selected: None, rel: None, o: ValueId(20), ls
+DIAGPRE 6 Attn(PlanDecode { kv_indptr: ValueId(15), kv_indices: ValueId(16), last_page_len: ValueId(17), kv_len: ValueId(18), q_heads: 64, kv_heads: 4, head_dim: 128, window: None, plan: ValueId(21) })
+DIAGPRE 7 Attn(Decode { q: ValueId(11), plan: ValueId(21), cache: ValueId(5), selection: None, bias: None, window: None, head_dim: 128, sm_scale: 0.088388346, selected: None, rel: None, o: ValueId(22), lse: None })
+DIAGPRE 8 Attn(PlanPrefill { kv_indptr: ValueId(15), kv_indices: ValueId(16), last_page_len: ValueId(17), kv_len: ValueId(18), q_heads: 64, kv_heads: 4, head_dim: 128, window: None, plan: ValueId(23) })
+DIAGPRE 9 Attn(Prefill { q: ValueId(11), plan: ValueId(23), cache: ValueId(5), mask: None, selection: None, bias: None, floor: None, window: None, head_dim: 128, kv_heads: 4, causal: true, sm_scale: 0.088388346, selected: None, rel: None, o: ValueId(24), lse: None })
+DIAGPRE 10 Attn(PlanPrefill { kv_indptr: ValueId(15), kv_indices: ValueId(16), last_page_len: ValueId(17), kv_len: ValueId(18), q_heads: 64, kv_heads: 4, head_dim: 128, window: None, plan: ValueId(26) })
+DIAGPRE 11 Attn(ScoreCapture { q: ValueId(11), plan: ValueId(26), cache: ValueId(5), head_dim: 128, kv_heads: 4, sm_scale: 0.088388346, observe: 32, kv_max: 2048, scores: ValueId(27) })
+DIAGPRE 12 Linear(Matmul { act: ValueId(25), w: ValueId(29), input_scales: None, scales: Some(ValueId(30)), quant: Some(E4m3 { gran: 32 }), logits: false, y: ValueId(28) })
+DIAGPRE 13 Elemwise(ResidualAdd { x: ValueId(28), gate: None, y: ValueId(1), y_out: ValueId(31) })
+DIAGPRE 14 Elemwise(Rmsnorm { x: ValueId(31), weight: PlusOne(ValueId(33)), axis: Row, eps: 1e-6, y: ValueId(32) })
+DIAGPRE 15 Linear(Matmul { act: ValueId(32), w: ValueId(34), input_scales: None, scales: Some(ValueId(35)), quant: Some(E4m3 { gran: 32 }), logits: false, y: ValueId(3235) })
+DIAGPRE 16 Linear(Glu { packed: Some(ValueId(3235)), gate: None, up: None, weights: None, intermediate: 12288, act: SwigluAlpha { alpha: 1.702 }, limit: Some(7.0), y: ValueId(36) })
+DIAGPRE 17 Linear(Matmul { act: ValueId(36), w: ValueId(38), input_scales: None, scales: Some(ValueId(39)), quant: Some(E4m3 { gran: 32 }), logits: false, y: ValueId(37) })
+DIAGPRE 18 Elemwise(ResidualAdd { x: ValueId(37), gate: None, y: ValueId(31), y_out: ValueId(40) })
+DIAGPRE 19 Elemwise(Rmsnorm { x: ValueId(40), weight: PlusOne(ValueId(42)), axis: Row, eps: 1e-6, y: ValueId(41) })
+DIAGPRE 20 Linear(Matmul { act: ValueId(41), w: ValueId(44), input_scales: None, scales: Some(ValueId(45)), quant: Some(E4m3 { gran: 32 }), logits: false, y: ValueId(3236) })
+DIAGPRE 21 Fused(Epilogue { y: ValueId(3236), ins: [ValueId(46), ValueId(47), ValueId(10), ValueId(12), ValueId(13)], key: 6392060777819382797, outs: [ValueId(48)], cache: Some(ValueId(43)) })
+DIAGPRE 22 Attn(Prefill { q: ValueId(48), plan: ValueId(19), cache: ValueId(43), mask: Some(ValueId(14)), selection: None, bias: None, floor: None, window: None, head_dim: 128, kv_heads: 4, causal: true, sm_scale: 0.088388346, selected: None, rel: None, o: ValueId(49), l
+DIAGPRE 23 Attn(Decode { q: ValueId(48), plan: ValueId(21), cache: ValueId(43), selection: None, bias: None, window: None, head_dim: 128, sm_scale: 0.088388346, selected: None, rel: None, o: ValueId(50), lse: None })
+DIAGPRE 24 Attn(Prefill { q: ValueId(48), plan: ValueId(23), cache: ValueId(43), mask: None, selection: None, bias: None, floor: None, window: None, head_dim: 128, kv_heads: 4, causal: true, sm_scale: 0.088388346, selected: None, rel: None, o: ValueId(51), lse: None })
+DIAGPRE 25 Attn(ScoreCapture { q: ValueId(48), plan: ValueId(26), cache: ValueId(43), head_dim: 128, kv_heads: 4, sm_scale: 0.088388346, observe: 32, kv_max: 2048, scores: ValueId(53) })
+DIAGPRE 26 Linear(Matmul { act: ValueId(52), w: ValueId(55), input_scales: None, scales: Some(ValueId(56)), quant: Some(E4m3 { gran: 32 }), logits: false, y: ValueId(54) })
+DIAGPRE 27 Elemwise(ResidualAdd { x: ValueId(54), gate: None, y: ValueId(40), y_out: ValueId(57) })
+DIAGPRE 28 Elemwise(Rmsnorm { x: ValueId(57), weight: PlusOne(ValueId(59)), axis: Row, eps: 1e-6, y: ValueId(58) })
+DIAGPRE 29 Linear(Matmul { act: ValueId(58), w: ValueId(60), input_scales: None, scales: Some(ValueId(61)), quant: Some(E4m3 { gran: 32 }), logits: false, y: ValueId(3237) })
+DIAGPRE 30 Linear(Glu { packed: Some(ValueId(3237)), gate: None, up: None, weights: None, intermediate: 12288, act: SwigluAlpha { alpha: 1.702 }, limit: Some(7.0), y: ValueId(62) })
+DIAGPRE 31 Linear(Matmul { act: ValueId(62), w: ValueId(64), input_scales: None, scales: Some(ValueId(65)), quant: Some(E4m3 { gran: 32 }), logits: false, y: ValueId(63) })
+DIAGPRE 32 Elemwise(ResidualAdd { x: ValueId(63), gate: None, y: ValueId(57), y_out: ValueId(66) })
+DIAGPRE 33 Elemwise(Rmsnorm { x: ValueId(66), weight: PlusOne(ValueId(68)), axis: Row, eps: 1e-6, y: ValueId(67) })
+DIAGPRE 34 Linear(Matmul { act: ValueId(67), w: ValueId(70), input_scales: None, scales: Some(ValueId(71)), quant: Some(E4m3 { gran: 32 }), logits: false, y: ValueId(3238) })
+DIAGPRE 35 Fused(Epilogue { y: ValueId(3238), ins: [ValueId(72), ValueId(73), ValueId(10), ValueId(12), ValueId(13)], key: 6392060777819382797, outs: [ValueId(74)], cache: Some(ValueId(69)) })
+DIAGPRE 36 Attn(Prefill { q: ValueId(74), plan: ValueId(19), cache: ValueId(69), mask: Some(ValueId(14)), selection: None, bias: None, floor: None, window: None, head_dim: 128, kv_heads: 4, causal: true, sm_scale: 0.088388346, selected: None, rel: None, o: ValueId(75), l
+DIAGPRE 37 Attn(Decode { q: ValueId(74), plan: ValueId(21), cache: ValueId(69), selection: None, bias: None, window: None, head_dim: 128, sm_scale: 0.088388346, selected: None, rel: None, o: ValueId(76), lse: None })
+DIAGPRE 38 Attn(Prefill { q: ValueId(74), plan: ValueId(23), cache: ValueId(69), mask: None, selection: None, bias: None, floor: None, window: None, head_dim: 128, kv_heads: 4, causal: true, sm_scale: 0.088388346, selected: None, rel: None, o: ValueId(77), lse: None })
+DIAGPRE 39 Attn(ScoreCapture { q: ValueId(74), plan: ValueId(26), cache: ValueId(69), head_dim: 128, kv_heads: 4, sm_scale: 0.088388346, observe: 32, kv_max: 2048, scores: ValueId(79) })
+DIAGPRE 40 Linear(Matmul { act: ValueId(78), w: ValueId(81), input_scales: None, scales: Some(ValueId(82)), quant: Some(E4m3 { gran: 32 }), logits: false, y: ValueId(80) })
+DIAGPRE 41 Elemwise(ResidualAdd { x: ValueId(80), gate: None, y: ValueId(66), y_out: ValueId(83) })
+DIAGPRE 42 Elemwise(Rmsnorm { x: ValueId(83), weight: PlusOne(ValueId(85)), axis: Row, eps: 1e-6, y: ValueId(84) })
+DIAGPRE 43 Linear(Matmul { act: ValueId(84), w: ValueId(86), input_scales: None, scales: Some(ValueId(87)), quant: Some(E4m3 { gran: 32 }), logits: false, y: ValueId(3239) })
+DIAGPRE 44 Linear(Glu { packed: Some(ValueId(3239)), gate: None, up: None, weights: None, intermediate: 12288, act: SwigluAlpha { alpha: 1.702 }, limit: Some(7.0), y: ValueId(88) })
+DIAGPRE 45 Linear(Matmul { act: ValueId(88), w: ValueId(90), input_scales: None, scales: Some(ValueId(91)), quant: Some(E4m3 { gran: 32 }), logits: false, y: ValueId(89) })
+DIAGPRE 46 Elemwise(ResidualAdd { x: ValueId(89), gate: None, y: ValueId(83), y_out: ValueId(92) })
+DIAGPRE 47 Elemwise(Rmsnorm { x: ValueId(92), weight: PlusOne(ValueId(94)), axis: Row, eps: 1e-6, y: ValueId(93) })
+DIAGPRE 48 Linear(Matmul { act: ValueId(93), w: ValueId(96), input_scales: None, scales: Some(ValueId(97)), quant: Some(E4m3 { gran: 32 }), logits: false, y: ValueId(3240) })
+DIAGPRE 49 Fused(Epilogue { y: ValueId(3240), ins: [ValueId(98), ValueId(99), ValueId(10), ValueId(12), ValueId(13)], key: 6392060777819382797, outs: [ValueId(100)], cache: Some(ValueId(95)) })
+DIAGPRE 50 Linear(Matmul { act: ValueId(93), w: ValueId(103), input_scales: None, scales: Some(ValueId(104)), quant: Some(E4m3 { gran: 32 }), logits: false, y: ValueId(102) })
+DIAGPRE 51 Elemwise(Rmsnorm { x: ValueId(102), weight: PlusOne(ValueId(109)), axis: Head(128), eps: 1e-6, y: ValueId(108) })
+DIAGPRE 52 Linear(Matmul { act: ValueId(93), w: ValueId(106), input_scales: None, scales: Some(ValueId(107)), quant: Some(E4m3 { gran: 32 }), logits: false, y: ValueId(105) })
+DIAGPRE 53 Elemwise(Rmsnorm { x: ValueId(105), weight: PlusOne(ValueId(111)), axis: Head(128), eps: 1e-6, y: ValueId(110) })
+DIAGPRE 54 Elemwise(Rope { q: ValueId(108), k: Some(ValueId(110)), positions: ValueId(10), head_dim: 128, theta: 5000000.0, turn: Partial { rotary_dim: 64, span: 32 }, freqs: None, q_out: ValueId(112), k_out: Some(ValueId(113)) })
+DIAGPRE 55 Attn(IndexKvAppend { k: ValueId(113), keys: ValueId(101), write_page: ValueId(114), write_offset: ValueId(115) })
+DIAGPRE 56 Attn(IndexTopk { q: ValueId(112), keys: ValueId(101), weights: None, heads: 4, head_dim: 128, top_k: 16, ratio: 128, score: BlockMax, selection: ValueId(116) })
+DIAGPRE 57 Attn(Prefill { q: ValueId(100), plan: ValueId(19), cache: ValueId(95), mask: Some(ValueId(14)), selection: None, bias: None, floor: None, window: None, head_dim: 128, kv_heads: 4, causal: true, sm_scale: 0.088388346, selected: None, rel: None, o: ValueId(117),
+DIAGPRE 58 Attn(Decode { q: ValueId(100), plan: ValueId(21), cache: ValueId(95), selection: Some(ValueId(116)), bias: None, window: None, head_dim: 128, sm_scale: 0.088388346, selected: Some(Blocks { ratio: 128, per_head: true }), rel: None, o: ValueId(118), lse: None })
+DIAGPRE 59 Attn(Prefill { q: ValueId(100), plan: ValueId(23), cache: ValueId(95), mask: None, selection: Some(ValueId(116)), bias: None, floor: None, window: None, head_dim: 128, kv_heads: 4, causal: true, sm_scale: 0.088388346, selected: Some(Blocks { ratio: 128, per_he
+DIAGPRE 60 Attn(ScoreCapture { q: ValueId(100), plan: ValueId(26), cache: ValueId(95), head_dim: 128, kv_heads: 4, sm_scale: 0.088388346, observe: 32, kv_max: 2048, scores: ValueId(121) })
+DIAGPRE 61 Linear(Matmul { act: ValueId(120), w: ValueId(123), input_scales: None, scales: Some(ValueId(124)), quant: Some(E4m3 { gran: 32 }), logits: false, y: ValueId(122) })
+DIAGPRE 62 Elemwise(ResidualAdd { x: ValueId(122), gate: None, y: ValueId(92), y_out: ValueId(125) })
+DIAGPRE 63 Elemwise(Rmsnorm { x: ValueId(125), weight: PlusOne(ValueId(127)), axis: Row, eps: 1e-6, y: ValueId(126) })
+DIAGPRE 64 Fused(MatmulMoeRoute { act: ValueId(126), w: ValueId(129), bias: Some(ValueId(132)), scale: None, hint: None, experts: 16, top_k: 4, score: Sigmoid { renormalize: true, scaling: 2.0 }, logits: ValueId(128), routes: ValueId(130), weights: ValueId(131) })
+DIAGPRE 65 Fused(MoeExperts { select: MoeSelect { x: ValueId(126), bank: ValueId(133), bias: None, routes: ValueId(130), input_scales: Some(ValueId(134)), quantized: true, quant: Some(Nvfp4), y: ValueId(3241) }, glu: Glu { packed: Some(ValueId(3241)), gate: None, up: Non
+DIAGPRE 66 Linear(Matmul { act: ValueId(126), w: ValueId(140), input_scales: None, scales: Some(ValueId(141)), quant: Some(E4m3 { gran: 32 }), logits: false, y: ValueId(3242) })
+DIAGPRE 67 Linear(Glu { packed: Some(ValueId(3242)), gate: None, up: None, weights: None, intermediate: 3072, act: SwigluAlpha { alpha: 1.702 }, limit: Some(7.0), y: ValueId(142) })
+DIAGPRE 68 Linear(Matmul { act: ValueId(142), w: ValueId(144), input_scales: None, scales: Some(ValueId(145)), quant: Some(E4m3 { gran: 32 }), logits: false, y: ValueId(143) })
+DIAGPRE 69 Elemwise(ResidualAdd { x: ValueId(143), gate: None, y: ValueId(139), y_out: ValueId(146) })
+DIAGPRE 70 Elemwise(ResidualAdd { x: ValueId(146), gate: None, y: ValueId(125), y_out: ValueId(147) })
+DIAGPRE 71 Elemwise(Rmsnorm { x: ValueId(147), weight: PlusOne(ValueId(149)), axis: Row, eps: 1e-6, y: ValueId(148) })
+DIAGPRE 72 Linear(Matmul { act: ValueId(148), w: ValueId(151), input_scales: None, scales: Some(ValueId(152)), quant: Some(E4m3 { gran: 32 }), logits: false, y: ValueId(3243) })
+DIAGPRE 73 Fused(Epilogue { y: ValueId(3243), ins: [ValueId(153), ValueId(154), ValueId(10), ValueId(12), ValueId(13)], key: 6392060777819382797, outs: [ValueId(155)], cache: Some(ValueId(150)) })
+DIAGPRE 74 Linear(Matmul { act: ValueId(148), w: ValueId(158), input_scales: None, scales: Some(ValueId(159)), quant: Some(E4m3 { gran: 32 }), logits: false, y: ValueId(157) })
+DIAGPRE 75 Elemwise(Rmsnorm { x: ValueId(157), weight: PlusOne(ValueId(164)), axis: Head(128), eps: 1e-6, y: ValueId(163) })
+DIAGPRE 76 Linear(Matmul { act: ValueId(148), w: ValueId(161), input_scales: None, scales: Some(ValueId(162)), quant: Some(E4m3 { gran: 32 }), logits: false, y: ValueId(160) })
+DIAGPRE 77 Elemwise(Rmsnorm { x: ValueId(160), weight: PlusOne(ValueId(166)), axis: Head(128), eps: 1e-6, y: ValueId(165) })
+DIAGPRE 78 Elemwise(Rope { q: ValueId(163), k: Some(ValueId(165)), positions: ValueId(10), head_dim: 128, theta: 5000000.0, turn: Partial { rotary_dim: 64, span: 32 }, freqs: None, q_out: ValueId(167), k_out: Some(ValueId(168)) })
+DIAGPRE 79 Attn(IndexKvAppend { k: ValueId(168), keys: ValueId(156), write_page: ValueId(169), write_offset: ValueId(170) })
+DIAGPRE 80 Attn(IndexTopk { q: ValueId(167), keys: ValueId(156), weights: None, heads: 4, head_dim: 128, top_k: 16, ratio: 128, score: BlockMax, selection: ValueId(171) })
+DIAGPRE 81 Attn(Prefill { q: ValueId(155), plan: ValueId(19), cache: ValueId(150), mask: Some(ValueId(14)), selection: None, bias: None, floor: None, window: None, head_dim: 128, kv_heads: 4, causal: true, sm_scale: 0.088388346, selected: None, rel: None, o: ValueId(172)
+DIAGPRE 82 Attn(Decode { q: ValueId(155), plan: ValueId(21), cache: ValueId(150), selection: Some(ValueId(171)), bias: None, window: None, head_dim: 128, sm_scale: 0.088388346, selected: Some(Blocks { ratio: 128, per_head: true }), rel: None, o: ValueId(173), lse: None }
+DIAGPRE 83 Attn(Prefill { q: ValueId(155), plan: ValueId(23), cache: ValueId(150), mask: None, selection: Some(ValueId(171)), bias: None, floor: None, window: None, head_dim: 128, kv_heads: 4, causal: true, sm_scale: 0.088388346, selected: Some(Blocks { ratio: 128, per_h
+DIAGPRE 84 Attn(ScoreCapture { q: ValueId(155), plan: ValueId(26), cache: ValueId(150), head_dim: 128, kv_heads: 4, sm_scale: 0.088388346, observe: 32, kv_max: 2048, scores: ValueId(176) })
+DIAGPRE 85 Linear(Matmul { act: ValueId(175), w: ValueId(178), input_scales: None, scales: Some(ValueId(179)), quant: Some(E4m3 { gran: 32 }), logits: false, y: ValueId(177) })
+DIAGPRE 86 Elemwise(ResidualAdd { x: ValueId(177), gate: None, y: ValueId(147), y_out: ValueId(180) })
+DIAGPRE 87 Elemwise(Rmsnorm { x: ValueId(180), weight: PlusOne(ValueId(182)), axis: Row, eps: 1e-6, y: ValueId(181) })
+DIAGPRE 88 Fused(MatmulMoeRoute { act: ValueId(181), w: ValueId(184), bias: Some(ValueId(187)), scale: None, hint: None, experts: 16, top_k: 4, score: Sigmoid { renormalize: true, scaling: 2.0 }, logits: ValueId(183), routes: ValueId(185), weights: ValueId(186) })
+DIAGPRE 89 Fused(MoeExperts { select: MoeSelect { x: ValueId(181), bank: ValueId(188), bias: None, routes: ValueId(185), input_scales: Some(ValueId(189)), quantized: true, quant: Some(Nvfp4), y: ValueId(3244) }, glu: Glu { packed: Some(ValueId(3244)), gate: None, up: Non
+DIAGPOST 0 Fused(Region { ins: [ValueId(2), ValueId(0), ValueId(4)], reads: [RegionRead { by: Some(1), from: 0 }, RegionRead { by: None, from: 0 }, RegionRead { by: None, from: 0 }], width: 6144, key: 1787842883
+DIAGPOST 1 Linear(Matmul { act: ValueId(3), w: ValueId(6), input_scales: None, scales: Some(ValueId(7)), quant: Some(E4m3 { gran: 32 }), logits: false, y: ValueId(3176) })
+DIAGPOST 2 Fused(Epilogue { y: ValueId(3176), ins: [ValueId(8), ValueId(9), ValueId(10), ValueId(12), ValueId(13)], key: 6392060777819382797, outs: [ValueId(11)], cache: Some(ValueId(5)) })
+DIAGPOST 3 Attn(PlanPrefill { kv_indptr: ValueId(15), kv_indices: ValueId(16), last_page_len: ValueId(17), kv_len: ValueId(18), q_heads: 64, kv_heads: 4, head_dim: 128, window: None, plan: ValueId(19) })
+DIAGPOST 4 Attn(Prefill { q: ValueId(11), plan: ValueId(19), cache: ValueId(5), mask: Some(ValueId(14)), selection: None, bias: None, floor: None, window: None, head_dim: 128, kv_heads: 4, causal: true, sm_scale
+DIAGPOST 5 Attn(PlanDecode { kv_indptr: ValueId(15), kv_indices: ValueId(16), last_page_len: ValueId(17), kv_len: ValueId(18), q_heads: 64, kv_heads: 4, head_dim: 128, window: None, plan: ValueId(21) })
+DIAGPOST 6 Attn(Decode { q: ValueId(11), plan: ValueId(21), cache: ValueId(5), selection: None, bias: None, window: None, head_dim: 128, sm_scale: 0.088388346, selected: None, rel: None, o: ValueId(22), lse: Non
+DIAGPOST 7 Attn(PlanPrefill { kv_indptr: ValueId(15), kv_indices: ValueId(16), last_page_len: ValueId(17), kv_len: ValueId(18), q_heads: 64, kv_heads: 4, head_dim: 128, window: None, plan: ValueId(23) })
+DIAGPOST 8 Attn(Prefill { q: ValueId(11), plan: ValueId(23), cache: ValueId(5), mask: None, selection: None, bias: None, floor: None, window: None, head_dim: 128, kv_heads: 4, causal: true, sm_scale: 0.088388346
+DIAGPOST 9 Attn(PlanPrefill { kv_indptr: ValueId(15), kv_indices: ValueId(16), last_page_len: ValueId(17), kv_len: ValueId(18), q_heads: 64, kv_heads: 4, head_dim: 128, window: None, plan: ValueId(26) })
+DIAGPOST 10 Attn(ScoreCapture { q: ValueId(11), plan: ValueId(26), cache: ValueId(5), head_dim: 128, kv_heads: 4, sm_scale: 0.088388346, observe: 32, kv_max: 2048, scores: ValueId(27) })
+DIAGPOST 11 Linear(Matmul { act: ValueId(25), w: ValueId(29), input_scales: None, scales: Some(ValueId(30)), quant: Some(E4m3 { gran: 32 }), logits: false, y: ValueId(28) })
+DIAGPOST 12 Fused(Region { ins: [ValueId(28), ValueId(1), ValueId(33)], reads: [], width: 6144, key: 11896029288371924301, outs: [ValueId(31), ValueId(32)] })
+DIAGPOST 13 Linear(Matmul { act: ValueId(32), w: ValueId(34), input_scales: None, scales: Some(ValueId(35)), quant: Some(E4m3 { gran: 32 }), logits: false, y: ValueId(3177) })
+DIAGPOST 14 Linear(Glu { packed: Some(ValueId(3177)), gate: None, up: None, weights: None, intermediate: 12288, act: SwigluAlpha { alpha: 1.702 }, limit: Some(7.0), y: ValueId(36) })
+DIAGPOST 15 Linear(Matmul { act: ValueId(36), w: ValueId(38), input_scales: None, scales: Some(ValueId(39)), quant: Some(E4m3 { gran: 32 }), logits: false, y: ValueId(37) })
+DIAGPOST 16 Fused(Region { ins: [ValueId(37), ValueId(31), ValueId(42)], reads: [], width: 6144, key: 11896029288371924301, outs: [ValueId(40), ValueId(41)] })
+DIAGPOST 17 Linear(Matmul { act: ValueId(41), w: ValueId(44), input_scales: None, scales: Some(ValueId(45)), quant: Some(E4m3 { gran: 32 }), logits: false, y: ValueId(3178) })
+DIAGPOST 18 Fused(Epilogue { y: ValueId(3178), ins: [ValueId(46), ValueId(47), ValueId(10), ValueId(12), ValueId(13)], key: 6392060777819382797, outs: [ValueId(48)], cache: Some(ValueId(43)) })
+DIAGPOST 19 Attn(Prefill { q: ValueId(48), plan: ValueId(19), cache: ValueId(43), mask: Some(ValueId(14)), selection: None, bias: None, floor: None, window: None, head_dim: 128, kv_heads: 4, causal: true, sm_scal
+DIAGPOST 20 Attn(Decode { q: ValueId(48), plan: ValueId(21), cache: ValueId(43), selection: None, bias: None, window: None, head_dim: 128, sm_scale: 0.088388346, selected: None, rel: None, o: ValueId(50), lse: No
+DIAGPOST 21 Attn(Prefill { q: ValueId(48), plan: ValueId(23), cache: ValueId(43), mask: None, selection: None, bias: None, floor: None, window: None, head_dim: 128, kv_heads: 4, causal: true, sm_scale: 0.08838834
+DIAGPOST 22 Attn(ScoreCapture { q: ValueId(48), plan: ValueId(26), cache: ValueId(43), head_dim: 128, kv_heads: 4, sm_scale: 0.088388346, observe: 32, kv_max: 2048, scores: ValueId(53) })
+DIAGPOST 23 Linear(Matmul { act: ValueId(52), w: ValueId(55), input_scales: None, scales: Some(ValueId(56)), quant: Some(E4m3 { gran: 32 }), logits: false, y: ValueId(54) })
+DIAGPOST 24 Fused(Region { ins: [ValueId(54), ValueId(40), ValueId(59)], reads: [], width: 6144, key: 11896029288371924301, outs: [ValueId(57), ValueId(58)] })
+DIAGPOST 25 Linear(Matmul { act: ValueId(58), w: ValueId(60), input_scales: None, scales: Some(ValueId(61)), quant: Some(E4m3 { gran: 32 }), logits: false, y: ValueId(3179) })
+DIAGPOST 26 Linear(Glu { packed: Some(ValueId(3179)), gate: None, up: None, weights: None, intermediate: 12288, act: SwigluAlpha { alpha: 1.702 }, limit: Some(7.0), y: ValueId(62) })
+DIAGPOST 27 Linear(Matmul { act: ValueId(62), w: ValueId(64), input_scales: None, scales: Some(ValueId(65)), quant: Some(E4m3 { gran: 32 }), logits: false, y: ValueId(63) })
+DIAGPOST 28 Fused(Region { ins: [ValueId(63), ValueId(57), ValueId(68)], reads: [], width: 6144, key: 11896029288371924301, outs: [ValueId(66), ValueId(67)] })
+DIAGPOST 29 Linear(Matmul { act: ValueId(67), w: ValueId(70), input_scales: None, scales: Some(ValueId(71)), quant: Some(E4m3 { gran: 32 }), logits: false, y: ValueId(3180) })
+DIAGPOST 30 Fused(Epilogue { y: ValueId(3180), ins: [ValueId(72), ValueId(73), ValueId(10), ValueId(12), ValueId(13)], key: 6392060777819382797, outs: [ValueId(74)], cache: Some(ValueId(69)) })
+DIAGPOST 31 Attn(Prefill { q: ValueId(74), plan: ValueId(19), cache: ValueId(69), mask: Some(ValueId(14)), selection: None, bias: None, floor: None, window: None, head_dim: 128, kv_heads: 4, causal: true, sm_scal
+DIAGPOST 32 Attn(Decode { q: ValueId(74), plan: ValueId(21), cache: ValueId(69), selection: None, bias: None, window: None, head_dim: 128, sm_scale: 0.088388346, selected: None, rel: None, o: ValueId(76), lse: No
+DIAGPOST 33 Attn(Prefill { q: ValueId(74), plan: ValueId(23), cache: ValueId(69), mask: None, selection: None, bias: None, floor: None, window: None, head_dim: 128, kv_heads: 4, causal: true, sm_scale: 0.08838834
+DIAGPOST 34 Attn(ScoreCapture { q: ValueId(74), plan: ValueId(26), cache: ValueId(69), head_dim: 128, kv_heads: 4, sm_scale: 0.088388346, observe: 32, kv_max: 2048, scores: ValueId(79) })
+DIAGPOST 35 Linear(Matmul { act: ValueId(78), w: ValueId(81), input_scales: None, scales: Some(ValueId(82)), quant: Some(E4m3 { gran: 32 }), logits: false, y: ValueId(80) })
+DIAGPOST 36 Fused(Region { ins: [ValueId(80), ValueId(66), ValueId(85)], reads: [], width: 6144, key: 11896029288371924301, outs: [ValueId(83), ValueId(84)] })
+DIAGPOST 37 Linear(Matmul { act: ValueId(84), w: ValueId(86), input_scales: None, scales: Some(ValueId(87)), quant: Some(E4m3 { gran: 32 }), logits: false, y: ValueId(3181) })
+DIAGPOST 38 Linear(Glu { packed: Some(ValueId(3181)), gate: None, up: None, weights: None, intermediate: 12288, act: SwigluAlpha { alpha: 1.702 }, limit: Some(7.0), y: ValueId(88) })
+DIAGPOST 39 Linear(Matmul { act: ValueId(88), w: ValueId(90), input_scales: None, scales: Some(ValueId(91)), quant: Some(E4m3 { gran: 32 }), logits: false, y: ValueId(89) })
+DIAGPOST 40 Fused(Region { ins: [ValueId(89), ValueId(83), ValueId(94)], reads: [], width: 6144, key: 11896029288371924301, outs: [ValueId(92), ValueId(93)] })
+DIAGPOST 41 Linear(Matmul { act: ValueId(93), w: ValueId(96), input_scales: None, scales: Some(ValueId(97)), quant: Some(E4m3 { gran: 32 }), logits: false, y: ValueId(3182) })
+DIAGPOST 42 Fused(Epilogue { y: ValueId(3182), ins: [ValueId(98), ValueId(99), ValueId(10), ValueId(12), ValueId(13)], key: 6392060777819382797, outs: [ValueId(100)], cache: Some(ValueId(95)) })
+DIAGPOST 43 Linear(Matmul { act: ValueId(93), w: ValueId(103), input_scales: None, scales: Some(ValueId(104)), quant: Some(E4m3 { gran: 32 }), logits: false, y: ValueId(102) })
+DIAGPOST 44 Elemwise(Rmsnorm { x: ValueId(102), weight: PlusOne(ValueId(109)), axis: Head(128), eps: 1e-6, y: ValueId(108) })
+DIAGPOST 45 Linear(Matmul { act: ValueId(93), w: ValueId(106), input_scales: None, scales: Some(ValueId(107)), quant: Some(E4m3 { gran: 32 }), logits: false, y: ValueId(105) })
+DIAGPOST 46 Elemwise(Rmsnorm { x: ValueId(105), weight: PlusOne(ValueId(111)), axis: Head(128), eps: 1e-6, y: ValueId(110) })
+DIAGPOST 47 Elemwise(Rope { q: ValueId(108), k: Some(ValueId(110)), positions: ValueId(10), head_dim: 128, theta: 5000000.0, turn: Partial { rotary_dim: 64, span: 32 }, freqs: None, q_out: ValueId(112), k_out: So
+DIAGPOST 48 Attn(IndexKvAppend { k: ValueId(113), keys: ValueId(101), write_page: ValueId(114), write_offset: ValueId(115) })
+DIAGPOST 49 Attn(IndexTopk { q: ValueId(112), keys: ValueId(101), weights: None, heads: 4, head_dim: 128, top_k: 16, ratio: 128, score: BlockMax, selection: ValueId(116) })
+DIAGPOST 50 Attn(Prefill { q: ValueId(100), plan: ValueId(19), cache: ValueId(95), mask: Some(ValueId(14)), selection: None, bias: None, floor: None, window: None, head_dim: 128, kv_heads: 4, causal: true, sm_sca
+DIAGPOST 51 Attn(Decode { q: ValueId(100), plan: ValueId(21), cache: ValueId(95), selection: Some(ValueId(116)), bias: None, window: None, head_dim: 128, sm_scale: 0.088388346, selected: Some(Blocks { ratio: 128,
+DIAGPOST 52 Attn(Prefill { q: ValueId(100), plan: ValueId(23), cache: ValueId(95), mask: None, selection: Some(ValueId(116)), bias: None, floor: None, window: None, head_dim: 128, kv_heads: 4, causal: true, sm_sc
+DIAGPOST 53 Attn(ScoreCapture { q: ValueId(100), plan: ValueId(26), cache: ValueId(95), head_dim: 128, kv_heads: 4, sm_scale: 0.088388346, observe: 32, kv_max: 2048, scores: ValueId(121) })
+DIAGPOST 54 Linear(Matmul { act: ValueId(120), w: ValueId(123), input_scales: None, scales: Some(ValueId(124)), quant: Some(E4m3 { gran: 32 }), logits: false, y: ValueId(122) })
+DIAGPOST 55 Fused(Region { ins: [ValueId(122), ValueId(92), ValueId(127)], reads: [], width: 6144, key: 11896029288371924301, outs: [ValueId(125), ValueId(126)] })
+DIAGPOST 56 Fused(MatmulMoeRoute { act: ValueId(126), w: ValueId(129), bias: Some(ValueId(132)), scale: None, hint: None, experts: 16, top_k: 4, score: Sigmoid { renormalize: true, scaling: 2.0 }, logits: ValueId
+DIAGPOST 57 Fused(MoeExperts { select: MoeSelect { x: ValueId(126), bank: ValueId(133), bias: None, routes: ValueId(130), input_scales: Some(ValueId(134)), quantized: true, quant: Some(Nvfp4), y: ValueId(3183) },
+DIAGPOST 58 Linear(Matmul { act: ValueId(126), w: ValueId(140), input_scales: None, scales: Some(ValueId(141)), quant: Some(E4m3 { gran: 32 }), logits: false, y: ValueId(3184) })
+DIAGPOST 59 Linear(Glu { packed: Some(ValueId(3184)), gate: None, up: None, weights: None, intermediate: 3072, act: SwigluAlpha { alpha: 1.702 }, limit: Some(7.0), y: ValueId(142) })
+DIAGPOST 60 Linear(Matmul { act: ValueId(142), w: ValueId(144), input_scales: None, scales: Some(ValueId(145)), quant: Some(E4m3 { gran: 32 }), logits: false, y: ValueId(143) })
+DIAGPOST 61 Fused(Region { ins: [ValueId(143), ValueId(139), ValueId(125), ValueId(148)], reads: [], width: 6144, key: 8402073442210214467, outs: [ValueId(146), ValueId(147)] })
+DIAGPOST 62 Linear(Matmul { act: ValueId(147), w: ValueId(150), input_scales: None, scales: Some(ValueId(151)), quant: Some(E4m3 { gran: 32 }), logits: false, y: ValueId(3185) })
+DIAGPOST 63 Fused(Epilogue { y: ValueId(3185), ins: [ValueId(152), ValueId(153), ValueId(10), ValueId(12), ValueId(13)], key: 6392060777819382797, outs: [ValueId(154)], cache: Some(ValueId(149)) })
+DIAGPOST 64 Linear(Matmul { act: ValueId(147), w: ValueId(157), input_scales: None, scales: Some(ValueId(158)), quant: Some(E4m3 { gran: 32 }), logits: false, y: ValueId(156) })
+DIAGPOST 65 Elemwise(Rmsnorm { x: ValueId(156), weight: PlusOne(ValueId(163)), axis: Head(128), eps: 1e-6, y: ValueId(162) })
+DIAGPOST 66 Linear(Matmul { act: ValueId(147), w: ValueId(160), input_scales: None, scales: Some(ValueId(161)), quant: Some(E4m3 { gran: 32 }), logits: false, y: ValueId(159) })
+DIAGPOST 67 Elemwise(Rmsnorm { x: ValueId(159), weight: PlusOne(ValueId(165)), axis: Head(128), eps: 1e-6, y: ValueId(164) })
+DIAGPOST 68 Elemwise(Rope { q: ValueId(162), k: Some(ValueId(164)), positions: ValueId(10), head_dim: 128, theta: 5000000.0, turn: Partial { rotary_dim: 64, span: 32 }, freqs: None, q_out: ValueId(166), k_out: So
+DIAGPOST 69 Attn(IndexKvAppend { k: ValueId(167), keys: ValueId(155), write_page: ValueId(168), write_offset: ValueId(169) })
+engine-cuda: bodies armed 102 of 102 compositions at load (decode 18/18, prefill 32/32, mixed 31/31, tower 0/0, wide 21/21; 0 segmented; 370 MiB of 4096 MiB, 81 of 1024 seats) (pool declared 112050 MiB, high water 2502 MiB, committed 2502 MiB, spare under the ceiling 1861 MiB) [12 key(s) never fired — this deployment cannot synthesize them, or their present set was already refused admission; e.g. mixed c2+c0 at bucket 1 (1024 seat(s) x 2048 context, 512 lane(s))] [sealed: every key attempted]
+╭─ Pie Engine ───────────────────────────────────────────────────────────────────────────────────────────────────╮
+│ Host         127.0.0.1:37069                                                                                   │
+│ Model        default (/root/.cache/huggingface/hub/models--MiniMaxAI--MiniMax-M3.1-Flash/snapshots/mini60-e16) │
+│ Backend      cuda                                                                                              │
+│ Device       cuda:0                                                                                            │
+╰────────────────────────────────────────────────────────────────────────────────────────────────────────────────╯
+[pie-bench] measured-start
+[pie-bench] measured-end
+[2m2026-11-06T05:09:45.978977Z[0m [33m WARN[0m [2mtarpc::server[0m[2m:[0m Requests stream errored out: could not ready the transport for writes: an error occurred readying to send into the channel: the channel is closed and cannot accept new items for sending
+[2m2026-11-06T05:09:45.978983Z[0m [33m WARN[0m [2mtarpc::client[0m[2m:[0m Connection broken: could not ready the transport for writes: an error occurred readying to send into the channel: the channel is closed and cannot accept new items for sending
+
+----------------------------------------------------
+mode:              latency
+engine:            pie
+model:             /root/.cache/huggingface/hub/models--MiniMaxAI--MiniMax-M3.1-Flash/snapshots/mini60-e16
+completed:         1/1  failed=0
+wall:              2.228 s
+requests/sec:      0.45
+output tokens:     256
+prompt tokens:     497
+output tok/sec:    114.91
+lat mean/p50:      2227.8 / 2227.8 ms
+lat p95/p99:       2227.8 / 2227.8 ms
+ttft mean/p50:     28.5 / 28.5 ms
+ttft p95/p99:      28.5 / 28.5 ms
+intertoken p50/p99/max: 8.62 / 8.66 / 9.05 ms
+total batches:     129
+avg batch latency us: 34213.1472868217
+last batch latency us: 25877
+total requests:    256
+max forward requests: 2
+batch size hist:   [2, 127, 0, 0, 0, 0, 0, 0]
+----------------------------------------------------
+EXIT=0
