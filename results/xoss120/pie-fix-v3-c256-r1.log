@@ -1,0 +1,38 @@
+[transformers] PyTorch was not found. Models won't be available and only tokenizers, configuration and file/data utilities can be used.
+engine-cuda: [engine] bodies_mem 4096 MiB is held down to 2082 MiB on this card: with the weights, activations and inputs resident, one sequence at the declared context and the guests' programs seated, 8330 MiB is left for the graph bodies and the cache rows together, and the bodies take at most a quarter of it. State a smaller bodies_mem to choose it.
+engine-cuda: bodies armed 166 of 166 compositions at load (decode 16/16, prefill 56/56, mixed 55/55, tower 0/0, wide 39/39; 0 segmented; 529 MiB of 2082 MiB, 127 of 1024 seats) (pool declared 6336 MiB, high water 864 MiB, committed 864 MiB, spare under the ceiling 1453 MiB) [18 key(s) never fired — this deployment cannot synthesize them, or their present set was already refused admission; e.g. mixed c2+c0 at bucket 1 (256 seat(s) x 2048 context, 256 lane(s))] [sealed: every key attempted]
+╭─ Pie Engine ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╮
+│ Host         127.0.0.1:38585                                                                                                        │
+│ Model        default (/root/.cache/huggingface/hub/models--openai--gpt-oss-120b/snapshots/b5c939de8f754692c1647ca79fbf85e8c1e70f8a) │
+│ Backend      cuda                                                                                                                   │
+│ Device       cuda:0                                                                                                                 │
+╰─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╯
+[pie-bench] measured-start
+[pie-bench] measured-end
+[2m2026-11-06T06:25:14.297963Z[0m [33m WARN[0m [2mtarpc::client[0m[2m:[0m Connection broken: could not ready the transport for writes: an error occurred readying to send into the channel: the channel is closed and cannot accept new items for sending
+[2m2026-11-06T06:25:14.297968Z[0m [33m WARN[0m [2mtarpc::server[0m[2m:[0m Requests stream errored out: could not ready the transport for writes: an error occurred readying to send into the channel: the channel is closed and cannot accept new items for sending
+
+----------------------------------------------------
+mode:              tput
+engine:            pie
+model:             openai/gpt-oss-120b
+completed:         512/512  failed=0
+wall:              17.710 s
+requests/sec:      28.91
+output tokens:     65536
+prompt tokens:     115200
+output tok/sec:    3700.43
+lat mean/p50:      8832.2 / 8847.2 ms
+lat p95/p99:       8919.6 / 8925.3 ms
+ttft mean/p50:     1653.9 / 1556.2 ms
+ttft p95/p99:      2638.4 / 2654.2 ms
+intertoken p50/p99/max: 48.90 / 68.74 / 2605.59 ms
+total batches:     140
+avg batch latency us: 242174.95714285714
+last batch latency us: 168746
+total requests:    65536
+max forward requests: 512
+batch size hist:   [0, 2, 0, 0, 1, 9, 0, 128]
+----------------------------------------------------
+EXIT=0
+1410 MHz, 1410 MHz, 37, 96.00 W
