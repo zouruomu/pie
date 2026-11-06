@@ -1,0 +1,54 @@
+diff --git a/crates/kernels-cuda/tests/kernels_cuda/linear/moe_select.rs b/crates/kernels-cuda/tests/kernels_cuda/linear/moe_select.rs
+index 6bc52fb7..a8a92401 100644
+--- a/crates/kernels-cuda/tests/kernels_cuda/linear/moe_select.rs
++++ b/crates/kernels-cuda/tests/kernels_cuda/linear/moe_select.rs
+@@ -657,3 +657,36 @@ fn w4a8_select_timing() {
+         b.sync();
+     }
+ }
++
++/// Measurement only (r2g): gpt-oss-120b's gate-up and down legs at a 5120-row
++/// fire, 128 experts, top 4, K padded from 2880 to 3072, MXFP8 rows in 32s.
++#[test]
++#[ignore = "timing only"]
++fn w4a8_select_timing_gptoss() {
++    let mut b = Bench::new(7);
++    let ctx = b.ctx().with_tuning(Tuning {
++        mxfp4_w4a8_from: 1,
++        mxfp4_w4a8_tma: std::env::var("W4A8_TMA").is_ok(),
++        mxfp4_w4a8_ws: std::env::var("W4A8_WS").is_ok(),
++        ..Tuning::DEFAULT
++    });
++    let (ex, tokens, top) = (128usize, 5120usize, 4usize);
++    for (n, k, by_token) in [(5760usize, 3072usize, true), (2880, 3072, false)] {
++        let rows_x = if by_token { tokens } else { tokens * top };
++        let (raw, _) = b.lcg.row(rows_x * k);
++        let x = t(b.up(&raw), rows_x, k, Bf16);
++        let codes = tab(ex * n * k / 2, |i| ((i * 2_654_435_761) >> 7) as u8);
++        let scales = tab(ex * n * k / 32, |i| 120 + (i % 7) as u8);
++        let (mx, sc) = (
++            t(b.up(&codes), ex, n * k / 2, U8),
++            t(b.up(&scales), ex, n * k / 32, U8),
++        );
++        let routes = tab(tokens * top, |r| ((r / top * 3 + r % top * 5) % ex) as i32);
++        let r = t(b.up(&routes), tokens, top, I32);
++        let mut y = b.out(tokens * top, n);
++        for _ in 0..5 {
++            assert!(moe::select_mxfp4_w4a8(&ctx, x, mx, sc, r, &mut y, 32).expect("fires"));
++        }
++        b.sync();
++    }
++}
+diff --git a/models/gpt_oss.poem b/models/gpt_oss.poem
+index 430028a3..7ab84e59 100644
+--- a/models/gpt_oss.poem
++++ b/models/gpt_oss.poem
+@@ -28,6 +28,8 @@ DEPLOYMENTS = [
+     # serves gpt-oss.
+     deployment("gptoss-20b", weights = [dtype.bf16, dtype.mxfp4], kv = dtype.e4m3),
+     deployment("gptoss-120b", weights = [dtype.bf16, dtype.mxfp4], kv = dtype.e4m3),
++    deployment("gptoss-20b", weights = [dtype.bf16, dtype.mxfp4a8g32], kv = dtype.bf16),
++    deployment("gptoss-120b", weights = [dtype.bf16, dtype.mxfp4a8g32], kv = dtype.bf16),
+ ]
+ 
+ # The drafter published apart from the model it drafts for.

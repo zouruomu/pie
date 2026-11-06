@@ -1,0 +1,158 @@
+diff --git a/crates/kernels-cuda/kernels/linear/moe/select_fp4_sm80.cu b/crates/kernels-cuda/kernels/linear/moe/select_fp4_sm80.cu
+index c66c3ace..b95c3de0 100644
+--- a/crates/kernels-cuda/kernels/linear/moe/select_fp4_sm80.cu
++++ b/crates/kernels-cuda/kernels/linear/moe/select_fp4_sm80.cu
+@@ -517,11 +517,11 @@ __global__ void __launch_bounds__(32 * kWarps, 384 / (32 * kWarps)) moe_select_m
+                                       row_base, g, c, limit, galpha);
+ }
+ 
+-/// `moe_select_mxfp4_mma_staged` for a wide fire, `k` whole 128s: eight
+-/// warps a CTA (256 rows, or 128 GLU columns), each 128-code chunk's codes
+-/// and scales staged with the slice's 64 routes through one `kStages`
+-/// cp.async ring, so a chunk's reads land stages ahead of its MMAs and the
+-/// routes' runs stage once a 256 rows.
++/// `moe_select_mxfp4_mma_staged` for a wide fire: eight warps a CTA (256
++/// rows, or 128 GLU columns), each 128-code chunk's codes staged with the
++/// slice's 64 routes through one `kStages` cp.async ring, so a chunk's reads
++/// land stages ahead of its MMAs and the routes' runs stage once a 256 rows;
++/// a K of whole 32s zero-fills its last chunk's tail.
+ template <int kGlu, int kStages>
+ __global__ void __launch_bounds__(256, 1) moe_select_mxfp4_mma_pipe(
+     const bf16* __restrict__ act,
+@@ -551,10 +551,10 @@ __global__ void __launch_bounds__(256, 1) moe_select_mxfp4_mma_pipe(
+     constexpr int kRowStep = kThreads / 16;
+     constexpr int kPasses = kSlice / kRowStep;
+     // A stage: the routes' runs, then a lane's 16-byte code run of each of
+-    // its four rows (`[warp][t][h][lane]`), then each row's four scales.
++    // its four rows (`[warp][t][h][lane]`).
+     constexpr int kXRuns = kSlice * 16;
+     constexpr int kWRuns = kWarps * kTiles * 2 * 32;
+-    constexpr int kStage = kXRuns + kWRuns + kWRuns / 16;
++    constexpr int kStage = kXRuns + kWRuns;
+ 
+     const int at = static_cast<int>(blockIdx.y);
+     if (at >= offsets[num_experts + 1]) return;
+@@ -575,14 +575,14 @@ __global__ void __launch_bounds__(256, 1) moe_select_mxfp4_mma_pipe(
+     auto tile_row = [&](int t) { return kGlu != 0 ? row_base + t * inter : row_base + 16 * t; };
+     const bool rows_live = row_base < span;
+ 
+-    const int chunks = k >> 7;
++    const int groups = k >> 5;
++    const int chunks = (groups + 3) >> 2;
+     const long long row_bytes = k >> 1;
+-    const int sf_row = k >> 5;
+     const u8* w_e = codes + static_cast<long long>(expert) * n * row_bytes;
+-    const u8* s_e = scales + static_cast<long long>(expert) * n * sf_row;
++    const u8* s_e = scales + static_cast<long long>(expert) * n * groups;
+ 
+-    // This lane's rows: its code runs (group `c` a chunk) and, at `c` 0,
+-    // their four scales a chunk, kept as bank rows (not pointers).
++    // This lane's rows: its code runs and scales (group `c` a chunk), kept
++    // as bank rows (not pointers).
+     int wr[kTiles][2];
+ #pragma unroll
+     for (int t = 0; t < kTiles; ++t)
+@@ -607,22 +607,18 @@ __global__ void __launch_bounds__(256, 1) moe_select_mxfp4_mma_pipe(
+ #pragma unroll
+             for (int j = 0; j < kPasses; ++j) {
+                 const int row = (tid >> 4) + kRowStep * j;
+-                const bool live = src[j] >= 0;
+-                const bf16* from = act + static_cast<long long>(live ? src[j] : 0) * k + ch * 128 + run * 8;
++                const bool live = src[j] >= 0 && ch * 128 + run * 8 < k;
++                const bf16* from = live ? act + static_cast<long long>(src[j]) * k + ch * 128 + run * 8 : act;
+                 cp16(st + w4mma::x_slot(row, run), from, live ? 16 : 0);
+             }
+             uint4* ws = st + kXRuns + warp * (kTiles * 2 * 32);
+-            unsigned* ss = reinterpret_cast<unsigned*>(st + kXRuns + kWRuns) + warp * (kTiles * 2 * 8);
++            const bool live = ch * 4 + c < groups;
+ #pragma unroll
+             for (int t = 0; t < kTiles; ++t)
+ #pragma unroll
+-                for (int h = 0; h < 2; ++h) {
+-                    cp16(ws + (t * 2 + h) * 32 + lane, w_e + wr[t][h] * row_bytes + ch * 64 + c * 16, 16);
+-                    if (c == 0) {
+-                        const unsigned saddr = static_cast<unsigned>(__cvta_generic_to_shared(ss + (t * 2 + h) * 8 + g));
+-                        asm volatile("cp.async.ca.shared.global [%0], [%1], 4;\n" ::"r"(saddr), "l"(s_e + wr[t][h] * sf_row + ch * 4));
+-                    }
+-                }
++                for (int h = 0; h < 2; ++h)
++                    cp16(ws + (t * 2 + h) * 32 + lane, live ? w_e + wr[t][h] * row_bytes + ch * 64 + c * 16 : w_e,
++                         live ? 16 : 0);
+         }
+         asm volatile("cp.async.commit_group;\n" ::);
+     };
+@@ -635,8 +631,20 @@ __global__ void __launch_bounds__(256, 1) moe_select_mxfp4_mma_pipe(
+ #pragma unroll
+             for (int e = 0; e < 4; ++e) acc[t][b][e] = 0.f;
+ 
++    // This lane's scales of a chunk, read a chunk ahead of its MMAs.
++    unsigned sc[kTiles][2];
++    auto load_s = [&](int ch) {
++        const bool live = ch < chunks && ch * 4 + c < groups;
++#pragma unroll
++        for (int t = 0; t < kTiles; ++t)
++#pragma unroll
++            for (int h = 0; h < 2; ++h)
++                sc[t][h] = live ? __ldg(s_e + static_cast<long long>(wr[t][h]) * groups + ch * 4 + c) : 0u;
++    };
++
+ #pragma unroll
+     for (int s = 0; s < kStages - 1; ++s) stage(s);
++    load_s(0);
+ 
+     for (int ch = 0; ch < chunks; ++ch) {
+         asm volatile("cp.async.wait_group %0;\n" ::"n"(kStages - 2));
+@@ -648,7 +656,6 @@ __global__ void __launch_bounds__(256, 1) moe_select_mxfp4_mma_pipe(
+         stage(ch + kStages - 1);
+         if (rows_live) {
+             const uint4* ws = st + kXRuns + warp * (kTiles * 2 * 32);
+-            const unsigned* ss = reinterpret_cast<const unsigned*>(st + kXRuns + kWRuns) + warp * (kTiles * 2 * 8);
+             uint4 cw[kTiles][2];
+             unsigned cs[kTiles][2];
+             bool wide = false;
+@@ -657,9 +664,10 @@ __global__ void __launch_bounds__(256, 1) moe_select_mxfp4_mma_pipe(
+ #pragma unroll
+                 for (int h = 0; h < 2; ++h) {
+                     cw[t][h] = ws[(t * 2 + h) * 32 + lane];
+-                    cs[t][h] = (ss[(t * 2 + h) * 8 + g] >> (8 * c)) & 0xFFu;
++                    cs[t][h] = sc[t][h];
+                     wide |= cs[t][h] > 128u;
+                 }
++            load_s(ch + 1);
+             if (__any_sync(0xffffffffu, wide)) {
+                 w4mma::compute_staged<true, false>(cw, cs, st, g, c, acc);
+             } else {
+diff --git a/crates/kernels-cuda/src/linear/moe/select_fp4.rs b/crates/kernels-cuda/src/linear/moe/select_fp4.rs
+index 27687a57..d21b4cc8 100644
+--- a/crates/kernels-cuda/src/linear/moe/select_fp4.rs
++++ b/crates/kernels-cuda/src/linear/moe/select_fp4.rs
+@@ -132,11 +132,11 @@ pub(super) const WGMMA_WIDE_FROM: u32 = 128;
+ const PIPE_FROM: u32 = 192;
+ 
+ /// The stages of `moe_select_mxfp4_mma_pipe`'s ring, and a stage's bytes:
+-/// 64 routes' 128-code runs, 256 rows' codes and their scales.
++/// 64 routes' 128-code runs and 256 rows' codes.
+ #[cfg(feature = "cuda")]
+ const PIPE_STAGES: u32 = 3;
+ #[cfg(feature = "cuda")]
+-const PIPE_STAGE: u32 = 64 * 256 + 256 * 64 + 256 * 4;
++const PIPE_STAGE: u32 = 64 * 256 + 256 * 64;
+ 
+ /// The 128-code chunks a warp of the register-held mxfp4 select keeps in
+ /// flight: one, five CTAs an SM; a decode's few CTAs take more warps from
+@@ -228,13 +228,12 @@ pub(super) fn select_mxfp4_mma(
+     let n = stated(op, nonzero(op, "N, the bank's output width", bank_rows)?)?;
+     let inter = stated(op, y.width)?;
+     let act_div = if fan.by_token { fan.top_k } else { 1 };
+-    // A wide fire of a K of whole 128s takes the staged slice's eight-warp
+-    // ring of codes and routes (`moe_select_mxfp4_mma_pipe`), mxfp4 alone.
++    // A wide fire takes the staged slice's eight-warp ring of codes and
++    // routes (`moe_select_mxfp4_mma_pipe`), mxfp4 alone.
+     let pipe = staged
+         && per >= PIPE_FROM
+         && !hopper_wgmma()
+         && tensor_scales.is_none()
+-        && k % 128 == 0
+         && ctx.smem_fits(PIPE_STAGES * PIPE_STAGE);
+     let RouteOrder {
+         order,

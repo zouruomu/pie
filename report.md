@@ -12,13 +12,67 @@ Card: NVIDIA RTX PRO 6000 Blackwell Server Edition (sm_120, 96 GB, 600 W cap), d
 - **At equal token counts, 97% of the gap is the MoE.** pf256, nsys:
   - 120b: +1,492 of +1,542 ms of kernel time is the MoE. The expert GEMMs alone are +1,660 ms, about 2× per token. pie's MoE glue is 168 ms cheaper, because its GLU and bias fuse into the select.
   - Everything else (attention, dense projections, norms, rope/KV) totals +49 ms, about 1%.
-- **At W4A16 pie is level with the engines that run W4A16.** vLLM 0.32 (MARLIN W4A16) 120b pf256 is 28.9k vs pie's 28.9k. Full sweep: `pending`.
+- **At W4A16 pie is level with or ahead of vLLM 0.32 (MARLIN W4A16), the other W4A16 engine:**
+  - 20b: pie leads at every pf (+4.3% to +30%).
+  - 120b: pie leads at pf4–pf64 and is level from pf128 up (pf256 +0.2%, pf1024 −0.8%, 3 alternating rounds, spreads <1.5%).
 - **The 120b-specific problem in the brief does not exist on main, and did not at the site's commit either.** On this pod, ee9098f60 runs 28.7k tok/s at 120b pf256, with the same kernels and per-component times as main. The site's 13.8k for that commit was that site run. #1430 changes nothing for gpt-oss: both commits run the same W4A16 staged selects.
-- **No fix PR:** per the orchestrator (note 3), changing gpt-oss's default MoE precision is out of scope. Nothing at W4A16 reaches the 4.5% bar against TRT-LLM (`pending`: vLLM sweep, the 20b pf16 dip, ea800efeb). What a W4A8 gpt-oss path on sm_120 would take, and what it would gain, is below as a decision for Felix.
+- **No fix PR:** per the orchestrator (note 3), changing gpt-oss's default MoE precision is out of scope. Nothing at W4A16 reaches the 4.5% bar: not against TRT-LLM outside the MoE (+1% of wall), not against vLLM, and not in the 20b pf16 "dip", which is noise. What a W4A8 gpt-oss path on sm_120 would take, and what it would gain, is below as a decision for Felix.
 
 ## Reproduced baseline (main dc6282d76)
 
-pending (table from results/baseline via scripts/pbtable.py)
+**Setup:**
+- Engines: pie embedded engine sha256 `22af6e94…b143` (recorded in every pie JSON), TRT-LLM 1.4.0rc2.post1 (PyTorch backend, LLM API), vLLM 0.32.0 (`scripts/bench/vllm_bench.py`).
+- Prompts: `results/prompts-gptoss-512.json`, unique and cold, HF-rendered to exactly 512 tokens; 16 warmup prompts first, then N measured prompts offered at once; 1 output token, greedy.
+- One engine at a time on an idle GPU. pie and vLLM run one process a point (as `pie_bench`/`vllm_bench` run). TRT-LLM runs a point list in one process after one warmup.
+- prefill tok/s = prompt tokens / wall. Each cell gives the median, (min–max, n) over rounds.
+- Rounds: three alternating at pf128–pf1024 for pie and TRT-LLM; three alternating pie/vLLM at the points within 4.5% (120b pf64/256/1024, 20b pf512); four for pie at 20b pf8/pf16; one elsewhere.
+- TTFT is pie's latency p50 (one output token) and TRT-LLM's first-token p50.
+
+**Clocks:**
+- pie 120b pf1024 in-run (100 ms samples at ≥90% utilization, results/clocks/): SM median 2400 MHz (2295–2415), 561 W median.
+- TRT-LLM at its large points: 2265–2317 MHz at the 600 W cap (per point in its JSONs).
+- pie runs at the higher clock, so clocks are not the gap.
+
+
+### gpt-oss-20b
+
+| pf | pie | TRT-LLM | vLLM | pie vs TRT-LLM | pie vs vLLM | pie TTFT p50 ms | TRT-LLM TTFT p50 ms |
+|---|---|---|---|---|---|---|---|
+| 4 | 29.6k (n=1) | 32.6k (n=1) | 25.5k (n=1) | -9.3% | +16.1% | 46 | 63 |
+| 8 | 39.8k (30.0-41.3, n=4) | 44.2k (n=1) | 30.7k (n=1) | -10.0% | +29.7% | 88 | 92 |
+| 16 | 40.2k (38.1-43.5, n=4) | 54.7k (n=1) | 32.5k (n=1) | -26.4% | +24.0% | 129 | 149 |
+| 32 | 45.0k (n=1) | 64.8k (n=1) | 41.3k (n=1) | -30.6% | +8.8% | 224 | 151 |
+| 64 | 45.7k (n=1) | 67.6k (n=1) | 42.4k (n=1) | -32.5% | +7.8% | 333 | 272 |
+| 128 | 46.2k (45.9-46.7, n=3) | 70.2k (69.0-70.7, n=3) | 43.5k (n=1) | -34.2% | +6.4% | 646 | 500 |
+| 256 | 46.7k (46.0-47.0, n=3) | 71.5k (69.9-71.7, n=3) | 44.3k (n=1) | -34.7% | +5.4% | 1274 | 955 |
+| 512 | 46.7k (46.4-47.0, n=5) | 72.1k (71.5-72.1, n=3) | 44.7k (44.7-44.8, n=3) | -35.3% | +4.3% | 2523 | 1879 |
+| 1024 | 47.0k (46.9-47.0, n=3) | 72.2k (71.4-72.3, n=3) | 44.8k (n=1) | -35.0% | +4.8% | 4943 | 3723 |
+
+prompt tokens a request: {'pie': [448], 'trt': [512], 'vllm': [512]}
+
+### gpt-oss-120b
+
+| pf | pie | TRT-LLM | vLLM | pie vs TRT-LLM | pie vs vLLM | pie TTFT p50 ms | TRT-LLM TTFT p50 ms |
+|---|---|---|---|---|---|---|---|
+| 4 | 20.7k (n=1) | 17.5k (n=1) | 14.6k (n=1) | +18.2% | +41.5% | 86 | 117 |
+| 8 | 24.6k (n=1) | 24.7k (n=1) | 19.8k (n=1) | -0.3% | +24.2% | 144 | 166 |
+| 16 | 26.7k (n=1) | 34.3k (n=1) | 22.7k (n=1) | -22.0% | +17.8% | 183 | 238 |
+| 32 | 27.9k (n=1) | 39.1k (n=1) | 25.6k (n=1) | -28.5% | +9.2% | 351 | 245 |
+| 64 | 27.8k (27.8-28.2, n=3) | 41.3k (n=1) | 27.4k (27.2-27.4, n=3) | -32.6% | +1.7% | 591 | 434 |
+| 128 | 28.5k (28.5-28.8, n=3) | 42.4k (42.2-42.7, n=3) | 28.4k (n=1) | -32.8% | +0.6% | 1057 | 817 |
+| 256 | 28.9k (28.5-29.0, n=5) | 43.2k (43.1-43.4, n=3) | 28.9k (28.9-28.9, n=3) | -33.0% | +0.2% | 2046 | 1566 |
+| 512 | 29.0k (29.0-29.1, n=3) | 43.4k (43.3-43.5, n=3) | 29.1k (n=1) | -33.3% | -0.5% | 4065 | 3083 |
+| 1024 | 29.0k (29.0-29.1, n=5) | 43.4k (43.3-43.6, n=3) | 29.3k (29.2-29.3, n=3) | -33.2% | -0.8% | 7947 | 6129 |
+
+prompt tokens a request: {'pie': [448], 'trt': [512], 'vllm': [512]}
+
+- pie prefills 448 tokens a prompt, TRT-LLM and vLLM 512 (see Fairness). At 512 of pie's own tokens, pie's tok/s is unchanged within 2% (results/equal-tokens).
+- Small points are noisy for pie at 0.1–0.2 s walls: four rounds at 20b pf8 span 30.0–41.3k, pf16 38.1–43.5k. Round 1's pf16 "dip" (38.1k below pf8's 41.3k) is not there in the medians (39.8k, 40.2k).
+- The site's 20b pie number (49.8k at ea800efeb) is above anything measured here. ea800efeb, built and run on this pod, is not faster than main at pf8–pf32 (results/explore/ea800e-* vs main-*), so main has not regressed.
+- An 8192-row fire (`--max-forward-tokens 8192`, TRT-LLM's max_num_tokens) instead of the profile's `fire_rows = 5120`:
+  - 20b: pf256 46.9k (same), pf16 36.9k vs 43.1k, pf32 41.4k vs 43.8k: slower at the small points;
+  - 120b pf16: 27.3k vs 26.7k, one round each.
+  The profile's split stays.
 
 ## Fairness of TensorRT-LLM's numbers, and the precision each engine ran
 
@@ -119,7 +173,23 @@ Orchestrator note 3 scoped a default-precision change out of this PR. This secti
 - 20b: 2091 → ~1000 ms, so 2.84 s → ~1.76 s, **~74k vs TRT-LLM's 72k**.
 - pie keeps its cheaper glue (its GLU and bias fuse), and its attention is faster. So the precision alone closes both cells.
 
-pie's own sm_120a W4A8 select (`moe_select_mxfp4_w4a8_ws`, tuned on this card for DeepSeek-V4/MiMo), timed at gpt-oss-120b's shape with K padded to 3072: `pending` (results/w4a8/).
+**pie's own sm_120a W4A8 select is already at TRT-LLM's rate.** I timed `moe_select_mxfp4_w4a8_ws<3>` (TMA + warp-specialized, as the PRO 6000 profile runs it) with an ignored timing test added in a scratch worktree (`w4a8_select_timing_gptoss`, not part of any PR).
+- Shape: gpt-oss-120b, a 5120-token fire, 128 experts, top 4, K padded 2880 → 3072, MXFP8 rows in 32s, synthetic balanced routes. Source: results/w4a8/w4a8-gptoss-timing*.
+
+| leg | kernel time (median of 5) | TFLOP/s at K = 3072 | at gpt-oss's true K = 2880 |
+|---|---|---|---|
+| gate-up (N = 5760) | 1.41 ms | 514 | 482 |
+| down (N = 2880) | 0.74 ms | 490 | 459 |
+| `quantize_rows_mxfp8_routed<32>` | 0.081 ms a call | | |
+
+**Measured projection.** The W4A16 selects cost 3.77 ms a layer a 5120-row fire (3478 ms over 36 layers × 25.6 fires). The W4A8 ones would cost 2.31 ms with the quantizes, ~2.17 at the true K.
+- 120b pf256 (4.60 s for 131,072 tokens today), saving 921.6 layer-fires × (3.77 − 2.17…2.31) ms:
+  - padded K, unfused GLU/bias: ~3.46 s, **~37.9k**;
+  - true K, unfused: ~3.33 s, ~39.4k;
+  - true K, fused epilogue: ~3.13 s, **~41.9k**.
+
+  That is vs TRT-LLM's 43.4k. The unfused GLU/bias pass is ~0.2 s: the routes × 5760 product read again and the GLU written, ~354 MB a layer-fire.
+- Synthetic balanced routes flatter the kernel a little relative to real routing.
 
 **What it needs, with estimates:**
 1. **K = 2880.** The sm_120a W4A8 selects take only whole 128s:
@@ -148,7 +218,11 @@ So a W4A8 deployment makes gpt-oss's numerics depend on the fire width, and the 
 
 ## Other loads and related cells
 
-pending
+- **120b batching (related red cell, site −30%):** one measurement at c1024 (1024 requests offered at once, 128 prompt tokens of each engine's own rendering, 128 out; results/batching/).
+  - pie: 131,072 output tokens in 16.0 s, **8,185 out tok/s**, latency p50 9.98 s.
+  - TRT-LLM: 18.4 s, **7,119 out tok/s**, TTFT p50 1.85 s.
+  - In this shape pie leads by 15%, so the site's −30% does not come from the MoE precision at large batch. The site's pie TTFT p50 of 20.9 s against TRT-LLM's 0.53 s suggests requests waiting for admission under a load with more requests than seats: the cap the concurrent A100 run (#1368's cap where pools seat to the end) is lifting. Per note 4 I did not chase it, and the site's batching request shape is not known to me.
+- **No change was made,** so there are no fix-vs-base checks (token equality, cross-model, memory fit, GPU suite) to report.
 
 ## Side findings
 
@@ -162,7 +236,7 @@ pending
 - **RTX 5090 and RTX PRO 4500 share the cause.**
   - Their profiles (`crates/engine-cuda/profiles/sm120/`) route gpt-oss's wide MXFP4 selects through the same W4A16 staged select. TRT-LLM's AUTO path is W4A8 on every sm_120/121 card (`model_config.py:579-587, 729-741`; `SmSupport {…, 120, 121}`).
   - Their larger gaps (5090 pbatch −44%) are consistent with GeForce's consumer tensor rates, but I could not measure them on this pod.
-- **The 20b pf16 dip:** `pending`.
+- **The 20b pf16 dip** was round-to-round noise at 0.1–0.2 s walls (see the baseline notes).
 
 ## Playbook notes
 
