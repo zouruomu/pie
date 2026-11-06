@@ -1,7 +1,7 @@
 # Status: 20261105-2035-a100-sxm-x1-gemma-4-31b-batching
 
-**Phase:** fix v2 built; verification queue (q6) started
-**UTC:** 2026-11-05 23:58
+**Phase:** fix v3 built; verification queue q7 running (~6 h GPU)
+**UTC:** 2026-11-06 00:27
 
 ## Preliminary verdict (1 round so far; rounds 2-3 running)
 
@@ -46,6 +46,21 @@ The cap is what holds pie at ~21 lanes. seat_to_end gates cleanly without it (+2
 1. Done: the fix no longer changes shared admission. v2 makes the cap a profile decision, `engine.uncapped_admission`, default off: every card behaves exactly as before. Only the A100 profile turns it on, beside `seat_to_end = true`. The plumbing spans engine-cuda chip/serve/api, engine caps (`PoolFacts`), worker translate and runtime bootstrap, about 40 lines. Gemma-4-26B-A4B c512/c1024 is first in the verification queue.
 2. Shared runtime code is touched only by the new field and its filter, which is a no-op unless a profile asks. No change for the gpt-oss-120b x H100 run.
 3. Remaining gap after the cap, c512: the gate admits exactly the pool, 35 lanes = 671 pages / 19. Lanes are in lockstep, since all requests are the same length, so the gate's lockstep bound is real; oversubscribing it 10% or 20% changes nothing (559.4). vLLM's pool seats 40 (11,929 tokens / 297). Lanes decoding: pie 27.6 of 35 (79%), vLLM 32.8 of 40 (82%). ITL 49.3 against 52.2 ms. So the rest of the gap is pool size (-12.5% seats), a slightly larger turnover loss (-4%), and pie's faster step (+6%) against them. working_set_percent 40/30 runs (a smaller arena, a larger pool) are finishing now.
+
+## Fix v3 = v2 + `working_set_percent = 40` in the A100 profile (second, independent line)
+The pool-size half of the remaining gap. At c512 (fix v1 + user layer, 1 round):
+
+| working_set_percent | fire tokens | pool pages | tok/s | lanes |
+|---|---|---|---|---|
+| 50 (default) | 3757 | 671 | 559.5 | 27.6 |
+| 40 | 2436 | 735 | 597.0 | 29.8 |
+| 30 | 1449 | 768 | 601.5 | 30.2 |
+
+40 is chosen: nearly all of 30's gain, with fires at about vLLM's 2,496-token chunks. Prefill batches are the risk (pbatch is green by only 2.1%). q7 measures pf4-pf1024 for base, v3 and v2.
+- Plumbing check: v2 with `uncapped_admission = false` as a user layer gives cap 26 and 454.1, the base value.
+- Turnover: the token 1 -> 2 gap is p50 488 ms in pie (fix) and 646 ms in vLLM (scripts/gaps.py). Not pie-specific.
+- Engines: base c795a06a, v2 2194798c, v3 8cd1ffd7 (branch fix-wip 47cfd8b1).
+- Tests on the fix tree so far: runtime 101 passed; pie-profile 41 passed; engine-cuda chip 13 passed.
 
 ## Fix v2 (results so far with the equivalent exp engine, 1 round)
 | | base | fix | vLLM |
