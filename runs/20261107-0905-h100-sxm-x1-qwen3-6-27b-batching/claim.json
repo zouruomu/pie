@@ -1,0 +1,328 @@
+{
+  "run": "20261107-0905-h100-sxm-x1-qwen3-6-27b-batching",
+  "retry_of": "20261106-1706-h100-sxm-x1-qwen3-6-27b-batching (second retry; 20261107-0105 was blocked by the revoked token)",
+  "cells": [
+    {
+      "hardware": "h100-sxm-x1",
+      "gpu": "NVIDIA H100 SXM",
+      "gpu_count": 1,
+      "model": "qwen3.8-27b",
+      "mode": "batching",
+      "gain": -0.3114,
+      "pie": 2311.3,
+      "best_engine": "trtllm",
+      "best": 3356.51,
+      "scheme": "bf16",
+      "miniature": false,
+      "pie_commit": "225b6b94d",
+      "pie_measured": "2026-11-03 06:03",
+      "pie_stale": {
+        "tag": "h100-full",
+        "measured": "2026-11-03 06:03"
+      },
+      "best_version": "1.4.0rc2.post1",
+      "best_measured": "2026-11-05 21:01"
+    },
+    {
+      "hardware": "h100-sxm-x1",
+      "gpu": "NVIDIA H100 SXM",
+      "gpu_count": 1,
+      "model": "qwen3.6-27b",
+      "mode": "batching",
+      "gain": -0.2606,
+      "pie": 2489.15,
+      "best_engine": "trtllm",
+      "best": 3366.33,
+      "scheme": "bf16",
+      "miniature": false,
+      "pie_commit": "ee9098f60",
+      "pie_measured": "2026-11-03 14:54",
+      "pie_stale": {
+        "tag": "h100-fill",
+        "measured": "2026-11-03 14:54"
+      },
+      "best_version": "1.4.0rc2.post1",
+      "best_measured": "2026-11-05 21:55"
+    }
+  ],
+  "related_cells_not_claimed": [
+    {
+      "hardware": "pro4500-x1",
+      "gpu": "NVIDIA RTX PRO 4500 Blackwell",
+      "gpu_count": 1,
+      "model": "qwen3.8-27b",
+      "mode": "batching",
+      "gain": -0.7678,
+      "pie": 452.6,
+      "best_engine": "vllm",
+      "best": 1949.43,
+      "scheme": "bf16",
+      "miniature": true,
+      "pie_commit": "573bab1e3",
+      "pie_measured": "2026-11-02 20:58",
+      "pie_stale": {
+        "tag": "pro4500-full",
+        "measured": "2026-11-02 20:58"
+      },
+      "best_version": "0.32.0",
+      "best_measured": "2026-11-02 21:11"
+    },
+    {
+      "hardware": "tpu-v6e-1",
+      "gpu": "Google Cloud TPU v6e (Trillium)",
+      "gpu_count": 1,
+      "model": "qwen3.6-27b",
+      "mode": "batching",
+      "gain": -0.5866,
+      "pie": 3472.27,
+      "best_engine": "vllm",
+      "best": 8399.49,
+      "scheme": "bf16",
+      "miniature": true,
+      "pie_commit": "59935820d",
+      "pie_measured": "2026-11-04 00:39",
+      "pie_stale": {
+        "tag": "tpu-v6e-full",
+        "measured": "2026-11-04 00:39"
+      },
+      "best_version": "0.32.0",
+      "best_measured": "2026-11-04 00:24"
+    },
+    {
+      "hardware": "tpu-v5e-1",
+      "gpu": "Google Cloud TPU v5e",
+      "gpu_count": 1,
+      "model": "qwen3.6-27b",
+      "mode": "batching",
+      "gain": -0.5192,
+      "pie": 2354.56,
+      "best_engine": "vllm",
+      "best": 4897.05,
+      "scheme": "bf16",
+      "miniature": true,
+      "pie_commit": "8ca51777f",
+      "pie_measured": "2026-11-03 23:02",
+      "pie_stale": {
+        "tag": "tpu-v5e-full",
+        "measured": "2026-11-03 23:02"
+      },
+      "best_version": "0.32.0",
+      "best_measured": "2026-11-05 16:24"
+    },
+    {
+      "hardware": "a100-sxm-x1",
+      "gpu": "NVIDIA A100 SXM 80GB",
+      "gpu_count": 1,
+      "model": "qwen3.8-27b",
+      "mode": "batching",
+      "gain": -0.279,
+      "pie": 1134.02,
+      "best_engine": "trtllm",
+      "best": 1572.87,
+      "scheme": "bf16",
+      "miniature": false,
+      "pie_commit": "d9c9582b6",
+      "pie_measured": "2026-11-03 11:06",
+      "pie_stale": {
+        "tag": "a100-sxm-full",
+        "measured": "2026-11-03 11:06"
+      },
+      "best_version": "1.4.0rc2.post1",
+      "best_measured": "2026-11-05 21:42"
+    },
+    {
+      "hardware": "a100-sxm-x1",
+      "gpu": "NVIDIA A100 SXM 80GB",
+      "gpu_count": 1,
+      "model": "qwen3.6-27b",
+      "mode": "batching",
+      "gain": -0.2716,
+      "pie": 1143.3,
+      "best_engine": "trtllm",
+      "best": 1569.67,
+      "scheme": "bf16",
+      "miniature": false,
+      "pie_commit": "ee9098f60",
+      "pie_measured": "2026-11-03 17:10",
+      "pie_stale": {
+        "tag": "a100-sxm-fill",
+        "measured": "2026-11-03 17:10"
+      },
+      "best_version": "1.4.0rc2.post1",
+      "best_measured": "2026-11-05 20:51"
+    },
+    {
+      "hardware": "l40s-x1",
+      "gpu": "NVIDIA L40S",
+      "gpu_count": 1,
+      "model": "qwen3.8-27b",
+      "mode": "batching",
+      "gain": -0.2501,
+      "pie": 1258.09,
+      "best_engine": "trtllm",
+      "best": 1677.59,
+      "scheme": "bf16",
+      "miniature": true,
+      "pie_commit": "eb8151362",
+      "pie_measured": "2026-10-29 20:02",
+      "pie_stale": {
+        "tag": "l40s-full",
+        "measured": "2026-10-29 20:02"
+      },
+      "best_version": "1.4.0rc2.post1",
+      "best_measured": "2026-11-05 21:59"
+    },
+    {
+      "hardware": "l40s-x1",
+      "gpu": "NVIDIA L40S",
+      "gpu_count": 1,
+      "model": "qwen3.6-27b",
+      "mode": "batching",
+      "gain": -0.2352,
+      "pie": 1280.85,
+      "best_engine": "trtllm",
+      "best": 1674.71,
+      "scheme": "bf16",
+      "miniature": true,
+      "pie_commit": "eb8151362",
+      "pie_measured": "2026-10-29 19:42",
+      "pie_stale": {
+        "tag": "l40s-full",
+        "measured": "2026-10-29 19:42"
+      },
+      "best_version": "1.4.0rc2.post1",
+      "best_measured": "2026-11-05 22:46"
+    },
+    {
+      "hardware": "a40-x1",
+      "gpu": "NVIDIA A40",
+      "gpu_count": 1,
+      "model": "qwen3.8-27b",
+      "mode": "batching",
+      "gain": -0.2127,
+      "pie": 1014.76,
+      "best_engine": "trtllm",
+      "best": 1288.93,
+      "scheme": "bf16",
+      "miniature": true,
+      "pie_commit": "ba82f3425",
+      "pie_measured": "2026-11-03 05:01",
+      "pie_stale": {
+        "tag": "a40-full",
+        "measured": "2026-11-03 05:01"
+      },
+      "best_version": "1.4.0rc2.post1",
+      "best_measured": "2026-11-05 21:35"
+    },
+    {
+      "hardware": "a40-x1",
+      "gpu": "NVIDIA A40",
+      "gpu_count": 1,
+      "model": "qwen3.6-27b",
+      "mode": "batching",
+      "gain": -0.171,
+      "pie": 1067.07,
+      "best_engine": "trtllm",
+      "best": 1287.15,
+      "scheme": "bf16",
+      "miniature": true,
+      "pie_commit": "ee9098f60",
+      "pie_measured": "2026-11-03 17:28",
+      "pie_stale": {
+        "tag": "a40-fill",
+        "measured": "2026-11-03 17:28"
+      },
+      "best_version": "1.4.0rc2.post1",
+      "best_measured": "2026-11-05 22:33"
+    },
+    {
+      "hardware": "rtx5090-x1",
+      "gpu": "NVIDIA GeForce RTX 5090",
+      "gpu_count": 1,
+      "model": "qwen3.8-27b",
+      "mode": "batching",
+      "gain": -0.1649,
+      "pie": 4206.04,
+      "best_engine": "trtllm",
+      "best": 5036.87,
+      "scheme": "bf16",
+      "miniature": true,
+      "pie_commit": "4305b638c",
+      "pie_measured": "2026-11-03 00:34",
+      "pie_stale": {
+        "tag": "rtx5090-full",
+        "measured": "2026-11-03 00:34"
+      },
+      "best_version": "1.4.0rc2.post1",
+      "best_measured": "2026-11-05 18:55"
+    },
+    {
+      "hardware": "h200-x1",
+      "gpu": "NVIDIA H200 SXM",
+      "gpu_count": 1,
+      "model": "qwen3.8-27b",
+      "mode": "batching",
+      "gain": -0.1027,
+      "pie": 4380.46,
+      "best_engine": "trtllm",
+      "best": 4881.78,
+      "scheme": "bf16",
+      "miniature": false,
+      "pie_commit": "1d267c2ae",
+      "pie_measured": "2026-11-03 04:37",
+      "pie_stale": {
+        "tag": "h200-full",
+        "measured": "2026-11-03 04:37"
+      },
+      "best_version": "1.4.0rc2.post1",
+      "best_measured": "2026-11-05 19:20"
+    },
+    {
+      "hardware": "b200-x1",
+      "gpu": "NVIDIA B200",
+      "gpu_count": 1,
+      "model": "qwen3.6-27b",
+      "mode": "batching",
+      "gain": -0.0809,
+      "pie": 6770.54,
+      "best_engine": "vllm",
+      "best": 7366.78,
+      "scheme": "bf16",
+      "miniature": false,
+      "pie_commit": "ee9098f60",
+      "pie_measured": "2026-11-03 14:56",
+      "pie_stale": {
+        "tag": "b200-fill",
+        "measured": "2026-11-03 14:56"
+      },
+      "best_version": "0.32.0",
+      "best_measured": "2026-11-03 14:48"
+    },
+    {
+      "hardware": "rtx4090-x1",
+      "gpu": "NVIDIA GeForce RTX 4090",
+      "gpu_count": 1,
+      "model": "qwen3.8-27b",
+      "mode": "batching",
+      "gain": -0.061,
+      "pie": 4504.96,
+      "best_engine": "trtllm",
+      "best": 4797.65,
+      "scheme": "bf16",
+      "miniature": true,
+      "pie_commit": "e8aeca437",
+      "pie_measured": "2026-11-03 01:19",
+      "pie_stale": {
+        "tag": "rtx4090-full",
+        "measured": "2026-11-03 01:19"
+      },
+      "best_version": "1.4.0rc2.post1",
+      "best_measured": "2026-11-05 20:11"
+    }
+  ],
+  "gpu_type_id": "NVIDIA H100 80GB HBM3",
+  "gpu_count": 1,
+  "owner": "orchestrator 2026-11-07T09:03Z (scheduled routine)",
+  "heartbeat": "2026-11-07T09:04Z",
+  "pod_id": null
+}
