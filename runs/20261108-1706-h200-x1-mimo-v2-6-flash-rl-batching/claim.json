@@ -1,0 +1,139 @@
+{
+  "run": "20261108-1706-h200-x1-mimo-v2-6-flash-rl-batching",
+  "cells": [
+    {
+      "hardware": "h200-x1",
+      "gpu": "NVIDIA H200 SXM",
+      "gpu_count": 1,
+      "model": "mimo-v2.6-flash-rl",
+      "mode": "batching",
+      "gain": -0.5047,
+      "pie": 2295.75,
+      "best_engine": "vllm",
+      "best": 4635.33,
+      "scheme": "mxfp4",
+      "miniature": true,
+      "pie_commit": "bb2d6bf43",
+      "pie_measured": "2026-11-08 04:09",
+      "pie_stale": {
+        "tag": "h200-rerun",
+        "measured": "2026-11-08 04:09"
+      },
+      "best_version": "0.32.0",
+      "best_measured": "2026-11-08 03:48"
+    },
+    {
+      "hardware": "h200-x1",
+      "gpu": "NVIDIA H200 SXM",
+      "gpu_count": 1,
+      "model": "mimo-v2.6-flash-rl",
+      "mode": "prefill",
+      "gain": -0.3047,
+      "pie": 4897.38,
+      "best_engine": "vllm",
+      "best": 7043.56,
+      "scheme": "mxfp4",
+      "miniature": true,
+      "pie_commit": "bb2d6bf43",
+      "pie_measured": "2026-11-07 22:10",
+      "pie_stale": {
+        "tag": "h200-rerun",
+        "measured": "2026-11-07 22:10"
+      },
+      "best_version": "0.32.0",
+      "best_measured": "2026-11-03 01:36"
+    }
+  ],
+  "related_cells_not_claimed": [
+    {
+      "hardware": "pro6000-x4",
+      "gpu": "NVIDIA RTX PRO 6000 Blackwell Server",
+      "gpu_count": 4,
+      "model": "mimo-v2.6-flash-rl",
+      "mode": "prefill",
+      "gain": -0.0994,
+      "pie": 7703.47,
+      "best_engine": "vllm",
+      "best": 8553.7,
+      "scheme": "mxfp4",
+      "miniature": false,
+      "pie_commit": "c91c5ffa3",
+      "pie_measured": "2026-10-22 20:20",
+      "pie_stale": {
+        "tag": "0.5.3-b5",
+        "measured": "2026-10-22 20:20"
+      },
+      "best_version": "0.31.0",
+      "best_measured": "2026-10-22 21:11"
+    },
+    {
+      "hardware": "rtx4090-x1",
+      "gpu": "NVIDIA GeForce RTX 4090",
+      "gpu_count": 1,
+      "model": "mimo-v2.6-flash-rl",
+      "mode": "batching",
+      "gain": -0.0778,
+      "pie": 20815.76,
+      "best_engine": "sglang",
+      "best": 22571.01,
+      "scheme": "mxfp4",
+      "miniature": true,
+      "pie_commit": "bb2d6bf43",
+      "pie_measured": "2026-11-07 22:24",
+      "pie_stale": {
+        "tag": "rtx4090-rerun",
+        "measured": "2026-11-07 22:24"
+      },
+      "best_version": "0.5.22",
+      "best_measured": "2026-11-07 22:32"
+    },
+    {
+      "hardware": "h100-sxm-x4",
+      "gpu": "NVIDIA H100 SXM",
+      "gpu_count": 4,
+      "model": "mimo-v2.6-flash-rl",
+      "mode": "decode",
+      "gain": -0.0626,
+      "pie": 204.74,
+      "best_engine": "vllm",
+      "best": 218.41,
+      "scheme": "mxfp4",
+      "miniature": false,
+      "pie_commit": "f2050c8a0",
+      "pie_measured": "2026-10-22 17:37",
+      "pie_stale": {
+        "tag": "0.5.3-b5",
+        "measured": "2026-10-22 17:37"
+      },
+      "best_version": "0.31.0",
+      "best_measured": "2026-10-21 17:14"
+    },
+    {
+      "hardware": "rtx4090-x1",
+      "gpu": "NVIDIA GeForce RTX 4090",
+      "gpu_count": 1,
+      "model": "mimo-v2.6-flash-rl",
+      "mode": "pbatch",
+      "gain": -0.0516,
+      "pie": 51501.45,
+      "best_engine": "sglang",
+      "best": 54303.35,
+      "scheme": "mxfp4",
+      "miniature": true,
+      "pie_commit": "bb2d6bf43",
+      "pie_measured": "2026-11-07 18:20",
+      "pie_stale": {
+        "tag": "rtx4090-rerun",
+        "measured": "2026-11-07 18:20"
+      },
+      "best_version": "0.5.22",
+      "best_measured": "2026-11-03 20:35"
+    }
+  ],
+  "gpu_type_id": "NVIDIA H200",
+  "gpu_count": 1,
+  "owner": "orchestrator 2026-11-08T17:03Z (scheduled routine)",
+  "heartbeat": "2026-11-08T17:08Z",
+  "pod_id": null,
+  "note": "also a token probe: if the pod agent fails at start with 401 again, close at once"
+}
